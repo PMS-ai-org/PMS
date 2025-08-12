@@ -1,6 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using PMS.WebAPI.Data;
 using PMS.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -9,6 +14,7 @@ builder.Services.AddSwaggerGen();
 
 // Simple in-memory PatientService
 builder.Services.AddSingleton<IPatientService, PatientService>();
+builder.Services.AddScoped<ITodoService, TodoService>();
 
 // CORS for Angular dev server
 var allowAngular = "AllowAngular";

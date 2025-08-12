@@ -1,22 +1,11 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'pms-root',
-  imports: [RouterOutlet],
-  template: `
-   <header role="banner">
-      <h1>PMS UI</h1>
-   </header>
-    <main>
-      <router-outlet></router-outlet>
-    </main>
-  `,
-  styles: [`
-    header { padding: 1rem; background: var(--primary); color: white; }
-    main { padding: 1rem; }
-  `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterOutlet, RouterModule],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
   host: { 'class': 'pms-root' }
 })
 export class AppComponent {

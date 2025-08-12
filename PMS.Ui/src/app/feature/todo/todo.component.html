@@ -1,0 +1,24 @@
+<h2>Todo List</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" style="margin-bottom: 1rem;">
+  <input type="text" formControlName="title" placeholder="Title" />
+  <label>
+    <input type="checkbox" formControlName="isComplete" />
+    Completed
+  </label>
+  <button type="submit">
+    {{ selectedTodo() ? 'Update' : 'Add' }}
+  </button>
+  <button type="button" (click)="cancelEdit()" *ngIf="selectedTodo()">Cancel</button>
+</form>
+
+<ul>
+   @for (todo of todos(); track $index) {
+    <li>
+      {{ todo.title }} - <strong>{{ todo.isComplete ? '✅' : '❌' }}</strong>
+      <button (click)="edit(todo)">Edit</button>
+      <button (click)="delete(todo)">Delete</button>
+    </li>
+  }
+
+</ul>

@@ -20,8 +20,4 @@ export class DataService {
   setCache(value: Record<string, unknown>) {
     this._cache.set(value);
   }
-
-  fetchHttpDataTest(): Observable<any> {
-    return this.http.get('http://localhost:5000/api/Patients');
-  }
 }
