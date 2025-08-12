@@ -1,0 +1,14 @@
+# Angular build output
+/dist
+/out-tsc
+
+# Node modules
+/node_modules
+
+# IDE
+.idea/
+.vscode/
+.angular/
+
+# Env files
+src/environments/environment*.ts
