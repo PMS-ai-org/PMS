@@ -1,0 +1,47 @@
+name: Angular CI
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'PMS.UI/**'
+      - '.github/workflows/angular-ci.yml'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: PMS.UI/package-lock.json
+      - run: cd PMS.UI && npm ci
+      - run: cd PMS.UI && npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: PMS.UI/package-lock.json
+      - run: cd PMS.UI && npm ci
+      - run: cd PMS.UI && npm run test -- --watch=false --browsers=ChromeHeadless
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: PMS.UI/package-lock.json
+      - run: cd PMS.UI && npm ci
+      - run: cd PMS.UI && npm run build -- --configuration production
