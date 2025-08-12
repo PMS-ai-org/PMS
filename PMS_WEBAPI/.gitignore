@@ -1,0 +1,15 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.ncrunch*
+_ReSharper*/
+node_modules/
+.vscode/
+.idea/
+*.db
+.env
+publish/
+wwwroot/
