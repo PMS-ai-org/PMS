@@ -4,44 +4,62 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'PMS.UI/**'
+      - 'PMS.Ui/**'
       - '.github/workflows/angular-ci.yml'
 
 jobs:
   lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: PMS.UI/package-lock.json
-      - run: cd PMS.UI && npm ci
-      - run: cd PMS.UI && npm run lint
+          cache-dependency-path: PMS.Ui/package-lock.json
+
+      - name: Install dependencies
+        run: cd PMS.Ui && npm ci
+
+      - name: Run linter
+        run: cd PMS.Ui && npm run lint
 
   test:
+    name: test
     runs-on: ubuntu-latest
-    needs: lint
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: PMS.UI/package-lock.json
-      - run: cd PMS.UI && npm ci
-      - run: cd PMS.UI && npm run test -- --watch=false --browsers=ChromeHeadless
+          cache-dependency-path: PMS.Ui/package-lock.json
+
+      - name: Install dependencies
+        run: cd PMS.Ui && npm ci
+
+      - name: Run tests
+        run: cd PMS.Ui && npm run test -- --watch=false --browsers=ChromeHeadless
 
   build:
+    name: build
     runs-on: ubuntu-latest
-    needs: [lint, test]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: PMS.UI/package-lock.json
-      - run: cd PMS.UI && npm ci
-      - run: cd PMS.UI && npm run build -- --configuration production
+          cache-dependency-path: PMS.Ui/package-lock.json
+      - run: cd PMS.Ui && npm ci
+      - run: cd PMS.Ui && npm run build -- --configuration production
