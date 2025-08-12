@@ -2,7 +2,8 @@
 A minimal .NET 8 Web API sample for Patients (in-memory).
 
 ## Requirements
-- .NET 8 SDK installed
+- .NET 8 SDK installed (https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-8.0.413-windows-x64-installer)
+
 
 ## Run locally
 1. Restore & build:
@@ -16,7 +17,7 @@ dotnet build
 dotnet run
 ```
 
-Swagger UI (Development): `https://localhost:5000/swagger`
+Swagger UI (Development): `http://localhost:7123/swagger`
 
 ## API Endpoints
 - `GET /api/patients` - list sample patients
