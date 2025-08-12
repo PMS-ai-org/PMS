@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - 'PMS.UI/**'
+      - 'PMS.Ui/**'
       - '.github/workflows/angular-ci.yml'
 
 jobs:
@@ -20,13 +20,13 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: PMS.UI/package-lock.json
+          cache-dependency-path: PMS.Ui/package-lock.json
 
       - name: Install dependencies
-        run: cd PMS.UI && npm ci
+        run: cd PMS.Ui && npm ci
 
       - name: Run linter
-        run: cd PMS.UI && npm run lint
+        run: cd PMS.Ui && npm run lint
 
   test:
     name: test
@@ -40,13 +40,13 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: PMS.UI/package-lock.json
+          cache-dependency-path: PMS.Ui/package-lock.json
 
       - name: Install dependencies
-        run: cd PMS.UI && npm ci
+        run: cd PMS.Ui && npm ci
 
       - name: Run tests
-        run: cd PMS.UI && npm run test -- --watch=false --browsers=ChromeHeadless
+        run: cd PMS.Ui && npm run test -- --watch=false --browsers=ChromeHeadless
 
   build:
     name: build
@@ -60,10 +60,6 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: PMS.UI/package-lock.json
-
-      - name: Install dependencies
-        run: cd PMS.UI && npm ci
-
-      - name: Build Angular app
-        run: cd PMS.UI && npm run build -- --configuration production
+          cache-dependency-path: PMS.Ui/package-lock.json
+      - run: cd PMS.Ui && npm ci
+      - run: cd PMS.Ui && npm run build -- --configuration production
