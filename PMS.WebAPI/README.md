@@ -4,7 +4,6 @@ A minimal .NET 8 Web API sample for Patients (in-memory).
 ## Requirements
 - .NET 8 SDK installed (https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-8.0.413-windows-x64-installer)
 
-
 ## Run locally
 1. Restore & build:
 ```bash
