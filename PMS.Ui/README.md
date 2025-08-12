@@ -42,3 +42,6 @@ npm run test
 - Do not use `@HostBinding` / `@HostListener`
 
 If you want a full working CLI project (with Angular CLI workspace builders installed), run `ng new pms-ui` and then copy `src/` + config files from this repo into it, or run `npm i` here and install `@angular-devkit/build-angular` + `@angular/cli` to fully enable `ng serve`.
+
+
+git checkout -b demo-ci-test
