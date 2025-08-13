@@ -1,15 +1,2 @@
- header {
-     padding: 1rem;
-     background: var(--primary);
-     color: white;
- }
-
- main {
-     padding: 1rem;
- }
-
- a {
-  text-decoration: underline;
-  color: blue;
-  cursor: pointer;
-}
+.spacer { flex: 1 1 auto; }
+.main-wrap { padding: 16px; }

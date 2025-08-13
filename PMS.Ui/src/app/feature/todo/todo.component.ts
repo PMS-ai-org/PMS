@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Todo, TodoService } from '../../services/todo.service';
 
 @Component({
-  selector: 'app-todo',
+  selector: 'pms-todo',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.scss']

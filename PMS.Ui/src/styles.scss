@@ -1,2 +1,23 @@
-:root { --primary: #0d6efd; }
-body { font-family: Inter, Roboto, Arial, sans-serif; margin: 0; }
+// @use '@angular/material' as mat;
+
+// // 1️⃣ Core styles
+// @include mat.core();
+
+// // 2️⃣ Define palettes
+// $primary-palette: mat.define-palette(m.$teal-palette);
+// $accent-palette: mat.define-palette(m.$pink-palette, A200, A100, A400);
+// $warn-palette: mat.define-palette(m.$red-palette);
+
+// // 3️⃣ Create theme
+// $my-theme: mat.define-light-theme((
+//   color: (
+//     primary: $primary-palette,
+//     accent: $accent-palette,
+//     warn: $warn-palette,
+//   ),
+//   typography: mat.define-typography-config(),
+//   density: 0,
+// ));
+
+// // 4️⃣ Apply theme to all components
+// @include mat.all-component-themes($my-theme);
