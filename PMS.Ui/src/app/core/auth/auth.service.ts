@@ -48,7 +48,7 @@ export class AuthService {
 
   logout(navigate = true) {
     this.tokenStore.clear();
-    if (navigate) this.router.navigate(['/login']);
+    if (navigate) { void this.router.navigate(['/login']); }
   }
 
   /** Attach token and auto-expiry */
