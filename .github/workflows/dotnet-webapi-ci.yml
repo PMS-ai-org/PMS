@@ -1,0 +1,48 @@
+name: .NET Core Web API CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup .NET SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # Change to your .NET version
+
+      # 3️⃣ Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore PMS/PMS.WebAPI
+
+      # 4️⃣ Build solution
+      - name: Build
+        run: dotnet build PMS/PMS.WebAPI --no-restore --configuration Release
+
+      # 5️⃣ Run tests (if test project exists)
+      - name: Test
+        run: dotnet test PMS/PMS.WebAPI --no-build --configuration Release --verbosity normal
+        continue-on-error: false
+
+      # 6️⃣ Publish (Optional)
+      - name: Publish
+        run: dotnet publish PMS/PMS.WebAPI --no-build --configuration Release -o ./publish
+
+      # 7️⃣ Upload artifact (Optional)
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapi-build
+          path: ./publish
