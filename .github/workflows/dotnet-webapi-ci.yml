@@ -25,20 +25,20 @@ jobs:
 
       # 3️⃣ Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore PMS/PMS.WebAPI
+        run: dotnet restore PMS.WebAPI
 
       # 4️⃣ Build solution
       - name: Build
-        run: dotnet build PMS/PMS.WebAPI --no-restore --configuration Release
+        run: dotnet build PMS.WebAPI --no-restore --configuration Release
 
       # 5️⃣ Run tests (if test project exists)
       - name: Test
-        run: dotnet test PMS/PMS.WebAPI --no-build --configuration Release --verbosity normal
+        run: dotnet test PMS.WebAPI --no-build --configuration Release --verbosity normal
         continue-on-error: false
 
       # 6️⃣ Publish (Optional)
       - name: Publish
-        run: dotnet publish PMS/PMS.WebAPI --no-build --configuration Release -o ./publish
+        run: dotnet publish PMS.WebAPI --no-build --configuration Release -o ./publish
 
       # 7️⃣ Upload artifact (Optional)
       - name: Upload build artifacts

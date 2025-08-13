@@ -26,7 +26,7 @@ export class TodoComponent {
   }
 
   loadTodos() {
-    this.todoService.getTodos().subscribe(this.todos.set);
+    this.todoService.getTodos().subscribe(todos => this.todos.set(todos));
   }
 
   submit() {
