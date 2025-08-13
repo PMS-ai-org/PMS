@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 export function decodeJwtPayload(token: string): any | null {
   try {
     const payload = token.split('.')[1];

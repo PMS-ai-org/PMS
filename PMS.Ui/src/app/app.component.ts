@@ -1,5 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { MaterialModule } from './core/shared/material.module';
 import { AuthService } from './core/auth/auth.service';
 
