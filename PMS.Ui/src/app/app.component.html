@@ -1,7 +1,13 @@
-<header role="banner">
-    <h1>PMS UI</h1>
-</header>
-<main>
-    <a routerLink="/todos">Go to Todos</a>
-    <router-outlet></router-outlet>
+<mat-toolbar color="primary">
+  <span>PMS UI</span>
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="auth.isAuthorized()">
+    <button mat-button routerLink="/todos">Todos</button>
+    <button mat-button (click)="auth.logout()">Logout</button>
+  </ng-container>
+</mat-toolbar>
+
+<main class="main-wrap">
+  <router-outlet></router-outlet>
 </main>
