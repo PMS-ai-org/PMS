@@ -8,9 +8,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register hosted service to fetch secrets on startup
+builder.Services.AddHostedService<SupabaseSecretsService>();
+
+var secretsService = new SupabaseSecretsService(builder.Configuration, builder.Environment);
+await secretsService.StartAsync(CancellationToken.None);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+//builder.Configuration.GetValue<string>("DefaultConnection"))
 
 // Password hasher (PBKDF2)
 builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
@@ -63,7 +70,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
 app.UseCors(allowAngular);
 app.UseHttpsRedirection();
 app.UseAuthentication();
