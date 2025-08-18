@@ -1,6 +1,6 @@
-import { CommonFields } from "./common.model";
+import { AuditableEntity } from "./common.model";
 
-export interface Appointment extends CommonFields {
+export interface Appointment extends AuditableEntity {
   Id: string;
   PatientId: string;
   DoctorId: string;

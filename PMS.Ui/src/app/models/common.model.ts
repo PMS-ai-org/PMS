@@ -1,6 +1,6 @@
-export interface CommonFields {
-  CreatedAt?: Date | null;
-  CreatedBy: string;
-  UpdatedAt?: Date | null;
-  UpdatedBy: string;
+export interface AuditableEntity {
+  created_at?: Date | null;
+  created_by: string;
+  updated_at?: Date | null;
+  updated_by: string;
 }
