@@ -2,11 +2,8 @@ import { AuditableEntity } from "./common.model";
 
 export interface MedicalHistory extends AuditableEntity {
   id: string;
+  Id: string;
   PatientId: string;
-  Code: string;
-  Description: string;
-  Source: string;
-  RecordedAt: string;
-  ClinicId: string;
-  SiteId: string;
+  Details?: string;
+  CreatedAt: string;
 }

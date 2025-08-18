@@ -7,4 +7,7 @@ export interface Patient extends AuditableEntity {
   DateOfBirth: string;
   Phone: string;
   Email: string;
+  Id: string;
+  Name: string;
+  CreatedAt: string;
 }
