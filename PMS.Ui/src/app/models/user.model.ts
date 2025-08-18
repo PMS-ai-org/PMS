@@ -1,6 +1,8 @@
-export interface User {
-  id: string;
-  email: string;
-  passwordHash: string;
-  createdUtc: string;
+import { CommonFields } from "./common.model";
+
+export interface User extends CommonFields {
+  Id: string;
+  Email: string;
+  PasswordHash: string;
+  CreatedUtc: string;
 }

@@ -1,10 +1,12 @@
-export interface MedicalHistory {
+import { CommonFields } from "./common.model";
+
+export interface MedicalHistory extends CommonFields {
   id: string;
-  patient_id: string;
-  code: string;
-  description: string;
-  source: string;
-  recorded_at: string;
-  clinic_id: string;
-  site_id: string;
+  PatientId: string;
+  Code: string;
+  Description: string;
+  Source: string;
+  RecordedAt: string;
+  ClinicId: string;
+  SiteId: string;
 }

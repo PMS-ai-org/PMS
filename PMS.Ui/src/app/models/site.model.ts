@@ -1,12 +1,13 @@
-export interface Site {
-  id: string;
-  clinic_id: string;
-  name: string;
-  neighborhood: string;
-  address: string;
-  city: string;
-  state: string;
-  lat: number;
-  lon: number;
-  created_at: string;
+import { CommonFields } from "./common.model";
+
+export interface Site extends CommonFields {
+  Id: string;
+  ClinicId: string;
+  Name: string;
+  Neighborhood: string;
+  Address: string;
+  City: string;
+  State: string;
+  Lat: number;
+  Lon: number;
 }

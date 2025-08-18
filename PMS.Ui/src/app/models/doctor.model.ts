@@ -1,9 +1,10 @@
-export interface Doctor {
-  doctorId: string;
-  firstName: string;
-  lastName: string;
-  specialty: string;
-  phone: string;
-  email: string;
-  createdAt: string;
+import { CommonFields } from "./common.model";
+
+export interface Doctor extends CommonFields {
+  DoctorId: string;
+  FirstName: string;
+  LastName: string;
+  Specialty: string;
+  Phone: string;
+  Email: string;
 }

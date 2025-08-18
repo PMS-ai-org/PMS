@@ -1,6 +1,7 @@
-export interface Clinic {
-  id: string;               // uuid
-  name: string;             // text
-  specialty: string;        // text
-  created_at: string;       // timestamptz
+import { CommonFields } from "./common.model";
+
+export interface Clinic extends CommonFields {
+  Id: string;               // uuid
+  Name: string;             // text
+  Specialty: string;        // text
 }

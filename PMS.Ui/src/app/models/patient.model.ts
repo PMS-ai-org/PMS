@@ -1,9 +1,10 @@
-export interface Patient {
-  patientId: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  phone: string;
-  email: string;
-  createdAt: string;
+import { CommonFields } from "./common.model";
+
+export interface Patient extends CommonFields {
+  PatientId: string;
+  FirstName: string;
+  LastName: string;
+  DateOfBirth: string;
+  Phone: string;
+  Email: string;
 }
