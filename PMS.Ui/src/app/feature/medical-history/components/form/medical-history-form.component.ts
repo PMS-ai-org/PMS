@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'pms-medical-history-form',
   templateUrl: './medical-history-form.component.html',
-  imports: [ 
+  imports: [
     CommonModule, ReactiveFormsModule, RouterLink, MaterialModule
   ]
 })
@@ -56,9 +56,7 @@ export class MedicalHistoryFormComponent implements OnInit {
     if (id) {
       this.isEdit = true;
       this.service.getById(id).subscribe(data => {
-        console.log('API raw response:', data);
         this.record = data;
-        console.log('Mapped record:', this.record);
         this.form.patchValue(this.record);
       });
     } else {

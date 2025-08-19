@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../../core/shared/material.module';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'pms-medical-history-list',
@@ -19,24 +20,22 @@ export class MedicalHistoryListComponent implements OnInit {
   selectedPatientId: string = 'e0d43bc2-7bb1-5b69-8a8a-fcacc203f4aa';
   dataSource = new MatTableDataSource<MedicalHistory>([]);
   displayedColumns: string[] = ['code', 'description', 'source', 'createdAt', 'actions'];
-  
-  constructor(private service: MedicalHistoryService) { }
+
+  constructor(private service: MedicalHistoryService,
+    private snack: MatSnackBar) { }
 
   ngOnInit() {
-    this.service.getByPatient(this.selectedPatientId).subscribe(data => {
-      this.dataSource.data = data;
-      console.log('Loaded records:', data);
-    });
+    this.loadRecords();
   }
 
   loadRecords() {
     this.service.getByPatient(this.selectedPatientId).subscribe({
       next: data => {
         this.dataSource.data = data;
-        console.log('Loaded records:', this.dataSource.data);
       },
-      error: err => console.error('Failed to load records:', err)
+      error: err => {
+        this.snack.open(err?.error?.message || 'Failed to load records', 'Close', { duration: 3000 });
+      }
     });
   }
-
 }

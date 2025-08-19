@@ -13,28 +13,24 @@ export class MedicalHistoryService {
   constructor(private http: HttpClient) { }
 
   getByPatient(patientId: string): Observable<MedicalHistory[]> {
-    return this.http.get<MedicalHistory[]>(`${this.baseUrl}?patientId=${patientId}`);
+    return this.http
+      .get<any[]>(`${this.baseUrl}?patientId=${patientId}`)
+      .pipe(
+        map(records => records.map(r => ({
+          id: r.id,
+          patientId: r.patient_id,
+          code: r.code,
+          description: r.description,
+          source: r.source,
+          createdAt: r.created_at,
+          clinicId: r.clinic_id,
+          siteId: r.site_id,
+          created_by: r.created_by,
+          updated_at: r.updated_at,
+          updated_by: r.updated_by
+        })))
+      );
   }
-
-  // getByPatient(patientId: string): Observable<MedicalHistory[]> {
-  //   return this.http
-  //     .get<any[]>(`${this.baseUrl}?patientId=${patientId}`)   // ✅ query param
-  //     .pipe(
-  //       map(records => {
-  //         console.log('Raw API response:', records); // debug
-  //         return records.map(r => ({
-  //           id: r.id,
-  //           patientId: r.patient_id,
-  //           code: r.code,
-  //           description: r.description,
-  //           source: r.source,
-  //           createdAt: r.created_at,
-  //           clinicId: r.clinic_id,
-  //           siteId: r.site_id
-  //         }));
-  //       })
-  //     );
-  // }
 
   getById(id: string): Observable<MedicalHistory> {
     return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
