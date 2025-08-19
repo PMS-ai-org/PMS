@@ -1,2 +1,25 @@
-.spacer { flex: 1 1 auto; }
-.main-wrap { padding: 16px; }
+.main-container {
+  height: 100vh; // full screen height
+}
+
+.sidenav {
+  width: 220px;
+  background: #f5f5f5;
+  padding: 10px;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  padding: 20px;
+}

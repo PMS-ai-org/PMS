@@ -1,13 +1,36 @@
-<mat-toolbar color="primary">
-  <span>PMS UI</span>
-  <span class="spacer"></span>
+<ng-container *ngIf="isLoggedIn(); else loginPage">
+  <mat-sidenav-container class="main-container">
+    
+    <!-- Left side features -->
+    <mat-sidenav #sidenav mode="side" opened class="sidenav">
+      <h3 class="p-3">Features</h3>
+      <button mat-button routerLink="/createDoctor">Create Doctor</button>
+      <button mat-button routerLink="/dashboard">Dashboard</button>
+      <button mat-button routerLink="/patients">Patients</button>
+      <button mat-button routerLink="/appointments">Appointments</button>
+      <button mat-button routerLink="/reports">Reports</button>
+      
+    </mat-sidenav>
 
-  <ng-container *ngIf="auth.isAuthorized()">
-    <button mat-button routerLink="/todos">Todos</button>
-    <button mat-button (click)="auth.logout()">Logout</button>
-  </ng-container>
-</mat-toolbar>
+    <!-- Right side content area -->
+    <mat-sidenav-content>
+      
+      <!-- Top bar -->
+      <mat-toolbar color="primary" class="toolbar">
+        <span class="flex-spacer"></span>
+        <span class="username">{{ userName }}</span>
+        <button mat-button (click)="logout()">Logout</button>
+      </mat-toolbar>
 
-<main class="main-wrap">
-  <router-outlet></router-outlet>
-</main>
+      <!-- Page Content -->
+      <div class="content">
+        <router-outlet></router-outlet>
+      </div>
+
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</ng-container>
+
+<ng-template #loginPage>
+  <pms-login></pms-login>
+</ng-template>

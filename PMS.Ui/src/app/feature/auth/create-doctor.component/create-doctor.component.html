@@ -1,0 +1,52 @@
+<form [formGroup]="doctorForm" (ngSubmit)="onSubmit()" class="p-4 grid gap-4">
+
+  <mat-form-field appearance="outline">
+    <mat-label>Username</mat-label>
+    <input matInput formControlName="username">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" type="email">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Full Name</mat-label>
+    <input matInput formControlName="fullName">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Phone Number</mat-label>
+    <input matInput formControlName="phoneNumber">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Specialization</mat-label>
+    <input matInput formControlName="specialization">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Role Id</mat-label>
+    <input matInput formControlName="roleId">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Clinic</mat-label>
+    <mat-select formControlName="clinicId" (selectionChange)="onClinicChange($event.value)">
+      <mat-option *ngFor="let clinic of clinics" [value]="clinic.id">
+        {{ clinic.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Site</mat-label>
+    <mat-select formControlName="siteId">
+      <mat-option *ngFor="let site of sites" [value]="site.id">
+        {{ site.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit">Register Doctor</button>
+</form>

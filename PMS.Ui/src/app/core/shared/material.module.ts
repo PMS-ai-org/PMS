@@ -8,9 +8,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { CommonModule } from '@angular/common';
 @NgModule({
   exports: [
+    CommonModule,
     MatButtonModule,
     MatInputModule,
     MatCardModule,
@@ -19,7 +23,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatSnackBarModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatListModule,
   ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

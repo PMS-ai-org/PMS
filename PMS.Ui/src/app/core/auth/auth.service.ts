@@ -1,69 +1,68 @@
-import { Injectable, effect, inject, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import * as jwt_decode from 'jwt-decode';
+import { LoginRequest, AuthResponse, ForgotPasswordDto, ResetPasswordDto } from '../models/auth.models';
 import { environment } from '../../../environments/environment';
-import { TokenStoreService } from './token-store.service';
-import { getExpiry } from './jwt.utils';
-
-interface AuthResponse {
-  accessToken: string;
-  expiresUtc: string;
-  email: string;
-}
+import { AuthSessionService } from './auth-session.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private tokenStore = inject(TokenStoreService);
-  private router = inject(Router);
+  private api = environment.apiUrl + '/auth';
 
-  /** Public signal for app & toolbar */
-  isAuthorized = signal(false);
-
-  /** Bridge the token stream to a signal and keep isAuthorized in sync */
-  private tokenSig = toSignal(this.tokenStore.tokenChanges$, { initialValue: null });
-
-  constructor() {
-    effect(() => {
-      const t = this.tokenSig();
-      if (!t) { this.isAuthorized.set(false); return; }
-      const exp = getExpiry(t);
-      this.isAuthorized.set(!!exp && exp.getTime() > Date.now());
+  constructor(private http: HttpClient, private authSession: AuthSessionService) { }
+  
+  private storeAuth(res: AuthResponse) {
+    this.authSession.setSession({
+      accessToken: res.accessToken,
+      expiresAt: res.expiresAt,
+      refreshToken: res.refreshToken,
+      role: res.role,
+      userId: res.userId,
+      fullName: res.fullName,
+      userAccessDetail: res.userAccessDetail
     });
   }
 
-  /** === API calls === */
-
-  login(email: string, password: string) {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
-      .pipe(tap(res => this.installToken(res)));
+  login(dto: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.api}/login`, dto).pipe(
+      tap(r => this.storeAuth(r))
+    );
   }
 
-  /** Register: per your requested flow, DO NOT keep token; go back to /login */
-  register(email: string, password: string) {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password });
+  logout(): Observable<any> {
+    this.authSession.clearSession();
+    return of(true);
   }
 
-  logout(navigate = true) {
-    this.tokenStore.clear();
-    if (navigate) { void this.router.navigate(['/login']); }
+  forgotPassword(dto: ForgotPasswordDto, frontendBaseUrl: string) {
+    return this.http.post(`${this.api}/forgot-password`, dto, {
+      headers: { 'X-Frontend-BaseUrl': frontendBaseUrl }
+    });
   }
 
-  /** Attach token and auto-expiry */
-  private installToken(res: AuthResponse) {
-    const exp = getExpiry(res.accessToken) ?? new Date(res.expiresUtc);
-    this.tokenStore.set(res.accessToken, exp);
+  resetPassword(dto: ResetPasswordDto) {
+    return this.http.post(`${this.api}/reset-password`, dto);
   }
 
-  /** For guards */
-  isAuthenticatedNow(): boolean {
-    const t = this.tokenStore.get();
-    if (!t) return false;
-    const exp = getExpiry(t);
-    return !!exp && exp.getTime() > Date.now();
+  refreshToken(refreshToken: string) {
+    return this.http.post<AuthResponse>(`${this.api}/refresh`, { refreshToken }).pipe(
+      tap(r => this.storeAuth(r)),
+      catchError(err => {
+        this.logout();
+        throw err;
+      })
+    );
   }
 
-  getToken(): string | null { return this.tokenStore.get(); }
+  // // helper to decode JWT
+  // decodeToken(): any | null {
+  //   const token = this.authSession.getToken();
+  //   if (!token) return null;
+  //   try {
+  //     return jwt_decode(token);
+  //   }
+  //   catch { return null; }
+  // }
 }
