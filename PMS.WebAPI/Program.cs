@@ -96,8 +96,8 @@ var app = builder.Build();
 // // apply migrations at startup (optional)
 // using (var scope = app.Services.CreateScope())
 // {
-//     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//     db.Database.Migrate();
+//      var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//     // db.Database.Migrate();
 
 //     // seed roles/features/admin
 //     var seeder = new DbSeeder(db, builder.Configuration);

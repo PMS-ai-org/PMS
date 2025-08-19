@@ -40,13 +40,12 @@ namespace PMS.WebAPI.Data
             // create first admin from config if not exists
             var adminCfg = _config.GetSection("FirstAdmin");
             var adminEmail = adminCfg["Email"];
-            if (!string.IsNullOrEmpty(adminEmail) && !_db.UserLogins.Any(u => u.Email == adminEmail))
+            if (!string.IsNullOrEmpty(adminEmail) && !_db.UserLogins.Any(u => u.Username == adminEmail))
             {
                 var role = _db.Roles.FirstOrDefault(r => r.RoleName == "Admin");
                 var user = new UserLogin
                 {
                     Username = adminCfg["Username"] ?? "admin",
-                    Email = adminEmail,
                     PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(adminCfg["Password"] ?? Guid.NewGuid().ToString()),
                     RoleId = role.RoleId,
                     IsFirstLogin = false // if you want them to reset, set true
@@ -58,6 +57,7 @@ namespace PMS.WebAPI.Data
                 var detail = new UserDetail
                 {
                     UserId = user.UserId,
+                    Email = adminEmail,
                     FullName = adminCfg["FullName"] ?? "Administrator",
                     PhoneNumber = adminCfg["PhoneNumber"],
                     Address = " ",

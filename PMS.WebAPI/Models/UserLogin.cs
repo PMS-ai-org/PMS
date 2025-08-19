@@ -12,9 +12,7 @@ namespace PMS.WebAPI.Models
         [Required, MaxLength(100)]
         public required string Username { get; set; }
 
-        [Required, MaxLength(150)]
-        public required string Email { get; set; }
-
+    
         [Required]
         public required string PasswordHash { get; set; }
 

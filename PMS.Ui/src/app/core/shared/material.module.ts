@@ -11,6 +11,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CommonModule } from '@angular/common';
 @NgModule({
   exports: [
@@ -27,6 +29,8 @@ import { CommonModule } from '@angular/common';
     MatSelectModule,
     MatSidenavModule,
     MatListModule,
+    MatTableModule,
+    MatCheckboxModule
   ]
 })
 export class MaterialModule { }

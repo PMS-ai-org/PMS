@@ -55,7 +55,7 @@ namespace PMS.WebAPI.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
                 new Claim(ClaimTypes.Role, user.Role?.RoleName ?? ""),
-                new Claim("email", user.Email)
+                new Claim("email", user.Username)
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -88,7 +88,7 @@ namespace PMS.WebAPI.Services
         {
             var user = await _db.UserLogins
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Username == request.Username || u.Email == request.Username);
+                .FirstOrDefaultAsync(u => u.Username == request.Username );
 
             if (user == null)
                 throw new Exception("Invalid credentials");
@@ -209,13 +209,12 @@ namespace PMS.WebAPI.Services
 
         public async Task<bool> RegisterStaffAsync(RegisterUserDto dto)
         {
-            if (await _db.UserLogins.AnyAsync(u => u.Username == dto.Username || u.Email == dto.Email))
+            if (await _db.UserLogins.AnyAsync(u => u.Username == dto.Username))
                 throw new Exception("User exists");
 
             var user = new UserLogin
             {
                 Username = dto.Username,
-                Email = dto.Email,
                 PasswordHash = HashPassword(dto.Password),
                 RoleId = dto.RoleId,
                 IsFirstLogin = true,
@@ -227,6 +226,7 @@ namespace PMS.WebAPI.Services
             var detail = new UserDetail
             {
                 UserId = user.UserId,
+                Email = dto.Email, // Assuming Email is required for staff
                 FullName = dto.FullName,
                 PhoneNumber = dto.PhoneNumber,
                 Address = string.Empty, // Set to empty or a default value; update as needed
@@ -253,13 +253,12 @@ namespace PMS.WebAPI.Services
 
         public async Task<bool> RegisterDoctorAsync(RegisterDoctorDto dto)
         {
-            if (await _db.UserLogins.AnyAsync(u => u.Username == dto.Username || u.Email == dto.Email))
+            if (await _db.UserLogins.AnyAsync(u => u.Username == dto.Email))
                 throw new Exception("User exists");
 
             var user = new UserLogin
             {
-                Username = dto.Username,
-                Email = dto.Email,
+                Username = dto.Email,
                 PasswordHash = HashPassword(Guid.NewGuid().ToString()), // random temp; force reset
                 RoleId = dto.RoleId, // should be Doctor role id
                 IsFirstLogin = true,
@@ -270,6 +269,7 @@ namespace PMS.WebAPI.Services
 
             var detail = new UserDetail
             {
+                Email = dto.Email,
                 UserId = user.UserId,
                 FullName = dto.FullName,
                 PhoneNumber = dto.PhoneNumber,
@@ -318,7 +318,7 @@ namespace PMS.WebAPI.Services
 
         public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto, string frontendBaseUrl)
         {
-            var user = await _db.UserLogins.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _db.UserLogins.FirstOrDefaultAsync(u => u.Username == dto.Email);
             if (user == null) return false;
 
             var reset = new PasswordResetToken
@@ -332,7 +332,7 @@ namespace PMS.WebAPI.Services
 
             var resetLink = $"{frontendBaseUrl.TrimEnd('/')}/reset-password?token={Uri.EscapeDataString(reset.Token)}&userId={user.UserId}";
             var html = $"<p>Click <a href=\"{resetLink}\">here</a> to reset your password. Link expires in 24 hours.</p>";
-            await _emailService.SendEmailAsync(user.Email, "Reset your password", html);
+            await _emailService.SendEmailAsync(user.Username, "Reset your password", html);
 
             return true;
         }

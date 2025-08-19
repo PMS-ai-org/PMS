@@ -52,80 +52,106 @@ namespace PMS.WebAPI.Controllers
         [HttpPost("create-doctor")]
         public async Task<IActionResult> CreateDoctor([FromBody] RegisterDoctorDto dto)
         {
-            // Ideally call a service. For brevity directly use db
-            if (await _context.UserLogins.AnyAsync(u => u.Username == dto.Username || u.Email == dto.Email))
-                return BadRequest("User exists");
+            if (await _context.UserLogins.AnyAsync(u => u.Username == dto.Email))
+                return BadRequest("User already exists");
 
-            var defaultPassword = Guid.NewGuid().ToString();
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            var user = new UserLogin
+            try
             {
-                Username = dto.Username,
-                Email = dto.Email,
-                PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(defaultPassword),
-                RoleId = dto.RoleId,
-                IsFirstLogin = true,
-                Role = await _context.Roles.FindAsync(dto.RoleId)
-            };
-            _context.UserLogins.Add(user);
-            await _context.SaveChangesAsync();
+                var defaultPassword = Guid.NewGuid().ToString();
 
-            var detail = new UserDetail
-            {
-                UserId = user.UserId,
-                FullName = dto.FullName,
-                PhoneNumber = dto.PhoneNumber,
-                Specialization = dto.Specialization,
-                Address = string.Empty // Ensure dto.Address is provided in RegisterDoctorDto
-            };
-            _context.UserDetails.Add(detail);
-            await _context.SaveChangesAsync();
-
-            // Map clinic-sites
-            foreach (var cs in dto.ClinicSites)
-            {
-                var map = new UserClinicSite
+                // 1. Create User
+                var user = new UserLogin
                 {
-                    UserId = user.UserId,
-                    ClinicId = cs.ClinicId,
-                    SiteId = cs.SiteId,
-                    UserLogin = user // Set the required navigation property
+                    Username = dto.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(defaultPassword),
+                    RoleId = dto.RoleId,
+                    IsFirstLogin = true,
+                    Role = await _context.Roles.FindAsync(dto.RoleId)
                 };
-                _context.UserClinicSites.Add(map);
+                _context.UserLogins.Add(user);
                 await _context.SaveChangesAsync();
 
-                // apply passed permissions (dto.Access) if any for this clinic-site
-                // Expectation: dto.Access is a list mapping FeatureId -> permission
-                // Here we assume dto.Access dictionary keyed by FeatureId or as permission list
+                // 2. Create User Detail
+                var detail = new UserDetail
+                {
+                    Email = dto.Email,
+                    UserId = user.UserId,
+                    FullName = dto.FullName,
+                    PhoneNumber = dto.PhoneNumber,
+                    Specialization = dto.Specialization,
+                    Address = string.Empty
+                };
+                _context.UserDetails.Add(detail);
+
+                // 3. Map clinic-sites & permissions
+                foreach (var cs in dto.ClinicSites)
+                {
+                    var map = new UserClinicSite
+                    {
+                        UserId = user.UserId,
+                        ClinicId = cs.ClinicId,
+                        SiteId = cs.SiteId,
+                        UserLogin = user
+                    };
+                    _context.UserClinicSites.Add(map);
+                    await _context.SaveChangesAsync(); // save so map.UserClinicSiteId is available
+
+                    if (dto.Access != null && dto.Access.ContainsKey(cs.SiteId))
+                    {
+                        var userAccesses = dto.Access[cs.SiteId]
+                            .Select(permission => new UserAccess
+                            {
+                                UserClinicSiteId = map.UserClinicSiteId,
+                                FeatureId = permission.FeatureId,
+                                CanAdd = permission.CanAdd,
+                                CanEdit = permission.CanEdit,
+                                CanDelete = permission.CanDelete,
+                                CanView = permission.CanView
+                            }).ToList();
+
+                        _context.UserAccesses.AddRange(userAccesses);
+                    }
+                }
+
+                // 4. Create reset token
+                var reset = new PasswordResetToken
+                {
+                    Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
+                    Expires = DateTime.UtcNow.AddDays(1),
+                    UserId = user.UserId
+                };
+                _context.PasswordResetTokens.Add(reset);
+
+                // Save everything together
+                await _context.SaveChangesAsync();
+
+                // Commit transaction
+                await transaction.CommitAsync();
+
+                // 5. Send Email (non-transactional)
+                var loginUrl = "https://myapp.com/login";
+                var body = $@"
+            Hi {dto.FullName},<br/><br/>
+            Your doctor account has been created.<br/>
+            <b>Username:</b> {dto.Email}<br/>
+            <b>Password:</b> {defaultPassword}<br/><br/>
+            Please login here: <a href='{loginUrl}'>{loginUrl}</a><br/><br/>
+            Regards,<br/>PMS Team
+        ";
+
+                await _emailService.SendEmailAsync(dto.Email, "Your Doctor Account", body);
+
+                return Ok(new { user.UserId, resetToken = reset.Token });
             }
-
-            // create reset token
-            var reset = new PasswordResetToken
+            catch (Exception ex)
             {
-                Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
-                Expires = DateTime.UtcNow.AddDays(1),
-                UserId = user.UserId
-            };
-            _context.PasswordResetTokens.Add(reset);
-            await _context.SaveChangesAsync();
-
-            // send email - for simplicity we won't send here; call email service with front-end link
-            // 6. Send welcome email with login link + default password
-            var loginUrl = "https://myapp.com/login";
-            var body = $@"
-                Hi {dto.FullName},<br/><br/>
-                Your doctor account has been created.<br/>
-                <b>Username:</b> {dto.Email}<br/>
-                <b>Password:</b> {defaultPassword}<br/><br/>
-                Please login here: <a href='{loginUrl}'>{loginUrl}</a><br/><br/>
-                Regards,<br/>PMS Team
-            ";
-
-            await _emailService.SendEmailAsync(dto.Email, "Your Doctor Account", body);
-
-
-            return Ok(new { user.UserId, resetToken = reset.Token });
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"Error creating doctor: {ex.Message}");
+            }
         }
+
 
     }
 }

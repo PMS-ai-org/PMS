@@ -37,7 +37,7 @@ namespace PMS.WebAPI.Data
             builder.Entity<Role>().HasIndex(r => r.RoleName).IsUnique();
             builder.Entity<Feature>().HasIndex(f => f.FeatureName).IsUnique();
             builder.Entity<UserLogin>().HasIndex(u => u.Username).IsUnique();
-            builder.Entity<UserLogin>().HasIndex(u => u.Email).IsUnique();
+            builder.Entity<UserDetail>().HasIndex(u => u.Email).IsUnique();
 
             builder.Entity<UserClinicSite>()
                 .HasIndex(x => new { x.UserId, x.ClinicId, x.SiteId })

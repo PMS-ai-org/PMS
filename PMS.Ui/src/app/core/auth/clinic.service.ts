@@ -22,8 +22,13 @@ export class ClinicService {
 
   // optional APIs to fetch clinics & sites
   getClinics() { return this.http.get<Clinic[]>(`${this.api}/Clinics/get-clinics`); }
-  getSitesByClinic(clinicId: string) { return this.http.get<Site[]>(`${this.api}/Clinics/${clinicId}/sites`); }
 
+  getRoles() { return this.http.get<Clinic[]>(`${this.api}/Admin/roles`); }
+
+  getFeatures() { return this.http.get<Clinic[]>(`${this.api}/Admin/features`); }
+
+  getSitesByClinic(clinicId: string) { return this.http.get<Site[]>(`${this.api}/Clinics/${clinicId}/sites`); }
+  
   saveDoctor(formData: any) {
     return this.http.post(`${this.api}/Clinics/create-doctor`, formData);
   }

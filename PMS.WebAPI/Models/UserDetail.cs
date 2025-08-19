@@ -16,6 +16,8 @@ namespace PMS.WebAPI.Models
         [Required, MaxLength(150)]
         public string FullName { get; set; }
 
+        [Required, MaxLength(150)]
+        public required string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public string Specialization { get; set; } // for doctors
