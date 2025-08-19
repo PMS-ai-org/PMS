@@ -10,6 +10,11 @@ import { Site } from '../models/site.model';
 import { MedicalHistory } from '../models/medical-history.model';
 import { UserClinicSite } from '../models/user-clinic-site.model';
 import { Role } from '../models/role.model';
+import { Feature } from '../models/feature.model';
+import { UserAccess } from '../models/user-access.model';
+import { UserLogin } from '../models/user-login.model';
+import { PasswordResetToken } from '../models/password-reset-token.model';
+import { RefreshToken } from '../models/refresh-token.model';
 
 @Injectable({ providedIn: 'root' })
 export class RepositoryService {
@@ -45,5 +50,25 @@ export class RepositoryService {
 
   getMedicalHistory(): Observable<MedicalHistory[]> {
     return this.http.get<MedicalHistory[]>(`${environment.apiUrl}/medical-history`);
+  }
+
+  getFeatures(): Observable<Feature[]> {
+    return this.http.get<Feature[]>(`${environment.apiUrl}/features`);
+  }
+
+  getUserAccesses(): Observable<UserAccess[]> {
+    return this.http.get<UserAccess[]>(`${environment.apiUrl}/user-accesses`);
+  }
+
+  getUserLogins(): Observable<UserLogin[]> {
+    return this.http.get<UserLogin[]>(`${environment.apiUrl}/user-logins`);
+  }
+
+  getPasswordResetTokens(): Observable<PasswordResetToken[]> {
+    return this.http.get<PasswordResetToken[]>(`${environment.apiUrl}/password-reset-tokens`);
+  }
+
+  getRefreshTokens(): Observable<RefreshToken[]> {
+    return this.http.get<RefreshToken[]>(`${environment.apiUrl}/refresh-tokens`);
   }
 }

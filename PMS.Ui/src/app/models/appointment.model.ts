@@ -6,7 +6,7 @@ export interface Appointment extends AuditableEntity {
   DoctorId: string;// not present in DB table
   BookedAt: string;
   ScheduledAt: string;
-  ReminderSent: string;
+  ReminderSent: boolean;
   Status: string;
   LeadTimeHours: number;
   Dow: number;
