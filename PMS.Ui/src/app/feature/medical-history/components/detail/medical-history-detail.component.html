@@ -1,0 +1,11 @@
+<h2>Medical History Details</h2>
+@if (record) {
+  <div>
+    <p><strong>Code:</strong> {{ record.Code }}</p>
+    <p><strong>Description:</strong> {{ record.Description }}</p>
+    <p><strong>Source:</strong> {{ record.Source }}</p>
+    <!-- <p><strong>Recorded At:</strong> {{ record.RecordedAt | date:'short' }}</p> -->
+    <p><strong>Clinic ID:</strong> {{ record.ClinicId }}</p>
+    <p><strong>Site ID:</strong> {{ record.SiteId }}</p>
+  </div>
+}

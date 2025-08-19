@@ -27,6 +27,7 @@ namespace PMS.WebAPI.Data
 
         public DbSet<Clinics> Clinics { get; set; }
         public DbSet<Sites> Sites { get; set; }
+        public DbSet<MedicalHistory> MedicalHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -52,6 +53,26 @@ namespace PMS.WebAPI.Data
                 .HasOne(u => u.UserDetail)
                 .WithOne(d => d.UserLogin)
                 .HasForeignKey<UserDetail>(d => d.UserId);
+
+            builder.Entity<MedicalHistory>(entity =>
+            {
+                entity.ToTable("medical_history", "pms");
+
+                entity.Property(m => m.Id).HasColumnName("id");
+                entity.Property(m => m.PatientId).HasColumnName("patient_id");
+                entity.Property(m => m.Code).HasColumnName("code");
+                entity.Property(m => m.Description).HasColumnName("description");
+                entity.Property(m => m.Source).HasColumnName("source");
+                entity.Property(m => m.created_at).HasColumnName("created_at");
+                entity.Property(m => m.ClinicId).HasColumnName("clinic_id");
+                entity.Property(m => m.SiteId).HasColumnName("site_id");
+
+                // 👇 Ignore inherited audit columns
+                entity.Ignore(m => m.created_at);
+                entity.Ignore(m => m.created_by);
+                entity.Ignore(m => m.updated_at);
+                entity.Ignore(m => m.updated_by);
+            });
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -83,6 +104,6 @@ namespace PMS.WebAPI.Data
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
             return string.IsNullOrEmpty(userId) ? Guid.Empty : Guid.Parse(userId);
         }
-       
+
     }
 }

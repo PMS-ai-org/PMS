@@ -75,6 +75,7 @@ builder.Services.AddSwaggerGen();
 // Simple in-memory PatientService
 builder.Services.AddSingleton<IPatientService, PatientService>();
 builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
 
 // CORS for Angular dev server
 var allowAngular = "AllowAngular";

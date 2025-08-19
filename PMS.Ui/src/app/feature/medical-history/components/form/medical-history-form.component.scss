@@ -1,0 +1,30 @@
+.form-wrap {
+  min-height: calc(100vh - 64px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.form-card {
+  width: min(380px, 100%);
+  padding: 8px 8px 16px;
+  animation: pop 300ms ease-out;
+}
+
+.title { margin: 8px 8px 16px; }
+
+.full { width: 100%; }
+
+.links {
+  margin-top: 12px;
+  text-align: center;
+  a { text-decoration: none; }
+}
+
+
+.form-grid {
+  display: flex;
+  flex-direction: column; /* stack fields vertically */
+  gap: 16px; /* spacing between fields */
+}
+
