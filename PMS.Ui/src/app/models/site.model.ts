@@ -1,4 +1,4 @@
-import { AuditableEntity } from "./common.model";
+import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Site extends AuditableEntity {
   Id: string;

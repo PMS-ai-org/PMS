@@ -1,9 +1,12 @@
-import { AuditableEntity } from "./common.model";
+import { AuditableEntity } from "./auditable-entity.model";
 
 export interface MedicalHistory extends AuditableEntity {
-  id: string;
   Id: string;
   PatientId: string;
-  Details?: string;
-  CreatedAt: string;
+  Code: string;
+  Description: string;
+  Source: string;
+  RecordedAt: string; // ISO date string
+  ClinicId?: string | null;
+  SiteId?: string | null;
 }

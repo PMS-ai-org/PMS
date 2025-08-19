@@ -1,9 +1,9 @@
-import { AuditableEntity } from "./common.model";
+import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Appointment extends AuditableEntity {
   Id: string;
   PatientId: string;
-  DoctorId: string;
+  DoctorId: string;// not present in DB table
   BookedAt: string;
   ScheduledAt: string;
   ReminderSent: string;
@@ -14,5 +14,5 @@ export interface Appointment extends AuditableEntity {
   SiteId: string;
   ClinicId: string;
   TreatmentPlan: string;
-  MedicalHistory: string;
+  MedicalHistory: string;// not present in DB table
 }

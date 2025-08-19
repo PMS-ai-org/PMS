@@ -1,4 +1,4 @@
-import { AuditableEntity } from "./common.model";
+import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Doctor extends AuditableEntity {
   DoctorId: string;

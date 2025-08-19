@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Appointment } from '../models/appointment.model';
-import { User } from '../models/user.model';
+import { UserDetail } from '../models/user-detail.model';
 import { Patient } from '../models/patient.model';
 import { Doctor } from '../models/doctor.model';
 import { Clinic } from '../models/clinic.model';
@@ -14,8 +14,8 @@ import { MedicalHistory } from '../models/medical-history.model';
 export class RepositoryService {
   private http = inject(HttpClient);
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${environment.apiUrl}/users`);
+  getUsers(): Observable<UserDetail[]> {
+    return this.http.get<UserDetail[]>(`${environment.apiUrl}/users`);
   }
 
   getAppointments(): Observable<Appointment[]> {

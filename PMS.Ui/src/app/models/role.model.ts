@@ -1,8 +1,6 @@
-export interface Role {
-  Id: string;
+import { AuditableEntity } from "./auditable-entity.model";
+
+export interface Role extends AuditableEntity {
+  RoleId: string;
   RoleName: string;
-  CreatedAt: string;
-  CreatedBy?: string;
-  UpdatedAt?: string;
-  UpdatedBy?: string;
 }
