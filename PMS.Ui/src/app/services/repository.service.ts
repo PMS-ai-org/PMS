@@ -5,10 +5,11 @@ import { environment } from '../../environments/environment';
 import { Appointment } from '../models/appointment.model';
 import { UserDetail } from '../models/user-detail.model';
 import { Patient } from '../models/patient.model';
-import { Doctor } from '../models/doctor.model';
 import { Clinic } from '../models/clinic.model';
 import { Site } from '../models/site.model';
 import { MedicalHistory } from '../models/medical-history.model';
+import { UserClinicSite } from '../models/user-clinic-site.model';
+import { Role } from '../models/role.model';
 
 @Injectable({ providedIn: 'root' })
 export class RepositoryService {
@@ -16,6 +17,10 @@ export class RepositoryService {
 
   getUsers(): Observable<UserDetail[]> {
     return this.http.get<UserDetail[]>(`${environment.apiUrl}/users`);
+  }
+  
+  getRoles(): Observable<Role[]> {
+    return this.http.get<Role[]>(`${environment.apiUrl}/roles`);
   }
 
   getAppointments(): Observable<Appointment[]> {
@@ -26,16 +31,16 @@ export class RepositoryService {
     return this.http.get<Patient[]>(`${environment.apiUrl}/patients`);
   }
 
-  getDoctors(): Observable<Doctor[]> {
-    return this.http.get<Doctor[]>(`${environment.apiUrl}/doctors`);
-  }
-
   getClinics(): Observable<Clinic[]> {
     return this.http.get<Clinic[]>(`${environment.apiUrl}/clinics`);
   }
 
   getSites(): Observable<Site[]> {
     return this.http.get<Site[]>(`${environment.apiUrl}/sites`);
+  }
+
+  getUserClinicSites(): Observable<UserClinicSite[]> {
+    return this.http.get<UserClinicSite[]>(`${environment.apiUrl}/user-clinic-sites`);
   }
 
   getMedicalHistory(): Observable<MedicalHistory[]> {
