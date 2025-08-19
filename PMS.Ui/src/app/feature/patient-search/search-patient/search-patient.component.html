@@ -1,0 +1,39 @@
+<mat-form-field class="full" appearance="outline">
+  <mat-icon matPrefix>person_search</mat-icon>
+
+  <input
+    type="text"
+    matInput
+    [placeholder]="placeholder"
+    [formControl]="q"
+    [matAutocomplete]="auto"
+    aria-label="Search patients"
+  />
+
+  <button *ngIf="q.value" matSuffix mat-icon-button aria-label="Clear" (click)="clear()">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <mat-progress-spinner *ngIf="loading" matSuffix mode="indeterminate" diameter="20" class="spinner"></mat-progress-spinner>
+
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-option *ngFor="let p of options; trackBy: p?.id" [value]="p" (onSelectionChange)="($event.source.selected) && onOptionSelected(p)">
+      <div class="opt">
+        <div class="line1">
+          <span class="name">{{ p.fullName }}</span>
+          <span class="meta">• {{ p.gender || '—' }} • {{ p.age ?? '—' }}</span>
+        </div>
+        <div class="line2" *ngIf="p.conditions?.length">
+          <mat-chip-set>
+            <mat-chip *ngFor="let c of p.conditions | slice:0:3" disabled>{{ c }}</mat-chip>
+            <span class="more" *ngIf="(p.conditions?.length || 0) > 3">+{{ (p.conditions?.length || 0) - 3 }}</span>
+          </mat-chip-set>
+        </div>
+      </div>
+    </mat-option>
+
+    <mat-option *ngIf="!loading && options.length === 0">
+      <span class="empty">No matches</span>
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

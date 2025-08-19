@@ -2,12 +2,24 @@
   <span>PMS UI</span>
   <span class="spacer"></span>
 
-  <ng-container *ngIf="auth.isAuthorized()">
-    <button mat-button routerLink="/todos">Todos</button>
+  @if (auth.isAuthorized()) {
+    <app-search-patient
+      [placeholder]="'Find patient...'"
+      [pageSize]="50"
+      (resultsChange)="onResults($event)"
+      (patientSelected)="onPicked($event)">
+    </app-search-patient>
+
     <button mat-button (click)="auth.logout()">Logout</button>
-  </ng-container>
+  }
 </mat-toolbar>
 
 <main class="main-wrap">
   <router-outlet></router-outlet>
+
+  @if ((rows?.length ?? 0) > 0) {
+    <div style="padding:12px;">
+      Found {{ rows.length }} patients
+    </div>
+  }
 </main>
