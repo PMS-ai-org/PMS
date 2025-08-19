@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PMS.WebAPI.Models.Search;
 using PMS.WebAPI.Services;

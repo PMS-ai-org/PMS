@@ -24,7 +24,7 @@ export interface SearchPatientResponse {
   providedIn: 'root'
 })
 export class SearchPatientService {
-  private apiUrl = 'https://localhost:5001/api/search'; 
+  private apiUrl = 'https://localhost:7231/api/search'; 
 
   constructor(private http: HttpClient) {}
 

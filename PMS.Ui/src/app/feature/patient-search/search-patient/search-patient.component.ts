@@ -56,7 +56,7 @@ export class SearchPatientComponent implements OnInit, OnDestroy {
           return of({ total: 0, items: [] } as SearchPatientResponse);
         }
         this.loading = true;
-        return this.svc.searchPatients(term, this.pageSize); // -> Observable<SearchPatientResponse>
+        return this.svc.searchPatients(term, this.pageSize); 
       })
     ).subscribe({
       next: (res) => {
