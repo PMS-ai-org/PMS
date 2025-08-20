@@ -1,3 +1,18 @@
+<mat-toolbar color="primary">
+  <span>PMS UI</span>
+  <span class="spacer"></span>
+
+  @if (auth.isAuthorized()) {
+    <app-search-patient
+      [placeholder]="'Find patient...'"
+      [pageSize]="50"
+      (resultsChange)="onResults($event)"
+      (patientSelected)="onPicked($event)">
+    </app-search-patient>
+
+    <button mat-button (click)="auth.logout()">Logout</button>
+  }
+</mat-toolbar>
 @if(isLoggedIn()){
 <mat-sidenav-container class="app-container">
   <!-- Sidebar -->
