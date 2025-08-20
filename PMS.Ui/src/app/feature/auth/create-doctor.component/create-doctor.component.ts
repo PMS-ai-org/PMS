@@ -1,9 +1,11 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClinicService } from '../../../core/auth/clinic.service';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
+import { LoaderService } from '../../../services/loader.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'pms-create-doctor',
   imports: [MaterialModule, ReactiveFormsModule, CommonModule],
@@ -12,7 +14,8 @@ import { forkJoin } from 'rxjs';
 })
 export class CreateDoctorComponent implements OnInit {
 
-  constructor(private clinicService: ClinicService) { }
+  constructor(private clinicService: ClinicService, private loader: LoaderService,
+    private router: Router) { }
 
   doctorForm!: FormGroup;
   clinics: any[] = [];
@@ -46,10 +49,10 @@ export class CreateDoctorComponent implements OnInit {
         this.clinics = clinics;
         this.roles = roles;
         this.features = features;
-
-        console.log({ clinics, roles, features });
       },
-      error: (err) => console.error('Error loading data:', err)
+      error: (err) => {
+        console.error('Error loading data:', err)
+      }
     });
   }
 
@@ -102,6 +105,7 @@ export class CreateDoctorComponent implements OnInit {
 
   onSubmit() {
     if (this.doctorForm.valid) {
+      this.loader.show();
       const formValue = this.doctorForm.value;
       // Create dictionary of siteId -> feature permissions
       const accessDict: Record<string, any[]> = {}; // siteId -> array of features
@@ -130,8 +134,15 @@ export class CreateDoctorComponent implements OnInit {
         access: accessDict // build from UI permissions
       };
       this.clinicService.saveDoctor(payload).subscribe({
-        next: () => alert('Doctor registered successfully!'),
-        error: (err) => console.error('Error:', err)
+        next: () => {
+            this.loader.hide();
+          alert('Doctor registered successfully!');
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          console.error('Error:', err);
+          this.loader.hide();
+        }
       });
     }
   }

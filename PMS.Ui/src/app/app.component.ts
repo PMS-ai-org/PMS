@@ -6,10 +6,11 @@ import { SearchPatientResponse, SearchPatientResult } from './services/search-pa
 import { SearchPatientComponent } from "./feature/patient-search/search-patient/search-patient.component";
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { LoginComponent } from './feature/auth/login/login.component';
+import { LoaderComponent } from './core/shared/loader-component/loader-component';
 
 @Component({
   selector: 'pms-root',
-  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent, SearchPatientComponent],
+  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent, SearchPatientComponent, LoaderComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   host: { 'class': 'pms-root' }
