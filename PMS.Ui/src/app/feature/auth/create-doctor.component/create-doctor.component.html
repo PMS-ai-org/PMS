@@ -1,6 +1,5 @@
 <mat-horizontal-stepper [linear]="true" #stepper>
-
-  <!-- Step 1: Doctor Info -->
+<!-- Step 1: Doctor Info -->
   <mat-step [stepControl]="doctorForm">
     <form [formGroup]="doctorForm" class="m-1">
       <ng-template matStepLabel>Doctor Information</ng-template>
@@ -58,8 +57,7 @@
   </mat-step>
 
   <!-- Step 2: Assign Sites & Features -->
-  <mat-step [stepControl]="doctorForm">
-   
+  <mat-step [stepControl]="doctorForm"> 
 
     <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
        <div class="flex justify-between mt-4">

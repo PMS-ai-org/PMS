@@ -14,9 +14,9 @@ export class RoleGuard implements CanActivate {
     debugger;
     const roles = route.data['roles'] as string[] | string;
     const user = this.authSessionService.session();
-    if (!user) { void this.router.navigate(['/login']); return false; }
+    if (!user) { return false; }
     const has = Array.isArray(roles) ? roles.includes(user.role) : user.role === roles;
-    if (!has) { void this.router.navigate(['/']); }
+    if (!has) { return false; }
     return has;
   }
 }
