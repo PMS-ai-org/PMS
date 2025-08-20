@@ -1,59 +1,77 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using PMS.WebAPI.Data;
-using PMS.WebAPI.Models;
 using PMS.WebAPI.Models.Dtos;
 using PMS.WebAPI.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace PMS.WebAPI.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(AppDbContext db, IPasswordHasher<object> hasher, ITokenService tokenSvc) : ControllerBase
+    public class AuthController : ControllerBase
     {
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-        {
-            var email = dto.Email.Trim().ToLowerInvariant();
-            var existingUser = await db.Users.SingleOrDefaultAsync(u => u.Email == email);
+        private readonly IAuthService _auth;
+        public AuthController(IAuthService auth) => _auth = auth;
 
-            if (existingUser is not null)
-            {
-                // Verify password — if correct, treat it like login
-                var verify = hasher.VerifyHashedPassword(new object(), existingUser.PasswordHash, dto.Password);
-                if (verify == PasswordVerificationResult.Failed)
-                    return Unauthorized(new { message = "Invalid password." });
-
-                var (token, exp) = tokenSvc.CreateToken(existingUser);
-                return Ok(new AuthResponseDto(token, exp, existingUser.Email));
-            }
-
-            // Create new user
-            var user = new User { Email = email };
-            user.PasswordHash = hasher.HashPassword(new object(), dto.Password);
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-
-            var (newToken, newExp) = tokenSvc.CreateToken(user);
-            return Ok(new AuthResponseDto(newToken, newExp, user.Email));
-        }
-        
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var email = dto.Email.Trim().ToLowerInvariant();
-            var user = await db.Users.SingleOrDefaultAsync(u => u.Email == email);
-            if (user is null)
-                return Unauthorized(new { message = "Invalid credentials." });
+            try
+            {
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var result = await _auth.LoginAsync(request, ip);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // For first-login we return 400 with message; frontend should catch and route to reset flow.
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
-            var result = hasher.VerifyHashedPassword(new object(), user.PasswordHash, dto.Password);
-            if (result == PasswordVerificationResult.Failed)
-                return Unauthorized(new { message = "Invalid credentials." });
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequest req)
+        {
+            try
+            {
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var res = await _auth.RefreshTokenAsync(req.RefreshToken, ip);
+                return Ok(res);
+            }
+            catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
+        }
 
-            var (token, exp) = tokenSvc.CreateToken(user);
-            return Ok(new AuthResponseDto(token, exp, user.Email));
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout([FromBody] RefreshRequest req)
+        {
+            await _auth.LogoutAsync(req.RefreshToken);
+            return Ok();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var frontendBaseUrl = Request.Headers["X-Frontend-BaseUrl"].ToString(); // pass frontend url via header
+            if (string.IsNullOrEmpty(frontendBaseUrl)) frontendBaseUrl = "https://your-frontend-url";
+
+            var ok = await _auth.ForgotPasswordAsync(dto, frontendBaseUrl);
+            return Ok(new { success = ok });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            try
+            {
+                await _auth.ResetPasswordAsync(dto);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

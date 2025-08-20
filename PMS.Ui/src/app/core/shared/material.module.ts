@@ -8,9 +8,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 @NgModule({
   exports: [
+    CommonModule,
     MatButtonModule,
     MatInputModule,
     MatCardModule,
@@ -20,7 +30,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatDividerModule,
     MatSnackBarModule,
     MatToolbarModule,
-    MatAutocompleteModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatListModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatStepperModule,
+    MatDialogModule,
+    MatAutocompleteModule
   ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

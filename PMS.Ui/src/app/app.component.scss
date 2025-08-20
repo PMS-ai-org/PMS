@@ -1,2 +1,35 @@
-.spacer { flex: 1 1 auto; }
-.main-wrap { padding: 16px; }
+.app-container {
+  height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: #f8f9fa;
+}
+
+.sidebar-header {
+  font-weight: bold;
+  color: #fff;
+}
+
+.mat-nav-list a {
+  font-size: 14px;
+}
+
+.mat-nav-list a.active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px;
+}
+
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  padding: 20px;
+}

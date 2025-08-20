@@ -1,27 +1,4 @@
-.auth-wrap {
-  min-height: calc(100vh - 64px);
-  display: grid;
-  place-items: center;
-  padding: 24px;
-}
-
-.auth-card {
-  width: min(380px, 100%);
-  padding: 8px 8px 16px;
-  animation: pop 300ms ease-out;
-}
-
-.title { margin: 8px 8px 16px; }
-
+.login-wrapper { display:flex; justify-content:center; align-items:center; height:80vh; }
+mat-card { width:400px; }
 .full { width: 100%; }
-
-.links {
-  margin-top: 12px;
-  text-align: center;
-  a { text-decoration: none; }
-}
-
-@keyframes pop {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
+.actions { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }

@@ -1,25 +1,42 @@
-<mat-toolbar color="primary">
-  <span>PMS UI</span>
-  <span class="spacer"></span>
+@if(isLoggedIn()){
+<mat-sidenav-container class="app-container">
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+    <mat-toolbar color="primary" class="sidebar-header">
+      Features
+    </mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/createDoctor" routerLinkActive="active">Create Doctor</a>
+      <a mat-list-item routerLink="/editAccess" routerLinkActive="active">Edit Access</a>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a mat-list-item routerLink="/patients" routerLinkActive="active">Patients</a>
+      <a mat-list-item routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      <a mat-list-item routerLink="/reports" routerLinkActive="active">Reports</a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-  @if (auth.isAuthorized()) {
+  <!-- Main Content -->
+  <mat-sidenav-content>
     <app-search-patient
       [placeholder]="'Find patient...'"
       [pageSize]="50"
       (resultsChange)="onResults($event)"
       (patientSelected)="onPicked($event)">
     </app-search-patient>
+    <!-- Top bar -->
+    <mat-toolbar color="primary" class="topbar">
+      <span class="flex-spacer"></span>
+      <span>{{ userName }}</span>
+      <button mat-button (click)="logout()">Logout</button>
+    </mat-toolbar>
 
-    <button mat-button (click)="auth.logout()">Logout</button>
-  }
-</mat-toolbar>
-
-<main class="main-wrap">
-  <router-outlet></router-outlet>
-
-  @if ((rows?.length ?? 0) > 0) {
-    <div style="padding:12px;">
-      Found {{ rows.length }} patients
+    <!-- Routed content -->
+    <div class="content">
+      <router-outlet></router-outlet>
     </div>
-  }
-</main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+}
+@else{
+<pms-login></pms-login>
+}
