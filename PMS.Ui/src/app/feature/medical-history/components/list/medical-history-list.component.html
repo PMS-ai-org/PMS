@@ -35,7 +35,6 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let record">
-        <a [routerLink]="['/medicalHistoryDetails', record.id]" mat-button color="primary">View</a>
         <a [routerLink]="['/medical-history/edit', record.id]" mat-button color="accent">Edit</a>
       </td>
     </ng-container>

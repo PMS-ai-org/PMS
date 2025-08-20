@@ -1,56 +1,52 @@
-<div class="form-wrap">
+<div class="form-container">
   <mat-card class="form-card">
-    <h2 class="title">
+    <h2 class="form-title">
       {{ isEdit ? 'Edit Medical History' : 'Add Medical History' }}
     </h2>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
-      <div class="form-grid">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="form-body">
+      <!-- Code -->
+      <mat-form-field appearance="outline">
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" />
+        @if (form.get('code')?.invalid && form.get('code')?.touched) {
+        <mat-error>Code is required</mat-error>
+        }
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Code</mat-label>
-          <input matInput formControlName="code" />
-          @if (form.get('code')?.invalid && form.get('code')?.touched) {
-            <mat-error>Code is required</mat-error>
-          }
-        </mat-form-field>
+      <!-- Description -->
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+        @if (form.get('description')?.invalid && form.get('description')?.touched) {
+        <mat-error>Description is required</mat-error>
+        }
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Description</mat-label>
-          <input matInput formControlName="description" />
-          @if (form.get('description')?.invalid && form.get('description')?.touched) {
-            <mat-error>Description is required</mat-error>
-          }
-        </mat-form-field>
+      <!-- Source -->
+      <mat-form-field appearance="outline">
+        <mat-label>Source</mat-label>
+        <input matInput formControlName="source" />
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Source</mat-label>
-          <input matInput formControlName="source" />
-        </mat-form-field>
+      <!-- Clinic ID -->
+      <mat-form-field appearance="outline">
+        <mat-label>Clinic ID</mat-label>
+        <input matInput formControlName="clinicId" />
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Clinic ID</mat-label>
-          <input matInput formControlName="clinicId" />
-        </mat-form-field>
+      <!-- Site ID -->
+      <mat-form-field appearance="outline">
+        <mat-label>Site ID</mat-label>
+        <input matInput formControlName="siteId" />
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Site ID</mat-label>
-          <input matInput formControlName="siteId" />
-        </mat-form-field>
-
-        <button
-          mat-flat-button
-          color="primary"
-          class="full"
-          type="submit"
-          >
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit">
           {{ isEdit ? 'Update' : 'Create' }}
         </button>
-
-        <div class="links full">
-          <a routerLink="/medicalHistoryList">Back to List</a>
-        </div>
-
+        <button mat-button routerLink="/medicalHistoryList">Back to List</button>
       </div>
     </form>
   </mat-card>

@@ -65,12 +65,11 @@ export class MedicalHistoryFormComponent implements OnInit {
     }
   }
 
-
   onSubmit(): void {
     this.loading = true;
 
     const record = this.form.value;
-    record.patientId = this.record?.patientId || "e0d43bc2-7bb1-5b69-8a8a-fcacc203f4aa"; // ✅ fallback mock
+    record.patientId = this.record?.patientId || "e0d43bc2-7bb1-5b69-8a8a-fcacc203f4aa"; //mocking patientId to bypass patient management page
 
     if (this.isEdit && this.record?.id) {
       this.service.update(this.record.id, record).subscribe({
