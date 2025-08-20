@@ -15,16 +15,14 @@
     </mat-nav-list>
   </mat-sidenav>
 
+  <!-- Main Content -->
+  <mat-sidenav-content>
     <app-search-patient
       [placeholder]="'Find patient...'"
       [pageSize]="50"
       (resultsChange)="onResults($event)"
       (patientSelected)="onPicked($event)">
     </app-search-patient>
-
-
-  <!-- Main Content -->
-  <mat-sidenav-content>
     <!-- Top bar -->
     <mat-toolbar color="primary" class="topbar">
       <span class="flex-spacer"></span>

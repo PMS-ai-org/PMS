@@ -9,7 +9,7 @@ import { LoginComponent } from './feature/auth/login/login.component';
 
 @Component({
   selector: 'pms-root',
-  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent],
+  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent, SearchPatientComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   host: { 'class': 'pms-root' }
