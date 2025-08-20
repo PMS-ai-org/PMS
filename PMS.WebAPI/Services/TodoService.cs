@@ -6,9 +6,9 @@ namespace PMS.WebAPI.Services
 {
     public class TodoService : ITodoService
     {
-        private readonly AppDbContext _context;
+        private readonly PmsDbContext _context;
 
-        public TodoService(AppDbContext context)
+        public TodoService(PmsDbContext context)
         {
             _context = context;
         }

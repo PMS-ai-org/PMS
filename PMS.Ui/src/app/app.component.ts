@@ -1,49 +1,44 @@
-import { Component, effect, inject } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { MaterialModule } from './core/shared/material.module';
-import { AuthService } from './core/auth/auth.service';
-import { SearchPatientResponse, SearchPatientResult } from './services/search-patient.service';
-import { SearchPatientComponent } from "./feature/patient-search/search-patient/search-patient.component";
-import { AuthSessionService } from './core/auth/auth-session.service';
-import { LoginComponent } from './feature/auth/login/login.component';
+import { Component, effect } from '@angular/core';
+import { Router } from '@angular/router';
 
+import { Patient } from './models/patient.model'; // Adjust the import path as necessary
+import { AuthSessionService } from './core/auth/auth-session.service';
+import { AuthService } from './core/auth/auth.service';
+import { MaterialModule } from './core/shared/material.module';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'pms-root',
-  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent, SearchPatientComponent],
+  standalone: true,
+  imports: [MaterialModule, CommonModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  host: { 'class': 'pms-root' }
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  // Use the item type, not the response type
-  rows: SearchPatientResult[] = [];
+  selectedPatient?: Patient;
+  userName: string = '';
 
-  onResults(res: SearchPatientResponse) {
-    this.rows = res.items ?? [];
-  }
 
-  onPicked(p: SearchPatientResult) {
-    console.log('Picked patient:', p);
-    // TODO: navigate later: this.router.navigate(['/patients', p.id]);
-  }
-  userName = "";
-
-  constructor(private authSession: AuthSessionService, private auth: AuthService) {
+  constructor(private authSession: AuthSessionService, private auth: AuthService) {{
 
     effect(() => {
       this.userName = this.authSession.session()?.fullName ?? "";
     });
   }
-
-  ngOnInit() {
+  }
+ngOnInit() {
     this.userName = this.authSession.session()?.fullName ?? "";
   }
 
-  isLoggedIn() {
+ isLoggedIn() {
     return this.authSession.session();
   }
 
   logout() {
     this.auth.logout();
+  }
+
+
+  onPatientSelected(patient: Patient) {
+    this.selectedPatient = patient;
   }
 }

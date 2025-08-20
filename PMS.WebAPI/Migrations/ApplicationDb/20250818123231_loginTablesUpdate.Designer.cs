@@ -11,7 +11,7 @@ using PMS.WebAPI.Data;
 
 namespace PMS.WebAPI.Migrations.ApplicationDb
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(PmsDbContext))]
     [Migration("20250818123231_loginTablesUpdate")]
     partial class loginTablesUpdate
     {

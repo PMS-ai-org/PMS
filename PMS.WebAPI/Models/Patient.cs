@@ -1,10 +1,22 @@
-namespace PMS.WebAPI.Models;
+using System;
 
-public class Patient
+namespace PMS.Models
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public DateTime DateOfBirth { get; set; }
-    public string? Gender { get; set; }
+    public class Patient
+    {
+        public Guid Id { get; set; }
+        public string FullName { get; set; }
+        public DateTime? Dob { get; set; }
+        public string Gender { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string Address { get; set; }
+        public int? Age { get; set; }
+        public string[] Conditions { get; set; }
+        public string[] Medications { get; set; }
+        public string Notes { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid? HomeClinicId { get; set; }
+        public Guid? HomeSiteId { get; set; }
+    }
 }

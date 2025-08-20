@@ -1,0 +1,21 @@
+<h3>Appointments</h3>
+<form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+  <label>Scheduled At: <input type="datetime-local" formControlName="scheduledAt"></label>
+  <label>Status:
+    <select formControlName="status">
+      <option value="scheduled">Scheduled</option>
+      <option value="done">Done</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </label>
+  <label>Treatment Plan: <input formControlName="treatmentPlan"></label>
+  <button type="submit">{{ editingId ? 'Update' : 'Create' }}</button>
+</form>
+<ul>
+  <li *ngFor="let appt of appointments">
+    {{ appt.scheduledAt | date:'short' }} - {{ appt.status }}
+    <button (click)="edit(appt)">Edit</button>
+    <button (click)="delete(appt.id)">Delete</button>
+  </li>
+</ul>
+<div *ngIf="error" class="error">{{ error }}</div>

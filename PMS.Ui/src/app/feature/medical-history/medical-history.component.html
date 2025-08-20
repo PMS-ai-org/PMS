@@ -1,0 +1,15 @@
+<h3>Medical History</h3>
+<form [formGroup]="historyForm" (ngSubmit)="onSubmit()">
+  <label>Code: <input formControlName="code"></label>
+  <label>Description: <input formControlName="description"></label>
+  <label>Source: <input formControlName="source"></label>
+  <button type="submit">{{ editingId ? 'Update' : 'Create' }}</button>
+</form>
+<ul>
+  <li *ngFor="let entry of historyList">
+    {{ entry.code }} - {{ entry.description }}
+    <button (click)="edit(entry)">Edit</button>
+    <button (click)="delete(entry.id!)">Delete</button>
+  </li>
+</ul>
+<div *ngIf="error" class="error">{{ error }}</div>

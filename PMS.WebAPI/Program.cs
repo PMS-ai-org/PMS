@@ -19,10 +19,10 @@ await secretsService.StartAsync(CancellationToken.None);
 
 // --- Database registrations ---
 // EF Core DbContext (still needed if you use EF for other entities)
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<PmsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<PmsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Password hasher (PBKDF2)
@@ -77,6 +77,13 @@ builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 builder.Services.Configure<TokenService.JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+services.AddScoped<IPatientRepository, PatientRepository>();
+services.AddScoped<IPatientService, PatientService>();  
+services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+services.AddScoped<IAppointmentService, AppointmentService>();
+services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
+services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
+
 // --- App Services ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -104,7 +111,7 @@ var app = builder.Build();
 // // apply migrations at startup (optional)
 // using (var scope = app.Services.CreateScope())
 // {
-//      var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//      var db = scope.ServiceProvider.GetRequiredService<PmsDbContext>();
 //     // db.Database.Migrate();
 
 //     // seed roles/features/admin

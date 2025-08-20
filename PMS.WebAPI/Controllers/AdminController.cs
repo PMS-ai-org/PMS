@@ -11,8 +11,8 @@ namespace PMS.WebAPI.Controllers
     //[Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
-        public AdminController(ApplicationDbContext db) => _db = db;
+        private readonly PmsDbContext _db;
+        public AdminController(PmsDbContext db) => _db = db;
 
         [HttpGet("roles")]
         public async Task<IActionResult> GetRoles() => Ok(await _db.Roles.ToListAsync());

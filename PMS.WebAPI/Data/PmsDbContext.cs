@@ -1,15 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using PMS.WebAPI.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace PMS.WebAPI.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class PmsDbContext : DbContext
     {
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
+        public PmsDbContext(DbContextOptions<PmsDbContext> options,
             IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
@@ -27,6 +30,12 @@ namespace PMS.WebAPI.Data
 
         public DbSet<Clinics> Clinics { get; set; }
         public DbSet<Sites> Sites { get; set; }
+
+        // ==== Add these DbSets for patient-related tables ====
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<MedicalHistory> MedicalHistories { get; set; }
+        // =====================================================
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -52,6 +61,12 @@ namespace PMS.WebAPI.Data
                 .HasOne(u => u.UserDetail)
                 .WithOne(d => d.UserLogin)
                 .HasForeignKey<UserDetail>(d => d.UserId);
+
+            // ===== Optionally add indexes/relations for new tables =====
+            // e.g., builder.Entity<Patient>().HasIndex(p => p.PatientNumber).IsUnique();
+            // e.g., builder.Entity<Appointment>().HasOne(a => a.Patient).WithMany(p => p.Appointments).HasForeignKey(a => a.PatientId);
+            // ===========================================================
+
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -77,12 +92,10 @@ namespace PMS.WebAPI.Data
             return base.SaveChangesAsync(cancellationToken);
         }
 
-
         private Guid GetCurrentUserId()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
             return string.IsNullOrEmpty(userId) ? Guid.Empty : Guid.Parse(userId);
         }
-       
     }
 }
