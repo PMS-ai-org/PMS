@@ -46,7 +46,7 @@ jobs:
         run: cd PMS.Ui && npm ci
 
       - name: Run tests
-        
+        run: cd PMS.Ui && npm run test -- --watch=false --browsers=ChromeHeadless
 
   build:
     name: build
