@@ -7,7 +7,7 @@ import { ResetPasswordComponent } from './feature/auth/reset-password-component/
 import { RoleGuard } from './core/auth/role.guard';
 import { HomeComponent } from './feature/home-component/home-component';
 import { AppComponent } from './app.component';
-import { EditAccess } from './feature/auth/edit-access/edit-access';
+import { EditAccess } from './feature/auth/edit-access/edit-access.component';
 
 export const appRoutes: Routes = [
   { path: '', component: AppComponent },

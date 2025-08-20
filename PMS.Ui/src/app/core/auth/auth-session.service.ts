@@ -14,6 +14,8 @@ export class AuthSessionService {
   readonly isAuthenticated = computed(() => !!this._session());
 
   constructor() {
+    this._session.set(JSON.parse(sessionStorage.getItem('authSession') || 'null'));
+    
     effect(() => {
         console.log(this._session());
     });
@@ -22,11 +24,13 @@ export class AuthSessionService {
   // Set session after login
   setSession(session: AuthResponse) {
     this._session.set(session);
+    sessionStorage.setItem('authSession', JSON.stringify(session));
   }
 
   // Clear session on logout
   clearSession() {
     this._session.set(null);
+    sessionStorage.removeItem('authSession');
   }
 
   // Get token directly (useful for interceptors)

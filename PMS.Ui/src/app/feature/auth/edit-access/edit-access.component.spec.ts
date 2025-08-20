@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditAccess } from './edit-access';
+import { EditAccess } from './edit-access.component';
 
 describe('EditAccess', () => {
   let component: EditAccess;

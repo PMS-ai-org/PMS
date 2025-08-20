@@ -2,11 +2,11 @@
 
   <!-- Step 1: Doctor Info -->
   <mat-step [stepControl]="doctorForm">
-    <form [formGroup]="doctorForm">
+    <form [formGroup]="doctorForm" class="m-1">
       <ng-template matStepLabel>Doctor Information</ng-template>
 
       <!-- Role -->
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1" >
         <mat-label>Role</mat-label>
         <mat-select formControlName="roleId" (selectionChange)="onRoleChange($event.value)">
           @for (role of roles; track $index) {
@@ -15,27 +15,27 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Full Name</mat-label>
         <input matInput formControlName="fullName">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Phone Number</mat-label>
         <input matInput formControlName="phoneNumber">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Specialization</mat-label>
         <input matInput formControlName="specialization">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Clinic</mat-label>
         <mat-select formControlName="clinicId" (selectionChange)="onClinicChange($event.value)">
           <mat-option *ngFor="let clinic of clinics" [value]="clinic.id">{{ clinic.name }}</mat-option>
@@ -43,7 +43,7 @@
       </mat-form-field>
 
       <!-- Multi Select Sites -->
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Select Sites</mat-label>
         <mat-select multiple (selectionChange)="onSitesChange($event.value)">
           <mat-option *ngFor="let site of sites" [value]="site.id">
@@ -59,12 +59,13 @@
 
   <!-- Step 2: Assign Sites & Features -->
   <mat-step [stepControl]="doctorForm">
-    <div class="flex justify-between mt-4">
+   
+
+    <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
+       <div class="flex justify-between mt-4">
       <button mat-raised-button matStepperPrevious>Back</button>
       <button mat-raised-button color="primary" type="submit">Register Doctor</button>
     </div>
-
-    <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Assign Sites</ng-template>
 
       <!-- Table for Sites & Features -->

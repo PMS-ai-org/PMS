@@ -145,22 +145,52 @@ namespace PMS.WebAPI.Services
                                         fullName: user.Username);
             }
 
-            var result =
-                    from d in _db.UserClinicSites
-                    join clinic in _db.Clinics on d.ClinicId equals clinic.id
-                    join site in _db.Sites on d.SiteId equals site.id
-                    where d.UserId == user.UserId && site.clinic_id == clinic.id
-                    select new
-                    {
-                        UserClinicSiteId = d.UserClinicSiteId,
-                        UserId = d.UserId,
-                        ClinicId = clinic.id,
-                        ClinicName = clinic.name,
-                        SiteId = site.id,
-                        SiteName = site.name
-                    };
+          
 
-            
+         var result = (from ua in _db.UserAccesses
+                              join ucs in _db.UserClinicSites on ua.UserClinicSiteId equals ucs.UserClinicSiteId
+                              join f in _db.Features on ua.FeatureId equals f.FeatureId
+                              join sites in _db.Sites on ucs.SiteId equals sites.id
+                              where ucs.UserId == user.UserId
+                              select new
+                              {
+                                  ucs.ClinicId,
+                                  ucs.SiteId,
+                                  sites.name,
+                                  ucs.UserClinicSiteId,
+                                  ua.UserAccessId,
+                                  f.FeatureId,
+                                  f.FeatureName,
+                                  ua.CanAdd,
+                                  ua.CanEdit,
+                                  ua.CanDelete,
+                                  ua.CanView
+                              })
+              .AsEnumerable() // switch to LINQ-to-Objects for grouping
+              .GroupBy(x => x.ClinicId)
+              .Select(clinicGroup => new
+              {
+                  ClinicId = clinicGroup.Key,
+                  Sites = clinicGroup
+                      .GroupBy(s => s.SiteId)
+                      .Select(siteGroup => new
+                      {
+                          SiteId = siteGroup.Key,
+                          SiteName = siteGroup.First().name,
+                          UserClinicSiteId = siteGroup.First().UserClinicSiteId,
+                          Features = siteGroup.Select(f => new
+                          {
+                              f.FeatureId,
+                              f.FeatureName,
+                              f.CanAdd,
+                              f.CanEdit,
+                              f.CanDelete,
+                              f.CanView,
+                              f.UserAccessId
+                          }).ToList()
+                      }).ToList()
+              }).ToList();
+
             // generate tokens
             var jwt = GenerateJwtToken(user);
             var refresh = CreateRefreshToken(ipAddress, user.UserId);
@@ -168,7 +198,7 @@ namespace PMS.WebAPI.Services
             await _db.SaveChangesAsync();
 
             return new AuthResponse(jwt, refresh.Token, DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
-            user.Role.RoleName, user.UserId, user.IsFirstLogin, user.Username, result.ToList());
+            user.Role.RoleName, user.UserId, user.IsFirstLogin, user.Username, result);
         }
 
         public async Task<AuthResponse> RefreshTokenAsync(string token, string ipAddress)

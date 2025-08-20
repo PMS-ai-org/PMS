@@ -4,13 +4,11 @@ import { MaterialModule } from '../../../core/shared/material.module';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { forkJoin, Observable } from 'rxjs';
-
 @Component({
   selector: 'pms-edit-access',
   imports: [MaterialModule, ReactiveFormsModule],
-  templateUrl: './edit-access.html',
-  styleUrl: './edit-access.scss'
+  templateUrl: './edit-access.component.html',
+  styleUrl: './edit-access.component.scss'
 })
 export class EditAccess {
   @ViewChild('siteAccessDialog') siteAccessDialog!: TemplateRef<any>;
