@@ -1,13 +1,11 @@
-export interface UserAccess {
-  userAccessId: string;
-  userClinicSiteId: string;
-  featureId: string;
-  canAdd: boolean;
-  canEdit: boolean;
-  canDelete: boolean;
-  canView: boolean;
-  created_at?: string;
-  created_by?: string;
-  updated_at?: string;
-  updated_by?: string;
+import { AuditableEntity } from "./auditable-entity.model";
+
+export interface UserAccess extends AuditableEntity{
+  UserAccessId: string;
+  UserClinicSiteId: string;
+  FeatureId: string;
+  CanAdd: boolean;
+  CanEdit: boolean;
+  CanDelete: boolean;
+  CanView: boolean;
 }

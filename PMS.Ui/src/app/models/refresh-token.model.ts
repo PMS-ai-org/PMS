@@ -1,12 +1,14 @@
-export interface RefreshToken {
-  id: string;
-  token: string;
-  expires: string;
-  isRevoked: boolean;
-  userId: string;
-  created: string;
-  createdByIp?: string;
-  revoked?: string;
-  revokedByIp?: string;
-  replacedByToken?: string;
+import { AuditableEntity } from "./auditable-entity.model";
+
+export interface RefreshToken extends AuditableEntity {
+  Id: string;
+  Token: string;
+  Expires: string;
+  IsRevoked: boolean;
+  UserId: string;
+  Created: string;
+  CreatedByIp?: string;
+  Revoked?: string;
+  RevokedByIp?: string;
+  ReplacedByToken?: string;
 }

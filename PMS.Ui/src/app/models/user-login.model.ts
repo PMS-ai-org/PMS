@@ -1,18 +1,16 @@
-export interface UserLogin {
-  userId: string;
-  username: string;
-  email: string;
-  passwordHash?: string;
-  roleId: string;
-  isFirstLogin?: boolean;
-  isLocked?: boolean;
-  failedAttempts?: number;
-  lockoutEnd?: string;
-  dateCreated?: string;
-  dateModified?: string;
-  created_at?: string;
-  created_by?: string;
-  updated_at?: string;
-  updated_by?: string;
-  isActive?: boolean;
+import { AuditableEntity } from "./auditable-entity.model";
+
+export interface UserLogin extends AuditableEntity{
+  UserId: string;
+  Username: string;
+  Email: string;
+  PasswordHash?: string;
+  RoleId: string;
+  IsFirstLogin?: boolean;
+  IsLocked?: boolean;
+  FailedAttempts?: number;
+  LockoutEnd?: string;
+  DateCreated?: string;
+  DateModified?: string;
+  IsActive?: boolean;
 }

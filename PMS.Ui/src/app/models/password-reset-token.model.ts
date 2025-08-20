@@ -1,8 +1,10 @@
-export interface PasswordResetToken {
-  id: string;
-  token: string;
-  expires: string;
-  userId: string;
-  isUsed: boolean;
-  created: string;
+import { AuditableEntity } from "./auditable-entity.model";
+
+export interface PasswordResetToken extends AuditableEntity {
+  Id: string;
+  Token: string;
+  Expires: string;
+  UserId: string;
+  IsUsed: boolean;
+  Created: string;
 }
