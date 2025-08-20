@@ -4,6 +4,7 @@ import { MaterialModule } from '../../../core/shared/material.module';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { LoaderService } from '../../../services/loader.service';
 @Component({
   selector: 'pms-edit-access',
   imports: [MaterialModule, ReactiveFormsModule],
@@ -18,7 +19,9 @@ export class EditAccess {
   displayedColumns: string[] = ['staffName', 'canView', 'canEdit', 'canDelete'];
 
   siteGroupForm!: FormGroup;
-  constructor(private clinicService: ClinicService, private dialog: MatDialog) { }
+  constructor(private clinicService: ClinicService, private dialog: MatDialog,
+    private loader: LoaderService
+  ) { }
 
   ngOnInit(): void {
     this.siteGroupForm = new FormGroup({
@@ -30,10 +33,15 @@ export class EditAccess {
 
 
   loadStaff() {
+    this.loader.show();
     this.clinicService.getStaffList().subscribe((res: any[]) => {
       this.staffList.set(new MatTableDataSource(res));
-      console.log(res);
-    });
+      this.loader.hide();
+    },
+      (err) => {
+        console.error('Error:', err);
+        this.loader.hide();
+      });
   }
 
 
@@ -59,7 +67,7 @@ export class EditAccess {
             canView: new FormControl(f.canView),
             canAdd: new FormControl(f.canAdd),
             canEdit: new FormControl(f.canEdit),
-            canDelete: new FormControl(f.canDelete),            
+            canDelete: new FormControl(f.canDelete),
             userAccessId: new FormControl(f.userAccessId),
           }))
         );
@@ -87,6 +95,7 @@ export class EditAccess {
     return this.sitesFormArray.controls.slice();
   }
   onSubmit() {
+    
     const formValue = this.siteGroupForm.value;
     // Create dictionary of siteId -> feature permissions
     const payloadData: any[] = [];
@@ -103,8 +112,13 @@ export class EditAccess {
         });
       });
     });
+     this.loader.show();
     this.clinicService.savePermission(payloadData).subscribe((res: any) => {
       this.dialog.closeAll();
+       this.loader.hide();
+    },(err)=>{
+      console.error('Error:', err);
+       this.loader.hide();
     });
 
   }
