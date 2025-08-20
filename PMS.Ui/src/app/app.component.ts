@@ -15,8 +15,6 @@ import { LoginComponent } from './feature/auth/login/login.component';
   host: { 'class': 'pms-root' }
 })
 export class AppComponent {
-  auth = inject(AuthService);
-
   // Use the item type, not the response type
   rows: SearchPatientResult[] = [];
 

@@ -17,6 +17,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 @NgModule({
   exports: [
     CommonModule,
@@ -35,9 +36,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatTableModule,
     MatCheckboxModule,
     MatStepperModule,
-    MatDialogModule
-    MatToolbarModule,
-    MatAutocompleteModule,
+    MatDialogModule,
+    MatAutocompleteModule
   ]
 })
 export class MaterialModule { }

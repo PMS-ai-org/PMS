@@ -17,12 +17,6 @@ builder.Services.AddHostedService<SupabaseSecretsService>();
 var secretsService = new SupabaseSecretsService(builder.Configuration, builder.Environment);
 await secretsService.StartAsync(CancellationToken.None);
 
-// Register hosted service to fetch secrets on startup
-builder.Services.AddHostedService<SupabaseSecretsService>();
-
-var secretsService = new SupabaseSecretsService(builder.Configuration, builder.Environment);
-await secretsService.StartAsync(CancellationToken.None);
-
 // --- Database registrations ---
 // EF Core DbContext (still needed if you use EF for other entities)
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -31,6 +25,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Password hasher (PBKDF2)
+// Add NpgsqlDataSource for low-level ADO.NET access in SearchPatientService
+// Register connection for DI
+builder.Services.AddScoped<NpgsqlConnection>(sp =>
+{
+    var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
+    return new NpgsqlConnection(connStr);
+});
 
 //builder.Configuration.GetValue<string>("DefaultConnection"))
 // configure settings
@@ -70,15 +72,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-// Password hasher (PBKDF2)
-// Add NpgsqlDataSource for low-level ADO.NET access in SearchPatientService
-// Register connection for DI
-builder.Services.AddScoped<NpgsqlConnection>(sp =>
-{
-    var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
-    return new NpgsqlConnection(connStr);
-});
-
 // --- Identity / Tokens ---
 builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 builder.Services.Configure<TokenService.JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -105,29 +98,6 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
-
-
-// --- JWT auth ---
-var jwt = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt =>
-    {
-        opt.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwt["Issuer"],
-            ValidAudience = jwt["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ClockSkew = TimeSpan.Zero
-        };
-    });
-
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -156,5 +126,3 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
-
-//TODO: Added to test pipeline code
