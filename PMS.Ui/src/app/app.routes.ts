@@ -7,12 +7,15 @@ import { ResetPasswordComponent } from './feature/auth/reset-password-component/
 import { RoleGuard } from './core/auth/role.guard';
 import { HomeComponent } from './feature/home-component/home-component';
 import { AppComponent } from './app.component';
+import { EditAccess } from './feature/auth/edit-access/edit-access';
 
 export const appRoutes: Routes = [
   { path: '', component: AppComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'createDoctor', component: CreateDoctorComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+
+  { path: 'editAccess', component: EditAccess, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'todos', canActivate: [AuthGuard], loadComponent: () => import('./feature/todo/todo.component').then(m => m.TodoComponent) },
   { path: 'reset-password', component: ResetPasswordComponent },
   //{ path: '**', redirectTo: '' }

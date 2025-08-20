@@ -1,19 +1,29 @@
-.main-container {
-  height: 100vh; // full screen height
+.app-container {
+  height: 100vh;
 }
 
-.sidenav {
+.sidebar {
   width: 220px;
-  background: #f5f5f5;
-  padding: 10px;
+  background: #f8f9fa;
 }
 
-.toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+.sidebar-header {
+  font-weight: bold;
+  color: #fff;
+}
+
+.mat-nav-list a {
+  font-size: 14px;
+}
+
+.mat-nav-list a.active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.topbar {
   display: flex;
   justify-content: flex-end;
+  padding: 0 16px;
 }
 
 .flex-spacer {

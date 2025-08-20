@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { MaterialModule } from '../../../core/shared/material.module';
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClinicService } from '../../../core/auth/clinic.service';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
@@ -24,7 +24,6 @@ export class CreateDoctorComponent implements OnInit {
 
   ngOnInit(): void {
     this.doctorForm = new FormGroup({
-      username: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
       fullName: new FormControl('', Validators.required),
       phoneNumber: new FormControl('', Validators.required),
@@ -122,7 +121,6 @@ export class CreateDoctorComponent implements OnInit {
       });
 
       const payload = {
-        username: formValue.username,
         email: formValue.email,
         fullName: formValue.fullName,
         phoneNumber: formValue.phoneNumber,

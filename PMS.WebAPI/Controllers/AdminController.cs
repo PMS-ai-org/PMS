@@ -1,12 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PMS.WebAPI.Data;
 using PMS.WebAPI.Models.Dtos;
 using PMS.WebAPI.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PMS.WebAPI.Controllers
 {
@@ -24,42 +20,32 @@ namespace PMS.WebAPI.Controllers
         [HttpGet("features")]
         public async Task<IActionResult> GetFeatures() => Ok(await _db.Features.ToListAsync());
 
-        
-        [HttpPost("assign-access")]
-        public async Task<IActionResult> AssignAccess(Guid userClinicSiteId, [FromBody] PermissionDto[] permissions)
-        {
-            var ucs = await _db.UserClinicSites.FindAsync(userClinicSiteId);
-            if (ucs == null) return NotFound();
 
-            foreach (var p in permissions)
+        [HttpPut("assign-access")]
+        public async Task<IActionResult> AssignAccess([FromBody]  PermissionDto[] Permissions)
+        {
+            if (Permissions == null || !Permissions.Any())
+                return BadRequest("No permissions provided");
+
+            foreach (var rowData in Permissions)
             {
-                var existing = await _db.UserAccesses.FirstOrDefaultAsync(x => x.UserClinicSiteId == userClinicSiteId && x.FeatureId == p.FeatureId);
-                if (existing == null)
+                var userAccess = await _db.UserAccesses.FindAsync(rowData.UserAccessId);
+                if (userAccess == null) return NotFound();
+
+                var existing = await _db.UserAccesses
+                    .FirstOrDefaultAsync(x => x.UserAccessId == userAccess.UserAccessId && x.FeatureId == rowData.FeatureId);
+
+                if (existing != null)
                 {
-                    var feature = await _db.Features.FindAsync(p.FeatureId);
-                    var ua = new UserAccess
-                    {
-                        UserClinicSiteId = userClinicSiteId,
-                        FeatureId = p.FeatureId,
-                        CanAdd = p.CanAdd,
-                        CanEdit = p.CanEdit,
-                        CanDelete = p.CanDelete,
-                        CanView = p.CanView,
-                        UserClinicSite = ucs,
-                        Feature = feature
-                    };
-                    _db.UserAccesses.Add(ua);
+                    existing.CanAdd = rowData.CanAdd;
+                    existing.CanEdit = rowData.CanEdit;
+                    existing.CanDelete = rowData.CanDelete;
+                    existing.CanView = rowData.CanView;
                 }
-                else
-                {
-                    existing.CanAdd = p.CanAdd;
-                    existing.CanEdit = p.CanEdit;
-                    existing.CanDelete = p.CanDelete;
-                    existing.CanView = p.CanView;
-                }
+                await _db.SaveChangesAsync();
             }
-            await _db.SaveChangesAsync();
             return Ok();
         }
+
     }
 }

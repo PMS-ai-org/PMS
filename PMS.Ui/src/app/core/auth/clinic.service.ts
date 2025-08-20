@@ -27,9 +27,19 @@ export class ClinicService {
 
   getFeatures() { return this.http.get<Clinic[]>(`${this.api}/Admin/features`); }
 
+  getStaffList() { return this.http.get<Site[]>(`${this.api}/Clinics/get-staff`); }
+
+  getStaffPermission(clinicId: string) { return this.http.get<Site[]>(`${this.api}/Clinics/${clinicId}/get-access`); }
+
   getSitesByClinic(clinicId: string) { return this.http.get<Site[]>(`${this.api}/Clinics/${clinicId}/sites`); }
-  
+
   saveDoctor(formData: any) {
     return this.http.post(`${this.api}/Clinics/create-doctor`, formData);
+  }
+
+  savePermission(formData: any) {
+    return this.http.put(`${this.api}/Admin/assign-access`,
+      formData
+    );
   }
 }

@@ -1,36 +1,36 @@
-<ng-container *ngIf="isLoggedIn(); else loginPage">
-  <mat-sidenav-container class="main-container">
-    
-    <!-- Left side features -->
-    <mat-sidenav #sidenav mode="side" opened class="sidenav">
-      <h3 class="p-3">Features</h3>
-      <button mat-button routerLink="/createDoctor">Create Doctor</button>
-      <button mat-button routerLink="/dashboard">Dashboard</button>
-      <button mat-button routerLink="/patients">Patients</button>
-      <button mat-button routerLink="/appointments">Appointments</button>
-      <button mat-button routerLink="/reports">Reports</button>
-      
-    </mat-sidenav>
+@if(isLoggedIn()){
+<mat-sidenav-container class="app-container">
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+    <mat-toolbar color="primary" class="sidebar-header">
+      Features
+    </mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/createDoctor" routerLinkActive="active">Create Doctor</a>
+      <a mat-list-item routerLink="/editAccess" routerLinkActive="active">Edit Access</a>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a mat-list-item routerLink="/patients" routerLinkActive="active">Patients</a>
+      <a mat-list-item routerLink="/appointments" routerLinkActive="active">Appointments</a>
+      <a mat-list-item routerLink="/reports" routerLinkActive="active">Reports</a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-    <!-- Right side content area -->
-    <mat-sidenav-content>
-      
-      <!-- Top bar -->
-      <mat-toolbar color="primary" class="toolbar">
-        <span class="flex-spacer"></span>
-        <span class="username">{{ userName }}</span>
-        <button mat-button (click)="logout()">Logout</button>
-      </mat-toolbar>
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <!-- Top bar -->
+    <mat-toolbar color="primary" class="topbar">
+      <span class="flex-spacer"></span>
+      <span>{{ userName }}</span>
+      <button mat-button (click)="logout()">Logout</button>
+    </mat-toolbar>
 
-      <!-- Page Content -->
-      <div class="content">
-        <router-outlet></router-outlet>
-      </div>
-
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</ng-container>
-
-<ng-template #loginPage>
-  <pms-login></pms-login>
-</ng-template>
+    <!-- Routed content -->
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+}
+@else{
+<pms-login></pms-login>
+}

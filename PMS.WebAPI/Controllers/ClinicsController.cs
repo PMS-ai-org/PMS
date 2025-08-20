@@ -33,6 +33,13 @@ namespace PMS.WebAPI.Controllers
             return Ok(clinics);
         }
 
+
+        [HttpGet("get-staff")]
+        public async Task<IActionResult> GetStaffList()
+        {
+            var staffList = await _context.UserDetails.ToListAsync();
+            return Ok(staffList);
+        }
         /// <summary>
         /// Get sites by clinicId
         /// </summary>
@@ -152,6 +159,54 @@ namespace PMS.WebAPI.Controllers
             }
         }
 
+        [HttpGet("{userId}/get-access")]
+        public async Task<IActionResult> GetAccess(Guid userId)
+        {
+            var userAccess = (from ua in _context.UserAccesses
+                              join ucs in _context.UserClinicSites on ua.UserClinicSiteId equals ucs.UserClinicSiteId
+                              join f in _context.Features on ua.FeatureId equals f.FeatureId
+                              join sites in _context.Sites on ucs.SiteId equals sites.id
+                              where ucs.UserId == userId
+                              select new
+                              {
+                                  ucs.ClinicId,
+                                  ucs.SiteId,
+                                  sites.name,
+                                  ucs.UserClinicSiteId,
+                                  ua.UserAccessId,
+                                  f.FeatureId,
+                                  f.FeatureName,
+                                  ua.CanAdd,
+                                  ua.CanEdit,
+                                  ua.CanDelete,
+                                  ua.CanView
+                              })
+              .AsEnumerable() // switch to LINQ-to-Objects for grouping
+              .GroupBy(x => x.ClinicId)
+              .Select(clinicGroup => new
+              {
+                  ClinicId = clinicGroup.Key,
+                  Sites = clinicGroup
+                      .GroupBy(s => s.SiteId)
+                      .Select(siteGroup => new
+                      {
+                          SiteId = siteGroup.Key,
+                          SiteName = siteGroup.First().name,
+                          UserClinicSiteId = siteGroup.First().UserClinicSiteId,
+                          Features = siteGroup.Select(f => new
+                          {
+                              f.FeatureId,
+                              f.FeatureName,
+                              f.CanAdd,
+                              f.CanEdit,
+                              f.CanDelete,
+                              f.CanView,
+                              f.UserAccessId
+                          }).ToList()
+                      }).ToList()
+              }).ToList();
 
+            return Ok(userAccess);
+        }
     }
 }
