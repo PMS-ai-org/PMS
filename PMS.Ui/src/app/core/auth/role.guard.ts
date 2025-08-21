@@ -11,7 +11,6 @@ export class RoleGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot) {
-    debugger;
     const roles = route.data['roles'] as string[] | string;
     const user = this.authSessionService.session();
     if (!user) { return false; }

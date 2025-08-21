@@ -33,6 +33,26 @@ namespace PMS.WebAPI.Controllers
             return Ok(clinics);
         }
 
+        /// <summary>
+        /// Get sites
+        /// </summary>
+        [HttpGet("get-sites")]
+        public async Task<IActionResult> GetSites()
+        {
+            var sites = await _context.Sites.ToListAsync();
+            return Ok(sites);
+        }
+
+        /// <summary>
+        /// Get user clinic sites
+        /// </summary>
+        [HttpGet("get-user-clinic-sites")]
+        public async Task<IActionResult> GetUserClinicSites()
+        {
+            var sites = await _context.UserClinicSites.ToListAsync();
+            return Ok(sites);
+        }
+
 
         [HttpGet("get-staff")]
         public async Task<IActionResult> GetStaffList()

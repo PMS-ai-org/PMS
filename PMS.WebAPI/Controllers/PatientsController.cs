@@ -33,7 +33,7 @@ namespace PMS.WebAPI.Controllers
         public async Task<IActionResult> Create([FromBody] Patient patient)
         {
             var created = await _service.CreateAsync(patient);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
 
         [HttpPut("{id}")]

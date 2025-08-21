@@ -1,7 +1,7 @@
 import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Patient extends AuditableEntity {
-    id?: string;
+  id?: string;
   fullName: string;
   dob?: string;
   gender?: string;

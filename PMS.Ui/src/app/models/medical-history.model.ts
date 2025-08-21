@@ -6,7 +6,6 @@ export interface MedicalHistory extends AuditableEntity {
   code: string;
   description: string;
   source?: string;
-  createdAt?: string;
   clinicId?: string;
   siteId?: string;
 }

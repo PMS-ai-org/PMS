@@ -1,0 +1,16 @@
+<div class="tile">
+  <h3>User Access Permissions</h3>
+  <ngx-charts-bar-horizontal
+    *ngIf="userAccesses$ | async as accesses"
+    [results]="accesses | groupByFeaturePermission"
+    [scheme]="{ domain: ['#10b981', '#f59e42', '#6366f1', '#3b82f6'] }"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="true"
+    [showXAxisLabel]="true"
+    [showYAxisLabel]="true"
+    xAxisLabel="Feature"
+    yAxisLabel="Permission Count"
+    [animations]="true">
+  </ngx-charts-bar-horizontal>
+</div>

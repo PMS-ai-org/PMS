@@ -50,7 +50,7 @@ namespace PMS.WebAPI.Repositories
         public async Task<(IEnumerable<Patient> Results, int TotalCount)> SearchAsync(string query, int page, int pageSize)
         {
             var q = _context.Patients
-                .Where(p => p.FullName.Contains(query) || p.Phone.Contains(query) || p.Email.Contains(query));
+                .Where(p => p.full_name.Contains(query) || p.phone.Contains(query) || p.email.Contains(query));
             var totalCount = await q.CountAsync();
             var results = await q.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             return (results, totalCount);
