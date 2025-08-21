@@ -16,7 +16,7 @@ public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {
         using (var scope = _scopeFactory.CreateScope())
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<PmsDbContext>();
             // Use dbContext here
         }
 

@@ -1,0 +1,13 @@
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="patient">
+  <h2>{{ patient.fullName }}</h2>
+  <p><strong>DOB:</strong> {{ patient.dob | date }}</p>
+  <p><strong>Gender:</strong> {{ patient.gender }}</p>
+  <p><strong>Phone:</strong> {{ patient.phone }}</p>
+  <p><strong>Email:</strong> {{ patient.email }}</p>
+  <p><strong>Address:</strong> {{ patient.address }}</p>
+  <p><strong>Age:</strong> {{ patient.age }}</p>
+  <p><strong>Conditions:</strong> {{ patient.conditions?.join(', ') }}</p>
+  <p><strong>Medications:</strong> {{ patient.medications?.join(', ') }}</p>
+  <p><strong>Notes:</strong> {{ patient.notes }}</p>
+</div>

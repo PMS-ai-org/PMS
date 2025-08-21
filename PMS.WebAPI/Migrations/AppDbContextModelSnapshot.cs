@@ -10,8 +10,8 @@ using PMS.WebAPI.Data;
 
 namespace PMS.WebAPI.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(PmsDbContext))]
+    partial class PmsDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

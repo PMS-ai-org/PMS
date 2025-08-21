@@ -14,10 +14,10 @@ namespace PMS.WebAPI.Controllers
     [ApiController]
     public class ClinicsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly PmsDbContext _context;
         private readonly IEmailService _emailService;
 
-        public ClinicsController(ApplicationDbContext context, IEmailService emailService)
+        public ClinicsController(PmsDbContext context, IEmailService emailService)
         {
             _context = context;
             _emailService = emailService;

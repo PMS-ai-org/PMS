@@ -11,7 +11,7 @@ using PMS.WebAPI.Data;
 
 namespace PMS.WebAPI.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(PmsDbContext))]
     [Migration("20250813142340_Init")]
     partial class Init
     {

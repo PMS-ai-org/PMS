@@ -9,8 +9,6 @@ namespace PMS.WebAPI.Models
         public Guid FeatureId { get; set; }
         [Required]
         public required string FeatureName { get; set; }
-        [Required]
-        public required string RouterLink { get; set; }
 
     }
 }
