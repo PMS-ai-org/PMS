@@ -1,6 +1,7 @@
 @if(isLoggedIn()){
 <mat-sidenav-container class="app-container">
   <!-- Sidebar -->
+  @if(role?.length > 0){
   <mat-toolbar color="primary">
     <mat-toolbar-row>
       <span class="app-title">Patient Portal</span>
@@ -21,7 +22,7 @@
       <button mat-button style="margin-left: auto;" (click)="logout()">Logout</button>
     </mat-toolbar-row>
   </mat-toolbar>
-
+  }
   <mat-topnav-content>
     <div class="mat-nav-content">
       <router-outlet></router-outlet>

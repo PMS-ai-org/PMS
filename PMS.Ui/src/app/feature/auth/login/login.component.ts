@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
 import { LoaderService } from '../../../services/loader.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'pms-login',
@@ -17,7 +18,7 @@ export class LoginComponent implements OnInit {
   error: string | null = null;
   form!: FormGroup;
 
-  constructor(private loaderService: LoaderService, private auth: AuthService, private router: Router) { }
+  constructor(private loaderService: LoaderService, private snack: MatSnackBar, private auth: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -44,6 +45,7 @@ export class LoginComponent implements OnInit {
       (err) => {
         console.error(err);
         this.loaderService.hide();
+        this.snack.open(err.error?.message || 'Login failed', 'Close', { duration: 3000 });
       });
   }
 }

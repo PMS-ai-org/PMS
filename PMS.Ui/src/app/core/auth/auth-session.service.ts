@@ -12,7 +12,7 @@ export class AuthSessionService {
   // Expose readonly signals
   readonly session = computed(() => this._session());
   readonly isAuthenticated = computed(() => !!this._session());
-  readonly userAccessDetail = computed(() => this._session()?.userAccessDetail[0] ?? null);
+  readonly userAccessDetail = computed(() => this._session()?.userAccessDetail?.[0] ?? null);
 
   constructor() {
     this._session.set(JSON.parse(sessionStorage.getItem('authSession') || 'null'));

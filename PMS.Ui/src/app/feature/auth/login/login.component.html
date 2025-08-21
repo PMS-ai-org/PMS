@@ -14,12 +14,14 @@
         </mat-form-field>
 
         <div class="actions">
-          <button mat-flat-button color="primary" type="submit" [disabled]="loading">Login</button>
-          <a routerLink="/auth/forgot">Forgot password?</a>
+          <button mat-flat-button color="primary" type="submit">Login</button>
+          <!-- <a routerLink="/auth/forgot">Forgot password?</a> -->
         </div>
       </form>
 
-      <mat-error *ngIf="error">{{ error }}</mat-error>
+      @if (error) {
+        <mat-error>{{ error }}</mat-error>
+      }
     </mat-card-content>
   </mat-card>
 </div>

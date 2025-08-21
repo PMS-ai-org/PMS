@@ -11,8 +11,7 @@ import { LoaderComponent } from './core/shared/loader-component/loader-component
 import { Features, Site } from './core/models/user.models';
 @Component({
   selector: 'pms-root',
-  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent,
-    SearchPatientComponent, LoaderComponent],
+  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent, LoaderComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -33,10 +32,11 @@ export class AppComponent {
         this.userName = this.authSession.session()?.fullName ?? "";
         this.role = this.authSession.session()?.role ?? "";
         this.sites = this.authSession.userAccessDetail()?.sites ?? [];
-        console.log(this.sites);
+        console.log(this.role);
       });
     }
   }
+
   ngOnInit() {
     this.userName = this.authSession.session()?.fullName ?? "";
   }
