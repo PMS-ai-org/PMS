@@ -29,7 +29,7 @@ export class RepositoryService {
   }
 
   getAppointments(): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(`${environment.apiUrl}/appointments`);
+    return this.http.get<Appointment[]>(`${environment.apiUrl}/appointments/get-appointments`);
   }
 
   getPatients(): Observable<Patient[]> {
@@ -37,15 +37,15 @@ export class RepositoryService {
   }
 
   getClinics(): Observable<Clinic[]> {
-    return this.http.get<Clinic[]>(`${environment.apiUrl}/clinics`);
+    return this.http.get<Clinic[]>(`${environment.apiUrl}/clinics/get-clinics`);
   }
 
   getSites(): Observable<Site[]> {
-    return this.http.get<Site[]>(`${environment.apiUrl}/sites`);
+    return this.http.get<Site[]>(`${environment.apiUrl}/clinics/get-sites`);
   }
 
   getUserClinicSites(): Observable<UserClinicSite[]> {
-    return this.http.get<UserClinicSite[]>(`${environment.apiUrl}/user-clinic-sites`);
+    return this.http.get<UserClinicSite[]>(`${environment.apiUrl}/clinics/get-user-clinic-sites`);
   }
 
   getMedicalHistory(): Observable<MedicalHistory[]> {

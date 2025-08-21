@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PMS.WebAPI.Data;
 using PMS.WebAPI.Models;
 using PMS.WebAPI.Services;
 
@@ -9,10 +11,21 @@ namespace PMS.WebAPI.Controllers
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _service;
+        private readonly PmsDbContext _context;
 
-        public AppointmentsController(IAppointmentService service)
+        public AppointmentsController(IAppointmentService service, PmsDbContext context)
         {
             _service = service;
+            _context = context;
+        }
+
+        /// <summary>
+        /// Get all appointments
+        /// </summary>
+        [HttpGet("get-appointments")]
+        public async Task<IActionResult> GetAppointments()
+        {
+            return Ok(await _service.GetAllAppointmentsAsync());
         }
 
         [HttpGet("patient/{patientId}")]
@@ -33,7 +46,7 @@ namespace PMS.WebAPI.Controllers
         public async Task<IActionResult> Create([FromBody] Appointment appointment)
         {
             var created = await _service.CreateAsync(appointment);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
         }
 
         [HttpPut("{id}")]

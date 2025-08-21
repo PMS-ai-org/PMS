@@ -13,6 +13,7 @@ namespace PMS.WebAPI.Services
         }
 
         public Task<IEnumerable<Appointment>> GetByPatientIdAsync(Guid patientId) => _repo.GetByPatientIdAsync(patientId);
+        public Task<IEnumerable<Appointment>> GetAllAppointmentsAsync() => _repo.GetAllAppointmentsAsync();
         public Task<Appointment?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
         public Task<Appointment> CreateAsync(Appointment appointment) => _repo.CreateAsync(appointment);
         public Task<bool> UpdateAsync(Guid id, Appointment appointment) => _repo.UpdateAsync(id, appointment);
