@@ -1,20 +1,34 @@
-<ng-container *ngIf="isLoggedIn(); else loginPage">
+@if(isLoggedIn()){
+<mat-sidenav-container class="app-container">
+  <!-- Sidebar -->
   <mat-toolbar color="primary">
     <mat-toolbar-row>
       <span class="app-title">Patient Portal</span>
       <span class="spacer"></span>
-      <button mat-button [routerLink]="['/patient/profile', selectedPatient?.id]" [disabled]="!selectedPatient">Patient Profile</button>
-      <button mat-button [routerLink]="['/appointment', selectedPatient?.id]" [disabled]="!selectedPatient">Appointment</button>
-      <button mat-button [routerLink]="['/medical-history', selectedPatient?.id]" [disabled]="!selectedPatient">Medical History</button>
+
+      @if (role.toLowerCase() == "admin") {
+      <button mat-button [routerLink]="['/create-staff']">Create Staff</button>
+      <button mat-button [routerLink]="['/permissions']">Permissions</button>
+      }
+      <button mat-button [routerLink]="['/patient/profile', selectedPatient?.id]" [disabled]="!selectedPatient">Patient
+        Profile</button>
+      <button mat-button [routerLink]="['/appointment', selectedPatient?.id]"
+        [disabled]="!selectedPatient">Appointment</button>
+      <button mat-button [routerLink]="['/medical-history', selectedPatient?.id]" [disabled]="!selectedPatient">Medical
+        History</button>
       <button mat-button [routerLink]="['/patient/register']">Registration</button>
     </mat-toolbar-row>
   </mat-toolbar>
-    
-  <div class="mat-nav-content">
-    <app-patient-autocomplete (patientSelected)="onPatientSelected($event)"></app-patient-autocomplete>
-    <router-outlet></router-outlet>
-  </div>
-</ng-container>
-<ng-template #loginPage>
-  <pms-login></pms-login>
-</ng-template>
+
+  <mat-topnav-content>
+    <div class="mat-nav-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-topnav-content>
+</mat-sidenav-container>
+}
+@else{
+<pms-login></pms-login>
+}
+
+<pms-loader-component></pms-loader-component>

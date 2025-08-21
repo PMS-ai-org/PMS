@@ -88,7 +88,7 @@ namespace PMS.WebAPI.Services
         {
             var user = await _db.UserLogins
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Username == request.Username );
+                .FirstOrDefaultAsync(u => u.Username == request.Username);
 
             if (user == null)
                 throw new Exception("Invalid credentials");
@@ -145,52 +145,92 @@ namespace PMS.WebAPI.Services
                                         fullName: user.Username);
             }
 
-          
 
-         var result = (from ua in _db.UserAccesses
-                              join ucs in _db.UserClinicSites on ua.UserClinicSiteId equals ucs.UserClinicSiteId
-                              join f in _db.Features on ua.FeatureId equals f.FeatureId
-                              join sites in _db.Sites on ucs.SiteId equals sites.id
-                              where ucs.UserId == user.UserId
-                              select new
-                              {
-                                  ucs.ClinicId,
-                                  ucs.SiteId,
-                                  sites.name,
-                                  ucs.UserClinicSiteId,
-                                  ua.UserAccessId,
-                                  f.FeatureId,
-                                  f.FeatureName,
-                                  ua.CanAdd,
-                                  ua.CanEdit,
-                                  ua.CanDelete,
-                                  ua.CanView
-                              })
-              .AsEnumerable() // switch to LINQ-to-Objects for grouping
-              .GroupBy(x => x.ClinicId)
-              .Select(clinicGroup => new
-              {
-                  ClinicId = clinicGroup.Key,
-                  Sites = clinicGroup
-                      .GroupBy(s => s.SiteId)
-                      .Select(siteGroup => new
-                      {
-                          SiteId = siteGroup.Key,
-                          SiteName = siteGroup.First().name,
-                          UserClinicSiteId = siteGroup.First().UserClinicSiteId,
-                          Features = siteGroup.Select(f => new
+        
+            var result = new List<object>();
+
+            if (user.Role?.RoleName == "Admin") // <-- Replace with your Admin check logic
+            {
+                result = (from site in _db.Sites
+                          join ucs in _db.UserClinicSites on site.id equals ucs.SiteId
+                          where ucs.UserId == user.UserId
+                          select new
                           {
+                              ucs.ClinicId,
+                              ucs.SiteId,
+                              SiteName = site.name,
+                              ucs.UserClinicSiteId
+                          })
+                          .AsEnumerable()
+                          .GroupBy(x => x.ClinicId)
+                          .Select(clinicGroup => new
+                          {
+                              ClinicId = clinicGroup.Key,
+                              Sites = clinicGroup.Select(siteItem => new
+                              {
+                                  siteItem.SiteId,
+                                  siteItem.SiteName,
+                                  siteItem.UserClinicSiteId,
+                                  Features = _db.Features
+                                               .Select(f => new
+                                               {
+                                                   f.FeatureId,
+                                                   f.FeatureName,
+                                                   CanAdd = true,
+                                                   CanEdit = true,
+                                                   CanDelete = true,
+                                                   CanView = true,
+                                                   UserAccessId = 0 // dummy since Admin doesn’t need actual mapping
+                                               }).ToList()
+                              }).ToList()
+                          }).ToList<object>();
+            }
+            else
+            {
+                result = (from ua in _db.UserAccesses
+                          join ucs in _db.UserClinicSites on ua.UserClinicSiteId equals ucs.UserClinicSiteId
+                          join f in _db.Features on ua.FeatureId equals f.FeatureId
+                          join sites in _db.Sites on ucs.SiteId equals sites.id
+                          where ucs.UserId == user.UserId
+                          select new
+                          {
+                              ucs.ClinicId,
+                              ucs.SiteId,
+                              sites.name,
+                              ucs.UserClinicSiteId,
+                              ua.UserAccessId,
                               f.FeatureId,
                               f.FeatureName,
-                              f.CanAdd,
-                              f.CanEdit,
-                              f.CanDelete,
-                              f.CanView,
-                              f.UserAccessId
-                          }).ToList()
-                      }).ToList()
-              }).ToList();
-
+                              ua.CanAdd,
+                              ua.CanEdit,
+                              ua.CanDelete,
+                              ua.CanView
+                          })
+                          .AsEnumerable()
+                          .GroupBy(x => x.ClinicId)
+                          .Select(clinicGroup => new
+                          {
+                              ClinicId = clinicGroup.Key,
+                              Sites = clinicGroup
+                                  .GroupBy(s => s.SiteId)
+                                  .Select(siteGroup => new
+                                  {
+                                      SiteId = siteGroup.Key,
+                                      SiteName = siteGroup.First().name,
+                                      UserClinicSiteId = siteGroup.First().UserClinicSiteId,
+                                      Features = siteGroup.Select(f => new
+                                      {
+                                          f.FeatureId,
+                                          f.FeatureName,
+                                          f.CanAdd,
+                                          f.CanEdit,
+                                          f.CanDelete,
+                                          f.CanView,
+                                          f.UserAccessId
+                                      }).ToList()
+                                  }).ToList()
+                          }).ToList<object>();
+            }
             // generate tokens
             var jwt = GenerateJwtToken(user);
             var refresh = CreateRefreshToken(ipAddress, user.UserId);

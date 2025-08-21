@@ -1,16 +1,18 @@
-import { Component, effect } from '@angular/core';
-import { Router } from '@angular/router';
-
 import { Patient } from './models/patient.model'; // Adjust the import path as necessary
-import { AuthSessionService } from './core/auth/auth-session.service';
-import { AuthService } from './core/auth/auth.service';
+import { Component, effect } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { MaterialModule } from './core/shared/material.module';
-import { CommonModule } from '@angular/common';
+import { AuthService } from './core/auth/auth.service';
+import { SearchPatientResponse, SearchPatientResult } from './services/search-patient.service';
+import { SearchPatientComponent } from "./feature/patient-search/search-patient/search-patient.component";
+import { AuthSessionService } from './core/auth/auth-session.service';
 import { LoginComponent } from './feature/auth/login/login.component';
+import { LoaderComponent } from './core/shared/loader-component/loader-component';
+import { Features, Site } from './core/models/user.models';
 @Component({
   selector: 'pms-root',
-  standalone: true,
-  imports: [MaterialModule, CommonModule, LoginComponent],
+  imports: [RouterOutlet, RouterModule, MaterialModule, LoginComponent,
+    SearchPatientComponent, LoaderComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -18,11 +20,20 @@ export class AppComponent {
   selectedPatient?: Patient;
   userName: string = '';
 
+  // Use the item type, not the response type
+  rows: SearchPatientResult[] = [];
+  sites: Site[] = [];
+  features: Features[] = [];
+  currentRole: string = '';
+  role = "";
 
   constructor(private authSession: AuthSessionService, private auth: AuthService) {
     {
       effect(() => {
         this.userName = this.authSession.session()?.fullName ?? "";
+        this.role = this.authSession.session()?.role ?? "";
+        this.sites = this.authSession.userAccessDetail()?.sites ?? [];
+        console.log(this.sites);
       });
     }
   }
@@ -36,6 +47,14 @@ export class AppComponent {
 
   logout() {
     this.auth.logout();
+  }
+
+  onResults(res: SearchPatientResponse) {
+    this.rows = res.items ?? [];
+  }
+
+  onSiteChange(siteId: string) {
+    console.log('Selected site ID:', siteId);
   }
 
 

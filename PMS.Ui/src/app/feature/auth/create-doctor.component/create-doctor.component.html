@@ -1,11 +1,11 @@
 <mat-horizontal-stepper [linear]="true" #stepper>
-<!-- Step 1: Doctor Info -->
+  <!-- Step 1: Doctor Info -->
   <mat-step [stepControl]="doctorForm">
     <form [formGroup]="doctorForm" class="m-1">
       <ng-template matStepLabel>Doctor Information</ng-template>
 
       <!-- Role -->
-      <mat-form-field appearance="outline" class="w-full mr-1" >
+      <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Role</mat-label>
         <mat-select formControlName="roleId" (selectionChange)="onRoleChange($event.value)">
           @for (role of roles; track $index) {
@@ -35,9 +35,11 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full mr-1">
-        <mat-label>Clinic</mat-label>
+        <mat-label>Role</mat-label>
         <mat-select formControlName="clinicId" (selectionChange)="onClinicChange($event.value)">
-          <mat-option *ngFor="let clinic of clinics" [value]="clinic.id">{{ clinic.name }}</mat-option>
+          @for (clinic of clinics; track $index) {
+          <mat-option [value]="clinic.id">{{ clinic.name }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
@@ -45,9 +47,11 @@
       <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Select Sites</mat-label>
         <mat-select multiple (selectionChange)="onSitesChange($event.value)">
-          <mat-option *ngFor="let site of sites" [value]="site.id">
+          @for (site of sites; track $index) {
+          <mat-option [value]="site.id">
             {{ site.name }}
           </mat-option>
+          }
         </mat-select>
       </mat-form-field>
       <div>
@@ -57,13 +61,13 @@
   </mat-step>
 
   <!-- Step 2: Assign Sites & Features -->
-  <mat-step [stepControl]="doctorForm"> 
+  <mat-step [stepControl]="doctorForm">
 
     <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
-       <div class="flex justify-between mt-4">
-      <button mat-raised-button matStepperPrevious>Back</button>
-      <button mat-raised-button color="primary" type="submit">Register Doctor</button>
-    </div>
+      <div class="flex justify-between mt-4">
+        <button mat-raised-button matStepperPrevious>Back</button>
+        <button mat-raised-button color="primary" type="submit">Register Doctor</button>
+      </div>
       <ng-template matStepLabel>Assign Sites</ng-template>
 
       <!-- Table for Sites & Features -->
