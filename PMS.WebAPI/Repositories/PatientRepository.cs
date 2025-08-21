@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using PMS.Data;
-using PMS.Models;
+using PMS.WebAPI.Data;
+using PMS.WebAPI.Models;
 
-namespace PMS.Repositories
+namespace PMS.WebAPI.Repositories
 {
     public class PatientRepository : IPatientRepository
     {
@@ -47,14 +47,16 @@ namespace PMS.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-    public async Task<(IEnumerable<Patient> Results, int TotalCount)> SearchAsync(string query, int page, int pageSize)
-{
-    var q = _context.Patients
-        .Where(p => p.FullName.Contains(query) || p.Phone.Contains(query) || p.Email.Contains(query));
-    var totalCount = await q.CountAsync();
-    var results = await q.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-    return (results, totalCount);
-}
+        public async Task<(IEnumerable<Patient> Results, int TotalCount)> SearchAsync(string query, int page, int pageSize)
+        {
+            var q = _context.Patients
+                .Where(p => p.FullName.Contains(query) || p.Phone.Contains(query) || p.Email.Contains(query));
+            var totalCount = await q.CountAsync();
+            var results = await q.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (results, totalCount);
+        }
     }
+
+    
 
 }

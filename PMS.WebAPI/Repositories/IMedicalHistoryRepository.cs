@@ -1,6 +1,6 @@
-using PMS.Models;
+using PMS.WebAPI.Models;
 
-namespace PMS.Repositories
+namespace PMS.WebAPI.Repositories
 {
     public interface IMedicalHistoryRepository
     {

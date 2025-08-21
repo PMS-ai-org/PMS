@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using PMS.Models;
-using PMS.Services;
+using PMS.WebAPI.Models;
+using PMS.WebAPI.Services;
 
-namespace PMS.Controllers
+namespace PMS.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

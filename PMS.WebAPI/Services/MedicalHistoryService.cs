@@ -1,7 +1,7 @@
-using PMS.Models;
-using PMS.Repositories;
+using PMS.WebAPI.Models;
+using PMS.WebAPI.Repositories;
 
-namespace PMS.Services
+namespace PMS.WebAPI.Services
 {
     public class MedicalHistoryService : IMedicalHistoryService
     {

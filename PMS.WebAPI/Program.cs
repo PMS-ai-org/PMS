@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Npgsql;
 using PMS.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using PMS.WebAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +20,6 @@ await secretsService.StartAsync(CancellationToken.None);
 
 // --- Database registrations ---
 // EF Core DbContext (still needed if you use EF for other entities)
-builder.Services.AddDbContext<PmsDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddDbContext<PmsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -77,20 +75,19 @@ builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 builder.Services.Configure<TokenService.JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-services.AddScoped<IPatientRepository, PatientRepository>();
-services.AddScoped<IPatientService, PatientService>();  
-services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-services.AddScoped<IAppointmentService, AppointmentService>();
-services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
-services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
+builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
 
 // --- App Services ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IPatientService, PatientService>();
-builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ISearchPatientService, SearchPatientService>();
 
 // --- CORS for Angular dev server ---

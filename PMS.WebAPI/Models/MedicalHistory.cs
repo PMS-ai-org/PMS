@@ -1,6 +1,6 @@
 using System;
 
-namespace PMS.Models
+namespace PMS.WebAPI.Models
 {
     public class MedicalHistory
     {

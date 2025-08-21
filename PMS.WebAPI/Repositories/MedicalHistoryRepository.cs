@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using PMS.Data;
-using PMS.Models;
+using PMS.WebAPI.Data;
+using PMS.WebAPI.Models;
 
-namespace PMS.Repositories
+namespace PMS.WebAPI.Repositories
 {
     public class MedicalHistoryRepository : IMedicalHistoryRepository
     {

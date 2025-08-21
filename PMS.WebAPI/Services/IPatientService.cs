@@ -1,6 +1,6 @@
-using PMS.Models;
+using PMS.WebAPI.Models;
 
-namespace PMS.Services
+namespace PMS.WebAPI.Services
 {
     public interface IPatientService
     {

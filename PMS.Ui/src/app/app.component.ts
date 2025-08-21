@@ -6,10 +6,11 @@ import { AuthSessionService } from './core/auth/auth-session.service';
 import { AuthService } from './core/auth/auth.service';
 import { MaterialModule } from './core/shared/material.module';
 import { CommonModule } from '@angular/common';
+import { LoginComponent } from './feature/auth/login/login.component';
 @Component({
   selector: 'pms-root',
   standalone: true,
-  imports: [MaterialModule, CommonModule],
+  imports: [MaterialModule, CommonModule, LoginComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -18,18 +19,18 @@ export class AppComponent {
   userName: string = '';
 
 
-  constructor(private authSession: AuthSessionService, private auth: AuthService) {{
-
-    effect(() => {
-      this.userName = this.authSession.session()?.fullName ?? "";
-    });
+  constructor(private authSession: AuthSessionService, private auth: AuthService) {
+    {
+      effect(() => {
+        this.userName = this.authSession.session()?.fullName ?? "";
+      });
+    }
   }
-  }
-ngOnInit() {
+  ngOnInit() {
     this.userName = this.authSession.session()?.fullName ?? "";
   }
 
- isLoggedIn() {
+  isLoggedIn() {
     return this.authSession.session();
   }
 

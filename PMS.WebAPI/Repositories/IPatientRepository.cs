@@ -1,11 +1,11 @@
-using PMS.Models;
+using PMS.WebAPI.Models;
 
-namespace PMS.Repositories
+namespace PMS.WebAPI.Repositories
 {
     public interface IPatientRepository
     {
         Task<IEnumerable<Patient>> GetAllAsync();
-        Task<IEnumerable<Patient>> SearchAsync(string query);
+        //Task<IEnumerable<Patient>> SearchAsync(string query);
         Task<Patient?> GetByIdAsync(Guid id);
         Task<Patient> CreateAsync(Patient patient);
         Task<bool> UpdateAsync(Guid id, Patient patient);
