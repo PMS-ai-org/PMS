@@ -138,10 +138,10 @@ namespace PMS.WebAPI.Controllers
                 await transaction.CommitAsync();
 
                 // 5. Send Email (non-transactional)
-                var loginUrl = "https://myapp.com/login";
+                var loginUrl = "http://localhost:4200/login";
                 var body = $@"
             Hi {dto.FullName},<br/><br/>
-            Your doctor account has been created.<br/>
+            Your account has been created.<br/>
             <b>Username:</b> {dto.Email}<br/>
             <b>Password:</b> {defaultPassword}<br/><br/>
             Please login here: <a href='{loginUrl}'>{loginUrl}</a><br/><br/>

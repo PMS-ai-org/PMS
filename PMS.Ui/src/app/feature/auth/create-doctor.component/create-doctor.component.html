@@ -35,7 +35,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full mr-1">
-        <mat-label>Role</mat-label>
+        <mat-label>Clinic</mat-label>
         <mat-select formControlName="clinicId" (selectionChange)="onClinicChange($event.value)">
           @for (clinic of clinics; track $index) {
           <mat-option [value]="clinic.id">{{ clinic.name }}</mat-option>
@@ -54,6 +54,7 @@
           }
         </mat-select>
       </mat-form-field>
+      
       <div>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
