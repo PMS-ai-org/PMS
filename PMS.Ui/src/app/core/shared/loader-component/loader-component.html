@@ -1,0 +1,11 @@
+<!-- loader.component.html -->
+<div class="loader-overlay" *ngIf="loading$ | async">
+  <div class="loader-box">
+    <mat-progress-spinner
+      mode="indeterminate"
+      diameter="60"
+      color="primary">
+    </mat-progress-spinner>
+    <p>Loading...</p>
+  </div>
+</div>
