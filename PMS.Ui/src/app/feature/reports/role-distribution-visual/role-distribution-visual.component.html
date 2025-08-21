@@ -1,0 +1,11 @@
+<div class="tile">
+  <h3>Role Distribution</h3>
+  <ngx-charts-pie-chart
+    *ngIf="roles$ | async as roles"
+    [results]="roles | groupByRole"
+    [legend]="true"
+    [labels]="true"
+    [doughnut]="true"
+    [animations]="true">
+  </ngx-charts-pie-chart>
+</div>
