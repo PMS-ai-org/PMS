@@ -17,6 +17,8 @@
       <button mat-button [routerLink]="['/medical-history', selectedPatient?.id]" [disabled]="!selectedPatient">Medical
         History</button>
       <button mat-button [routerLink]="['/patient/register']">Registration</button>
+
+      <button mat-button style="margin-left: auto;" (click)="logout()">Logout</button>
     </mat-toolbar-row>
   </mat-toolbar>
 
