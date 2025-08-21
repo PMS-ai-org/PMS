@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
+import { LoaderService } from '../../../services/loader.service';
 
 @Component({
   selector: 'pms-login',
@@ -16,7 +17,7 @@ export class LoginComponent implements OnInit {
   error: string | null = null;
   form!: FormGroup;
 
-  constructor(private authSession: AuthSessionService, private auth: AuthService, private router: Router) { }
+  constructor(private loaderService: LoaderService, private auth: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -28,17 +29,21 @@ export class LoginComponent implements OnInit {
   submit() {
     if (this.form.invalid) return;
     this.loading = true;
-
+    this.loaderService.show();
     this.auth.login(this.form.value).subscribe((res: any) => {
-      debugger;
       if (res.requirePasswordReset) {
         this.router.navigate(['/reset-password'], {
           queryParams: { userId: res.userId, token: res.accessToken }
         });
       } else {
-        
+
         this.router.navigate(['/home']);
       }
-    });
+      this.loaderService.hide();
+    },
+      (err) => {
+        console.error(err);
+        this.loaderService.hide();
+      });
   }
 }
