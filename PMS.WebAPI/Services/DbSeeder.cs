@@ -8,10 +8,10 @@ namespace PMS.WebAPI.Data
 {
     public class DbSeeder
     {
-        private readonly ApplicationDbContext _db;
+        private readonly PmsDbContext _db;
         private readonly IConfiguration _config;
 
-        public DbSeeder(ApplicationDbContext db, IConfiguration config)
+        public DbSeeder(PmsDbContext db, IConfiguration config)
         {
             _db = db;
             _config = config;

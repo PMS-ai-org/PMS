@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Npgsql;
 using PMS.WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using PMS.WebAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,10 +20,7 @@ await secretsService.StartAsync(CancellationToken.None);
 
 // --- Database registrations ---
 // EF Core DbContext (still needed if you use EF for other entities)
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<PmsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Password hasher (PBKDF2)
@@ -77,13 +75,19 @@ builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 builder.Services.Configure<TokenService.JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
+builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
+
 // --- App Services ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IPatientService, PatientService>();
-builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ISearchPatientService, SearchPatientService>();
 
 // --- CORS for Angular dev server ---
@@ -104,7 +108,7 @@ var app = builder.Build();
 // // apply migrations at startup (optional)
 // using (var scope = app.Services.CreateScope())
 // {
-//      var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//      var db = scope.ServiceProvider.GetRequiredService<PmsDbContext>();
 //     // db.Database.Migrate();
 
 //     // seed roles/features/admin

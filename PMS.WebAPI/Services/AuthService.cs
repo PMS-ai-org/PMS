@@ -14,7 +14,7 @@ namespace PMS.WebAPI.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly PmsDbContext _db;
         private readonly JwtSettings _jwtSettings;
         private readonly IEmailService _emailService;
         private readonly SmtpSettings _smtpSettings;
@@ -23,7 +23,7 @@ namespace PMS.WebAPI.Services
         private const int MAX_FAILED_ATTEMPTS = 5;
         private readonly TimeSpan LOCKOUT_DURATION = TimeSpan.FromMinutes(15);
 
-        public AuthService(ApplicationDbContext db, IOptions<JwtSettings> jwtOpt, IEmailService emailService, IOptions<SmtpSettings> smtpOpt)
+        public AuthService(PmsDbContext db, IOptions<JwtSettings> jwtOpt, IEmailService emailService, IOptions<SmtpSettings> smtpOpt)
         {
             _db = db;
             _jwtSettings = jwtOpt.Value;

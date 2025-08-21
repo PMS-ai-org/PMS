@@ -1,44 +1,20 @@
-@if(isLoggedIn()){
-<mat-sidenav-container class="app-container">
-  <!-- Sidebar -->
-  <mat-sidenav mode="side" opened class="sidebar">
-    <mat-toolbar color="primary" class="sidebar-header">
-      Features
-    </mat-toolbar>
-    <mat-nav-list>
-      <a mat-list-item routerLink="/createDoctor" routerLinkActive="active">Create Doctor</a>
-      <a mat-list-item routerLink="/editAccess" routerLinkActive="active">Edit Access</a>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-      <a mat-list-item routerLink="/patients" routerLinkActive="active">Patients</a>
-      <a mat-list-item routerLink="/appointments" routerLinkActive="active">Appointments</a>
-      <a mat-list-item routerLink="/reports" routerLinkActive="active">Reports</a>
-    </mat-nav-list>
-  </mat-sidenav>
-
-  <!-- Main Content -->
-  <mat-sidenav-content>
-    <app-search-patient
-      [placeholder]="'Find patient...'"
-      [pageSize]="50"
-      (resultsChange)="onResults($event)"
-      (patientSelected)="onPicked($event)">
-    </app-search-patient>
-    <!-- Top bar -->
-    <mat-toolbar color="primary" class="topbar">
-      <span class="flex-spacer"></span>
-      <span>{{ userName }}</span>
-      <button mat-button (click)="logout()">Logout</button>
-    </mat-toolbar>
-
-    <!-- Routed content -->
-    <div class="content">
-      <router-outlet></router-outlet>
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
-}
-@else{
-<pms-login></pms-login>
-}
-
-<pms-loader-component></pms-loader-component>
+<ng-container *ngIf="isLoggedIn(); else loginPage">
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <span class="app-title">Patient Portal</span>
+      <span class="spacer"></span>
+      <button mat-button [routerLink]="['/patient/profile', selectedPatient?.id]" [disabled]="!selectedPatient">Patient Profile</button>
+      <button mat-button [routerLink]="['/appointment', selectedPatient?.id]" [disabled]="!selectedPatient">Appointment</button>
+      <button mat-button [routerLink]="['/medical-history', selectedPatient?.id]" [disabled]="!selectedPatient">Medical History</button>
+      <button mat-button [routerLink]="['/patient/register']">Registration</button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+    
+  <div class="mat-nav-content">
+    <app-patient-autocomplete (patientSelected)="onPatientSelected($event)"></app-patient-autocomplete>
+    <router-outlet></router-outlet>
+  </div>
+</ng-container>
+<ng-template #loginPage>
+  <pms-login></pms-login>
+</ng-template>

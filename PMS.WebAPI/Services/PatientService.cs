@@ -1,33 +1,25 @@
 using PMS.WebAPI.Models;
-using System.Collections.Concurrent;
+using PMS.WebAPI.Repositories;
 
-namespace PMS.WebAPI.Services;
-
-public class PatientService : IPatientService
+namespace PMS.WebAPI.Services
 {
-    private readonly ConcurrentDictionary<Guid, Patient> _store = new();
-
-    public PatientService()
+    public class PatientService : IPatientService
     {
-        // Seed sample data
-        var p1 = new Patient { FirstName = "Asha", LastName = "Sharma", DateOfBirth = new DateTime(1985, 5, 12), Gender = "Female" };
-        var p2 = new Patient { FirstName = "Rohit", LastName = "Kumar", DateOfBirth = new DateTime(1990, 9, 1), Gender = "Male" };
-        Add(p1);
-        Add(p2);
+        private readonly IPatientRepository _repository;
+
+        public PatientService(IPatientRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<IEnumerable<Patient>> GetAllAsync() => _repository.GetAllAsync();
+        public Task<Patient> GetByIdAsync(Guid id) => _repository.GetByIdAsync(id);
+        public Task<Patient> CreateAsync(Patient patient) => _repository.CreateAsync(patient);
+        public Task<bool> UpdateAsync(Guid id, Patient patient) => _repository.UpdateAsync(id, patient);
+        public Task<bool> DeleteAsync(Guid id) => _repository.DeleteAsync(id);
+        public async Task<(IEnumerable<Patient> Results, int TotalCount)> SearchAsync(string query, int page, int pageSize)
+        {
+            return await _repository.SearchAsync(query, page, pageSize);
+        }
     }
-
-    public Patient Add(Patient patient)
-    {
-        if (patient.Id == Guid.Empty) patient.Id = Guid.NewGuid();
-        _store[patient.Id] = patient;
-        return patient;
-    }
-
-    public IEnumerable<Patient> GetAll() => _store.Values.OrderBy(p => p.LastName).ThenBy(p => p.FirstName);
-
-    public Patient? GetById(Guid id) => _store.TryGetValue(id, out var p) ? p : null;
-
-    public void Remove(Guid id) => _store.TryRemove(id, out _);
-
-    public void Clear() => _store.Clear();
 }
