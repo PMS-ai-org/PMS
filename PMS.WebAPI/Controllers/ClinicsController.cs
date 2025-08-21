@@ -37,7 +37,16 @@ namespace PMS.WebAPI.Controllers
         [HttpGet("get-staff")]
         public async Task<IActionResult> GetStaffList()
         {
-            var staffList = await _context.UserDetails.ToListAsync();
+            
+            var staffList = from ul in _context.UserLogins
+                            join ud in _context.UserDetails on ul.UserId equals ud.UserId
+                            join rl in _context.Roles on ul.RoleId equals rl.RoleId
+                            select new
+                            {
+                                ud.FullName,
+                                ud.Email,
+                                role = rl.RoleName
+                            };
             return Ok(staffList);
         }
         /// <summary>
