@@ -3,11 +3,11 @@
   <!-- Sidebar -->
   <mat-sidenav mode="side" opened class="sidebar">
     <mat-toolbar color="primary" class="sidebar-header">
-      Features
+      PMS UI
     </mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/createDoctor" routerLinkActive="active">Create Doctor</a>
-      <a mat-list-item routerLink="/editAccess" routerLinkActive="active">Edit Access</a>
+      <a mat-list-item routerLink="/createDoctor" routerLinkActive="active">Create Staff</a>
+      <a mat-list-item routerLink="/editAccess" routerLinkActive="active">Permissions</a>
       <a mat-list-item routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a mat-list-item routerLink="/patients" routerLinkActive="active">Patients</a>
       <a mat-list-item routerLink="/appointments" routerLinkActive="active">Appointments</a>
@@ -17,16 +17,26 @@
 
   <!-- Main Content -->
   <mat-sidenav-content>
-    <app-search-patient
-      [placeholder]="'Find patient...'"
-      [pageSize]="50"
-      (resultsChange)="onResults($event)"
+    <app-search-patient [placeholder]="'Find patient...'" [pageSize]="50" (resultsChange)="onResults($event)"
       (patientSelected)="onPicked($event)">
     </app-search-patient>
+
+
     <!-- Top bar -->
     <mat-toolbar color="primary" class="topbar">
-      <span class="flex-spacer"></span>
       <span>{{ userName }}</span>
+
+      <span class="flex-spacer"></span>
+      <span>
+        <mat-form-field appearance="outline" class="w-full mr-1">
+          <mat-label>Sites</mat-label>
+          <mat-select (selectionChange)="onSiteChange($event.value)">
+            @for (site of sites; track $index) {
+            <mat-option [value]="site.siteId">{{ site.siteName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </span>
       <button mat-button (click)="logout()">Logout</button>
     </mat-toolbar>
 

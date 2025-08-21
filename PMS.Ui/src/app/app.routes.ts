@@ -13,10 +13,9 @@ export const appRoutes: Routes = [
   { path: '', component: AppComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'createDoctor', component: CreateDoctorComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+  { path: 'create-staff', component: CreateDoctorComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
 
-  { path: 'editAccess', component: EditAccess, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
-  { path: 'todos', canActivate: [AuthGuard], loadComponent: () => import('./feature/todo/todo.component').then(m => m.TodoComponent) },
+  { path: 'permissions', component: EditAccess, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'reset-password', component: ResetPasswordComponent },
   //{ path: '**', redirectTo: '' }
 ];
