@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { LoaderService } from '../../../services/loader.service';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'pms-create-doctor',
   imports: [MaterialModule, ReactiveFormsModule, CommonModule],
@@ -15,7 +16,7 @@ import { Router } from '@angular/router';
 export class CreateDoctorComponent implements OnInit {
 
   constructor(private clinicService: ClinicService, private loader: LoaderService,
-    private router: Router) { }
+    private router: Router, private snack: MatSnackBar) { }
 
   doctorForm!: FormGroup;
   clinics: any[] = [];
@@ -52,6 +53,7 @@ export class CreateDoctorComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading data:', err)
+        this.snack.open('Failed to load data. Please try again later.' + (err.error?.message || ''), 'Close', { duration: 3000 });
       }
     });
   }
@@ -141,6 +143,7 @@ export class CreateDoctorComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error:', err);
+          this.snack.open('Error: ' + (err.error?.message || ''), 'Close', { duration: 3000 });
           this.loader.hide();
         }
       });

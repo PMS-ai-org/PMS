@@ -1,6 +1,7 @@
 @if(isLoggedIn()){
 <mat-sidenav-container class="app-container">
   <!-- Sidebar -->
+  @if(role?.length > 0){
   <mat-toolbar color="primary">
     <mat-toolbar-row>
       <span class="app-title">Patient Portal</span>
@@ -10,20 +11,43 @@
       <button mat-button [routerLink]="['/create-staff']">Create Staff</button>
       <button mat-button [routerLink]="['/permissions']">Permissions</button>
       }
+
+      @if (showprofile) {
       <button mat-button [routerLink]="['/patient/profile', selectedPatient?.id]" [disabled]="!selectedPatient">Patient
         Profile</button>
+      }
+      @if (showappointment) {
       <button mat-button [routerLink]="['/appointment', selectedPatient?.id]"
         [disabled]="!selectedPatient">Appointment</button>
+      }
+      @if (showmedicalhistory) {
       <button mat-button [routerLink]="['/medical-history', selectedPatient?.id]" [disabled]="!selectedPatient">Medical
         History</button>
+      }
+      @if (showregister) {
       <button mat-button [routerLink]="['/patient/register']">Registration</button>
+      }
+
 
       <button mat-button style="margin-left: auto;" (click)="logout()">Logout</button>
     </mat-toolbar-row>
   </mat-toolbar>
-
+  }
   <mat-topnav-content>
     <div class="mat-nav-content">
+      @if (sites && role?.toLowerCase() != "admin") {
+      <div style="text-align: right;">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Select Site</mat-label>
+          <mat-select [(ngModel)]="selectedSite" (selectionChange)="onSitesChange($event.value)">
+            @for (site of sites; track $index) {
+            <mat-option [value]="site.siteId">{{ site.siteName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      }
+
       <router-outlet></router-outlet>
     </div>
   </mat-topnav-content>
