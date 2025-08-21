@@ -7,8 +7,9 @@ import { SearchPatientResponse, SearchPatientResult } from './services/search-pa
 import { SearchPatientComponent } from "./feature/patient-search/search-patient/search-patient.component";
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { LoginComponent } from './feature/auth/login/login.component';
-import { LoaderComponent } from './core/shared/loader-component/loader-component';
 import { Features, Site } from './core/models/user.models';
+import { LoaderComponent } from './core/shared/loader-component/loader-component';
+
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'pms-root',

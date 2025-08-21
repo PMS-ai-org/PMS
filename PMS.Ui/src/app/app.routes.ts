@@ -12,6 +12,7 @@ import { AppointmentComponent } from './feature/appointment/appointment.componen
 import { MedicalHistoryComponent } from './feature/medical-history/medical-history.component';
 import { PatientProfileComponent } from './feature/patient-profile/patient-profile.component';
 import { PatientRegistrationComponent } from './feature/patient-registration/patient-registration.component';
+import { ReportsComponent } from './feature/reports/reports.component';
 
 export const appRoutes: Routes = [
   { path: '', component: AppComponent },
@@ -23,5 +24,6 @@ export const appRoutes: Routes = [
   { path: 'appointment/:patientId', component: AppointmentComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'medical-history/:patientId', component: MedicalHistoryComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin, Doctor' } },
   { path: 'permissions', component: EditAccess, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+  { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'reset-password', component: ResetPasswordComponent },
 ];

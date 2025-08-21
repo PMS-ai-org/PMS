@@ -1,20 +1,24 @@
-using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PMS.WebAPI.Models
 {
+    [Table("appointments")]
     public class Appointment
     {
-        public Guid Id { get; set; }
-        public Guid PatientId { get; set; }
-        public DateTime BookedAt { get; set; }
-        public DateTime ScheduledAt { get; set; }
-        public bool ReminderSent { get; set; }
-        public string Status { get; set; }
-        public double? LeadTimeHours { get; set; }
-        public int? Dow { get; set; }
-        public int? HourOfDay { get; set; }
-        public Guid? SiteId { get; set; }
-        public Guid? ClinicId { get; set; }
-        public string TreatmentPlan { get; set; } // Store as JSON string
+        [Key]
+        public Guid id { get; set; }
+        [ForeignKey("patients")]
+        public Guid patient_id { get; set; }
+        public DateTime booked_at { get; set; }
+        public DateTime scheduled_at { get; set; }
+        public bool reminder_sent { get; set; }
+        public string status { get; set; }
+        public double? lead_time_hours { get; set; }
+        public int? dow { get; set; }
+        public int? hour_of_day { get; set; }
+        public Guid? site_id { get; set; }
+        public Guid? clinic_id { get; set; }
+        public string? treatment_plan { get; set; } // Store as JSON string
     }
 }

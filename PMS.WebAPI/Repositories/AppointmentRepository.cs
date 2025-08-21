@@ -15,7 +15,12 @@ namespace PMS.WebAPI.Repositories
 
         public async Task<IEnumerable<Appointment>> GetByPatientIdAsync(Guid patientId)
         {
-            return await _context.Appointments.Where(a => a.PatientId == patientId).ToListAsync();
+            return await _context.Appointments.Where(a => a.patient_id == patientId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
+        {
+            return await _context.Appointments.ToListAsync();
         }
 
         public async Task<Appointment?> GetByIdAsync(Guid id)
