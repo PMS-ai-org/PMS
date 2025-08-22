@@ -149,7 +149,7 @@ export class PatientRegistrationComponent implements OnInit {
     };
     if (this.patientId) {
       patientData.id = this.patientId;
-      patientData.created_at = this.patientData.created_at;
+      patientData.created_at = this.patientData?.created_at;
       patientData.updated_at = new Date();
     }
     return patientData;

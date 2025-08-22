@@ -10,7 +10,7 @@ import { Patient } from '../../models/patient.model';
 
 class MockPatientService {
   loadPatientById = jest.fn();
-  createPatient = jest.fn();
+  savePatient = jest.fn();
   patients$ = new BehaviorSubject<Patient | null>(null).asObservable();
 }
 
@@ -188,7 +188,7 @@ describe('PatientRegistrationComponent', () => {
       component.calculatedAge = 30;
       component.patientId = '123';
       component.onSubmit();
-      expect(mockPatientService.createPatient).toHaveBeenCalled();
+      expect(mockPatientService.savePatient).toHaveBeenCalled();
     });
   });
 
