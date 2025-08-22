@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { RepositoryService } from './repository.service';
 
 export interface Patient {
   id?: string;
@@ -23,16 +24,14 @@ export interface Patient {
 export class PatientService {
   private apiUrl = '/api/patients';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private repositoryService: RepositoryService) {}
 
   getAll(): Observable<Patient[]> {
     return this.http.get<Patient[]>(this.apiUrl);
   }
 
  search(query: string, page: number = 1, pageSize: number = 10): Observable<{ results: Patient[], totalCount: number }> {
-  return this.http.get<{ results: Patient[], totalCount: number }>(
-    `${this.apiUrl}/search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
-  );
+  return this.repositoryService.search(query, page, pageSize);
 }
 
   getById(id: string): Observable<Patient> {

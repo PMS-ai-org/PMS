@@ -22,7 +22,7 @@ export class PatientAutocompleteComponent {
 
   @Output() patientSelected = new EventEmitter<Patient>();
 
-  displayedColumns: string[] = ['fullName', 'dob', 'gender', 'phone', 'email'];
+  displayedColumns: string[] = ['full_name', 'dob', 'gender', 'phone', 'email'];
 
   constructor(private patientService: PatientService) {
     this.filteredPatients$ = this.searchCtrl.valueChanges.pipe(
@@ -36,6 +36,7 @@ export class PatientAutocompleteComponent {
         // For autocomplete dropdown, just fetch first 5 results (do not care about totalCount)
         return this.patientService.search(value, 1, 5).pipe(
           switchMap(res => of(res.results))
+          
         );
       })
     );
@@ -66,4 +67,5 @@ export class PatientAutocompleteComponent {
   onRowClick(patient: Patient) {
     this.patientSelected.emit(patient);
   }
+
 }

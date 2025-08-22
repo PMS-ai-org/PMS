@@ -17,8 +17,7 @@
         Profile</button>
       }
       @if (showappointment) {
-      <button mat-button [routerLink]="['/appointment', selectedPatient?.id]"
-        [disabled]="!selectedPatient">Appointment</button>
+      <button mat-button [routerLink]="['/appointment']">Appointment</button>
       }
       @if (showmedicalhistory) {
       <button mat-button [routerLink]="['/medical-history', selectedPatient?.id]" [disabled]="!selectedPatient">Medical

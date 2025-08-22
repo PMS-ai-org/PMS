@@ -1,22 +1,95 @@
-:host {
-  display: block;
-  padding: 1rem;
+.appointment-container {
+  padding: 24px;
+  max-width: 800px;
 }
-form label {
-  display: block;
-  margin-bottom: 0.5rem;
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
 }
-form input, form select {
-  margin-left: 0.5rem;
+
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
-button {
-  margin-right: 0.5rem;
+
+.row {
+  display: flex;
+  gap: 16px;
 }
-ul {
-  list-style: none;
-  padding-left: 0;
+
+.full-width {
+  width: 100%;
 }
-.error {
-  color: red;
-  margin-top: 1rem;
+
+.half-width {
+  flex: 1;
+}
+
+.submit-btn {
+  align-self: flex-end;
+  padding: 8px 20px;
+  font-weight: 500;
+  height: 50px;
+  border-radius: 20px;
+}
+
+.appointment-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 12px;
+}
+
+.doctor-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+
+.doctor-card {
+  width: 600px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+mat-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+mat-card-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+mat-card-content {
+  margin-bottom: 16px;
+}
+
+.half-width {
+  width: 100%;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end; /* aligns buttons to the right */
+  gap: 8px; /* spacing between buttons */
 }

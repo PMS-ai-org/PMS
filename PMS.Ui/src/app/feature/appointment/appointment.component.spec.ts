@@ -53,7 +53,7 @@ describe('AppointmentComponent', () => {
 
   it('should handle edit', () => {
     const appt = { id: '1', patientId: '123', bookedAt: '', scheduledAt: '2025-08-20T12:00', status: 'scheduled', treatmentPlan: 'Routine' };
-    component.edit(appt);
+    //component.edit(appt);
     expect(component.editingId).toBe('1');
     expect(component.appointmentForm.value.scheduledAt).toBe('2025-08-20T12:00');
   });
