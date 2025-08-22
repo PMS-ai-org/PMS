@@ -83,7 +83,6 @@ constructor(
     this.repositoryService.getUsers().subscribe({
       next: users => {
         this.doctors = users;
-        console.log('Doctors loaded:', this.doctors);
       },
       error: err => this.error = err.message
     });

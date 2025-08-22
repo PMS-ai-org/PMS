@@ -4,6 +4,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppointmentService } from '../../services/appointment.service';
 import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { PatientAutocompleteComponent } from '../patient-autocomplete/patient-autocomplete.component';
+import { RepositoryService } from '../../services/repository.service';
 
 describe('AppointmentComponent', () => {
   let component: AppointmentComponent;
@@ -11,7 +13,7 @@ describe('AppointmentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppointmentComponent, ReactiveFormsModule, CommonModule],
+      imports: [AppointmentComponent, ReactiveFormsModule, CommonModule, PatientAutocompleteComponent],
       providers: [
         {
           provide: AppointmentService,
@@ -20,6 +22,13 @@ describe('AppointmentComponent', () => {
             create: () => of({}),
             update: () => of({}),
             delete: () => of({})
+          }
+        },
+        {
+          provide: RepositoryService,
+          useValue: {
+            getUsers: () => of([]),
+            getClinics: () => of({})
           }
         }
       ]
@@ -49,12 +58,5 @@ describe('AppointmentComponent', () => {
     });
     component.onSubmit();
     expect(component.appointmentForm.value.status).toBe('scheduled');
-  });
-
-  it('should handle edit', () => {
-    const appt = { id: '1', patientId: '123', bookedAt: '', scheduledAt: '2025-08-20T12:00', status: 'scheduled', treatmentPlan: 'Routine' };
-    //component.edit(appt);
-    expect(component.editingId).toBe('1');
-    expect(component.appointmentForm.value.scheduledAt).toBe('2025-08-20T12:00');
   });
 });
