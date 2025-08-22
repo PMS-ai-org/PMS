@@ -1,4 +1,43 @@
-.login-wrapper { display:flex; justify-content:center; align-items:center; height:80vh; }
-mat-card { width:400px; }
-.full { width: 100%; }
-.actions { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* full screen height */
+  background-color: #f5f5f5;
+}
+
+.login-container {
+  text-align: center;
+}
+
+.app-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #673ab7; /* Material Indigo */
+}
+
+mat-card {
+  width: 400px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.full {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}

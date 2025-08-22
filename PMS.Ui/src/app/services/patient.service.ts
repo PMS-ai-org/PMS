@@ -13,17 +13,15 @@ export class PatientService {
   private patientsSubject = new BehaviorSubject<Patient | undefined>(undefined);
   patients$: Observable<Patient | undefined> = this.patientsSubject.asObservable();
 
-  constructor(private http: HttpClient, private repo: RepositoryService, private router: Router) { }
+  constructor(private http: HttpClient, private repositoryService: RepositoryService, private repo: RepositoryService, private router: Router) { }
 
   getAll(): Observable<Patient[]> {
     return this.http.get<Patient[]>(this.apiUrl);
   }
 
-  search(query: string, page: number = 1, pageSize: number = 10): Observable<{ results: Patient[], totalCount: number }> {
-    return this.http.get<{ results: Patient[], totalCount: number }>(
-      `${environment.apiUrl}/Patients/search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
-    );
-  }
+ search(query: string, page: number = 1, pageSize: number = 10): Observable<{ results: Patient[], totalCount: number }> {
+  return this.repositoryService.search(query, page, pageSize);
+}
 
   loadPatientById(id: string): void {
     this.repo.getPatientById(id).subscribe({

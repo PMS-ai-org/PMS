@@ -24,7 +24,7 @@ export const appRoutes: Routes = [
   { path: 'patient/register', component: PatientRegistrationComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'patient/register/:id', component: PatientRegistrationComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'patient/search', component: SearchPatientComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
-  { path: 'appointment/:patientId', component: AppointmentComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+  { path: 'appointment', component: AppointmentComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Staff', 'Doctor'] } },
   { path: 'medical-history/:patientId', component: MedicalHistoryComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin, Doctor' } },
   { path: 'permissions', component: EditAccess, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },

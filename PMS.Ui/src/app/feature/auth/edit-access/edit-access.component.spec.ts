@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { EditAccess } from './edit-access.component';
+import { ClinicService } from '../../../core/auth/clinic.service';
 
 describe('EditAccess', () => {
   let component: EditAccess;
@@ -8,7 +10,8 @@ describe('EditAccess', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditAccess]
+      imports: [EditAccess, HttpClientTestingModule],
+      providers: [ClinicService]
     })
     .compileComponents();
 
