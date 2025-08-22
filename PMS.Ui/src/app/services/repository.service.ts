@@ -77,4 +77,22 @@ export class RepositoryService {
       `${environment.apiUrl}/patients/search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
     );
   }
+
+  getPatientById(id: string): Observable<Patient> {
+    return this.http.get<Patient>(`${environment.apiUrl}/Patients/${id}`);
+  }
+
+  // Add new patient
+  addPatient(patient: Patient): Observable<Patient> {
+    return this.http.post<Patient>(`${environment.apiUrl}/Patients`, patient);
+  }
+
+  updatePatient(id: string, patient: Patient): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/Patients/${id}`, patient);
+  }
+
+  // Delete patient
+  deletePatient(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/Patients/${id}`);
+  }
 }

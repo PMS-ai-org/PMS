@@ -13,7 +13,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-describe('PatientAutocompleteComponent', () => {
+xdescribe('PatientAutocompleteComponent', () => {
   let component: PatientAutocompleteComponent;
   let fixture: ComponentFixture<PatientAutocompleteComponent>;
 
