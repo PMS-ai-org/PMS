@@ -14,6 +14,7 @@ import { PatientProfileComponent } from './feature/patient-profile/patient-profi
 import { PatientRegistrationComponent } from './feature/patient-registration/patient-registration.component';
 import { ReportsComponent } from './feature/reports/reports.component';
 import { SearchPatientComponent } from './feature/patient-search/search-patient/search-patient.component';
+import { MedicalHistoryFormComponent } from './feature/medical-history/components/form/medical-history-form.component';
 
 export const appRoutes: Routes = [
   { path: '', component: AppComponent },
@@ -25,7 +26,9 @@ export const appRoutes: Routes = [
   { path: 'patient/register/:id', component: PatientRegistrationComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'patient/search', component: SearchPatientComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'appointment', component: AppointmentComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Staff', 'Doctor'] } },
-  { path: 'medical-history/:patientId', component: MedicalHistoryComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin, Doctor' } },
+  { path: 'medical-history/add', component: MedicalHistoryFormComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+  { path: 'medical-history/edit/:id', component: MedicalHistoryFormComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+  { path: 'medical-history/:patientId', component: MedicalHistoryComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'permissions', component: EditAccess, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'reset-password', component: ResetPasswordComponent },
