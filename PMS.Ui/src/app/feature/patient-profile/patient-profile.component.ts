@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RepositoryService } from '../../services/repository.service';
 import { Patient } from '../../models/patient.model';
+import { MaterialModule } from '../../core/shared/material.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-patient-profile',
+  imports: [MaterialModule, ReactiveFormsModule, CommonModule],
   templateUrl: './patient-profile.component.html',
   styleUrls: ['./patient-profile.component.scss']
 })
