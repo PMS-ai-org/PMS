@@ -12,10 +12,6 @@
       <button mat-button [routerLink]="['/permissions']">Permissions</button>
       }
 
-      @if (showprofile) {
-      <button mat-button [routerLink]="['/patient/profile', selectedPatient?.id]" [disabled]="!selectedPatient">Patient
-        Profile</button>
-      }
       @if (showappointment) {
       <button mat-button [routerLink]="['/appointment']">Appointment</button>
       }

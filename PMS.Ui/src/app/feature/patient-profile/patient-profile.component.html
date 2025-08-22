@@ -1,13 +1,90 @@
-<div *ngIf="loading">Loading...</div>
-<div *ngIf="patient">
-  <h2>{{ patient.fullName }}</h2>
-  <p><strong>DOB:</strong> {{ patient.dob | date }}</p>
-  <p><strong>Gender:</strong> {{ patient.gender }}</p>
-  <p><strong>Phone:</strong> {{ patient.phone }}</p>
-  <p><strong>Email:</strong> {{ patient.email }}</p>
-  <p><strong>Address:</strong> {{ patient.address }}</p>
-  <p><strong>Age:</strong> {{ patient.age }}</p>
-  <p><strong>Conditions:</strong> {{ patient.conditions?.join(', ') }}</p>
-  <p><strong>Medications:</strong> {{ patient.medications?.join(', ') }}</p>
-  <p><strong>Notes:</strong> {{ patient.notes }}</p>
+<div class="loader-overlay flex" *ngIf="isLoading$ | async; else gridTemplate">
+  <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
 </div>
+
+<ng-template #gridTemplate>
+  <ng-container *ngIf="patientData$ | async as patientData; else loadingTemplate">
+  <div class="patient-profile-container">
+    <!-- Patient Information -->
+    <mat-card class="profile-card">
+      <mat-card-title>
+        <mat-icon color="primary">person</mat-icon> Patient Information
+      </mat-card-title>
+      <mat-card-content>
+        <div class="info-item">
+          <mat-icon>badge</mat-icon>
+          <span>{{ patientData.full_name }}</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>calendar_today</mat-icon>
+          <span>{{ patientData.dob | date }}</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>wc</mat-icon>
+          <span>{{ patientData.gender }}</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>cake</mat-icon>
+          <span>{{ patientData.age }}</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>home</mat-icon>
+          <span>{{ patientData.address }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Contact Details -->
+    <mat-card class="profile-card">
+      <mat-card-title>
+        <mat-icon color="primary">contact_phone</mat-icon> Contact Details
+      </mat-card-title>
+      <mat-card-content>
+        <div class="info-item">
+          <mat-icon>phone</mat-icon>
+          <span>{{ patientData.phone }}</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>email</mat-icon>
+          <span>{{ patientData.email }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Medical Details -->
+    <mat-card class="profile-card">
+      <mat-card-title>
+        <mat-icon color="primary">healing</mat-icon> Medical Details
+      </mat-card-title>
+      <mat-card-content>
+        <div class="info-item">
+          <mat-icon>local_hospital</mat-icon>
+          <span>Conditions:</span>
+        </div>
+        <mat-chip-listbox>
+          <mat-chip *ngFor="let condition of patientData.conditions">{{ condition }}</mat-chip>
+        </mat-chip-listbox>
+
+        <div class="info-item">
+          <mat-icon>medication</mat-icon>
+          <span>Medications:</span>
+        </div>
+        <mat-chip-listbox>
+          <mat-chip *ngFor="let med of patientData.medications">{{ med }}</mat-chip>
+        </mat-chip-listbox>
+
+        <div class="info-item">
+          <mat-icon>note</mat-icon>
+          <span>{{ patientData.notes }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  </ng-container>
+
+<!-- ELSE loader template -->
+<ng-template #loadingTemplate>
+  Select Patient
+</ng-template>
+
+</ng-template>

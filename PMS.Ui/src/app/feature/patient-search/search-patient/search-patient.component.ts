@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { SearchPatientResponse, SearchPatientResult, SearchPatientService } from '../../../services/search-patient.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -30,8 +30,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     MatDialogModule,
     MatPaginatorModule,
-    MatTooltipModule
-  ],
+    MatTooltipModule,
+],
   templateUrl: './search-patient.component.html',
   styleUrls: ['./search-patient.component.scss']
 })
@@ -56,10 +56,12 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   options: SearchPatientResult[] = [];
   private sub?: Subscription;
 
-  searchControl = new FormControl('', [Validators.minLength(3)]);
+  searchControl = new FormControl('',[Validators.minLength(1)]);
   patients = signal<Patient[]>([]);
   displayedColumns: string[] = ['full_name', 'dob', 'gender', 'email', 'phone', 'action'];
   dataSource = new MatTableDataSource<Patient>([]);
+  isLoading:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -119,10 +121,13 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   onSearch() {
+    this.isLoading.next(true);
     const query = this.searchControl.value || '';
     this.patientService.search(query).subscribe(response => {
+      this.isLoading.next(false);
       this.dataSource.data = response.results;
     }, () => {
+      this.isLoading.next(false);
       console.error('Search error');
     });
   }
@@ -148,6 +153,10 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
 
   createNewPatient() {
     this.router.navigate(['/patient/register']);
+  }
+
+  navigateToProfilePage(patientId: string) {
+    this.router.navigate(['/patient/profile', patientId]);
   }
 
   deletePatient(patient: Patient) {

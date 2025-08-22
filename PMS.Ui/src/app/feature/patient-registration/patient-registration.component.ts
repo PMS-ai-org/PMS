@@ -121,8 +121,11 @@ export class PatientRegistrationComponent implements OnInit {
   }
 
 
-  onCancel() {
+  onCancel(reset: boolean) {
     this.form.reset();
+    if (reset) 
+      this.router.navigate(['/patient/search']);
+    
   }
 
   onSubmit() {

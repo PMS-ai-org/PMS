@@ -38,7 +38,7 @@ export class PatientService {
     if(patientId){
       this.repo.updatePatient(patientId, patient).subscribe({
         next: () => {
-          this.router.navigate(['/patient/search']);
+          this.router.navigate(['/patient/profile', patientId]);
         },
         error: (err) => {
           console.error('❌ Error updating patient:', err);
@@ -47,7 +47,7 @@ export class PatientService {
     }else{
       this.repo.addPatient(patient).subscribe({
       next: (newPatient) => {
-        this.router.navigate(['/patient/search']);
+        this.router.navigate(['/patient/profile', newPatient.id]);
       },
       error: (err) => {
         console.error('❌ Error adding patient:', err);

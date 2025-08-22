@@ -1,43 +1,3 @@
-<!-- <mat-form-field class="full" appearance="outline">
-  <mat-icon matPrefix>person_search</mat-icon>
-
-  <input
-    type="text"
-    matInput
-    [placeholder]="placeholder"
-    [formControl]="q"
-    [matAutocomplete]="auto"
-    aria-label="Search patients"
-  />
-
-  <button *ngIf="q.value" matSuffix mat-icon-button aria-label="Clear" (click)="clear()">
-    <mat-icon>close</mat-icon>
-  </button>
-
-  <mat-progress-spinner *ngIf="loading" matSuffix mode="indeterminate" diameter="20" class="spinner"></mat-progress-spinner>
-
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-    <mat-option *ngFor="let p of options; trackBy: p?.id" [value]="p" (onSelectionChange)="($event.source.selected) && onOptionSelected(p)">
-      <div class="opt">
-        <div class="line1">
-          <span class="name">{{ p.fullName }}</span>
-          <span class="meta">• {{ p.gender || '—' }} • {{ p.age ?? '—' }}</span>
-        </div>
-        <div class="line2" *ngIf="p.conditions?.length">
-          <mat-chip-set>
-            <mat-chip *ngFor="let c of p.conditions | slice:0:3" disabled>{{ c }}</mat-chip>
-            <span class="more" *ngIf="(p.conditions?.length || 0) > 3">+{{ (p.conditions?.length || 0) - 3 }}</span>
-          </mat-chip-set>
-        </div>
-      </div>
-    </mat-option>
-
-    <mat-option *ngIf="!loading && options.length === 0">
-      <span class="empty">No matches</span>
-    </mat-option>
-  </mat-autocomplete>
-</mat-form-field> -->
-
 <div class="search-container">
   <div class="search-bar">
     <mat-form-field appearance="outline">
@@ -55,49 +15,51 @@
     </button>
   </div>
 
-  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
+  <!-- Loader Overlay -->
+  <div class="loader-overlay flex" *ngIf="isLoading | async; else gridTemplate">
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+  </div>
 
-    <!-- ID -->
-    <!-- <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-      <td mat-cell *matCellDef="let patient"> {{patient.id}} </td>
-    </ng-container> -->
+  <ng-template #gridTemplate>
+    <div class="grid-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
 
-    <!-- Full Name -->
-    <ng-container matColumnDef="full_name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Full Name </th>
-      <td mat-cell *matCellDef="let patient"> {{patient.full_name}} </td>
-    </ng-container>
+      <!-- Full Name -->
+      <ng-container matColumnDef="full_name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Full Name </th>
+        <td mat-cell *matCellDef="let patient"> <a mat-button (click)="navigateToProfilePage(patient.id)" color="primary">{{patient.full_name}}</a>
+        </td>
+      </ng-container>
 
-    <!-- DOB -->
-    <ng-container matColumnDef="dob">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> DOB </th>
-      <td mat-cell *matCellDef="let patient"> {{patient.dob | date}} </td>
-    </ng-container>
+      <!-- DOB -->
+      <ng-container matColumnDef="dob">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> DOB </th>
+        <td mat-cell *matCellDef="let patient"> {{patient.dob | date}} </td>
+      </ng-container>
 
-    <!-- Gender -->
-    <ng-container matColumnDef="gender">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender </th>
-      <td mat-cell *matCellDef="let patient"> {{patient.gender}} </td>
-    </ng-container>
+      <!-- Gender -->
+      <ng-container matColumnDef="gender">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender </th>
+        <td mat-cell *matCellDef="let patient"> {{patient.gender}} </td>
+      </ng-container>
 
-    <!-- Email -->
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
-      <td mat-cell *matCellDef="let patient"> {{patient.email}} </td>
-    </ng-container>
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+        <td mat-cell *matCellDef="let patient"> {{patient.email}} </td>
+      </ng-container>
 
-    <!-- Phone -->
-    <ng-container matColumnDef="phone">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone </th>
-      <td mat-cell *matCellDef="let patient"> {{patient.phone}} </td>
-    </ng-container>
+      <!-- Phone -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone </th>
+        <td mat-cell *matCellDef="let patient"> {{patient.phone}} </td>
+      </ng-container>
 
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
-      <td mat-cell *matCellDef="let patient">
-        <button mat-icon-button (click)="onEdit(patient.id)"> <mat-icon>edit</mat-icon> </button>
-        <button mat-icon-button (click)="deletePatient(patient)"> <mat-icon>delete</mat-icon> </button>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let patient">
+          <button mat-icon-button (click)="onEdit(patient.id)"> <mat-icon>edit</mat-icon> </button>
+          <button mat-icon-button (click)="deletePatient(patient)"> <mat-icon>delete</mat-icon> </button>
         <button mat-icon-button (click)="onMedicalHistory(patient)" matTooltip="Medical History Details">
           <mat-icon>medical_services</mat-icon>
         </button>
@@ -106,19 +68,18 @@
         <button mat-icon-button matTooltip="View Appointments">
           <mat-icon>event</mat-icon>
         </button>
-      </td>
-    </ng-container>
+        </td>
+      </ng-container>
 
-    <!-- Header & Row -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <!-- Header & Row -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-  </table>
-  <mat-paginator [length]="dataSource.data.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 20,50,100]"
-    showFirstLastButtons class="box-shadow">
-  </mat-paginator>
+    </table>
+    <mat-paginator [length]="dataSource.data.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 20,50,100]"
+      showFirstLastButtons class="box-shadow">
+    </mat-paginator>
+  </div>
+  </ng-template>
+
 </div>
-
-
-
-
