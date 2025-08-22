@@ -1,9 +1,20 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription } from 'rxjs';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { SearchPatientResponse, SearchPatientResult, SearchPatientService } from '../../../services/search-patient.service';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { Patient } from '../../../models/patient.model';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirmationDialog.component';
+import { Router } from '@angular/router';
+import { PatientService } from '../../../services/patient.service';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { RepositoryService } from '../../../services/repository.service';
 
 @Component({
   selector: 'app-search-patient',
@@ -11,13 +22,18 @@ import { SearchPatientResponse, SearchPatientResult, SearchPatientService } from
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MaterialModule
+    MaterialModule,
+    MatTableModule,
+    MatSortModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatPaginatorModule
   ],
   templateUrl: './search-patient.component.html',
   styleUrls: ['./search-patient.component.scss']
 })
-export class SearchPatientComponent implements OnInit, OnDestroy {
-[x: string]: any;
+export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() placeholder = 'Search patients';
   @Input() pageSize = 20;
   @Input() debounceMs = 250;
@@ -38,7 +54,16 @@ export class SearchPatientComponent implements OnInit, OnDestroy {
   options: SearchPatientResult[] = [];
   private sub?: Subscription;
 
-  constructor(private svc: SearchPatientService) {}
+  searchControl = new FormControl('',[Validators.minLength(3)]);
+  patients = signal<Patient[]>([]);
+  displayedColumns: string[] = ['id', 'full_name', 'dob', 'gender', 'email', 'phone', 'action'];
+  dataSource = new MatTableDataSource<Patient>([]);
+
+  @ViewChild(MatSort) sort!: MatSort;
+   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router, private patientService: PatientService, private repo: RepositoryService) {
+
+  }
 
   ngOnInit(): void {
     this.q = this.control ?? new FormControl<string>('', { nonNullable: true });
@@ -56,7 +81,7 @@ export class SearchPatientComponent implements OnInit, OnDestroy {
           return of({ total: 0, items: [] } as SearchPatientResponse);
         }
         this.loading = true;
-        return this.svc.searchPatients(term, this.pageSize); 
+        return this.svc.searchPatients(term, this.pageSize);
       })
     ).subscribe({
       next: (res) => {
@@ -84,6 +109,64 @@ export class SearchPatientComponent implements OnInit, OnDestroy {
     this.q.setValue('');
     this.options = [];
     this.resultsChange.emit({ total: 0, items: [] });
+  }
+
+  clearSearchField() {
+    this.searchControl.setValue('');
+    this.dataSource.data = [];
+  }
+
+  onSearch() {
+    const query = this.searchControl.value || '';
+    this.patientService.search(query).subscribe(response => {
+      this.dataSource.data = response.results;
+    }, () => {
+      console.error('Search error');
+    });
+  }
+
+  onPageChange(event: PageEvent) {
+    const query = this.searchControl.value || '';
+    this.patientService.search(query, event.pageIndex + 1, event.pageSize).subscribe(response => {
+      this.dataSource.data = response.results;
+      this.paginator.length = response.totalCount; // API should return total count
+    });
+  }
+
+  onEdit(patientId: string) {
+    this.router.navigate(['/patient/register', patientId]);
+  }
+
+  createNewPatient() {
+    this.router.navigate(['/patient/register']);
+  }
+
+  deletePatient(patient: Patient) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: { message: `Are you sure you want to delete ${patient.full_name}?` }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        if(patient.id) {
+          this.repo.deletePatient(patient.id).subscribe({
+            next: () => {
+              this.dataSource.data = this.dataSource.data.filter(p => p.id !== patient.id);
+              this.paginator.length = this.dataSource.data.length;
+            },
+            error: () => {
+              console.error(`❌ Error deleting patient ${patient.id}:`);
+            }
+          });
+        }
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy(): void { this.sub?.unsubscribe(); }

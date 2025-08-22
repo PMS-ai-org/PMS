@@ -1,13 +1,35 @@
-.full { width: 100%; }
-.spinner { margin-left: 6px; }
-.opt { display: flex; flex-direction: column; gap: 2px;
-  .line1 { display: flex; gap: 6px; align-items: baseline;
-    .name { font-weight: 600; }
-    .meta { color: rgba(0,0,0,.6); font-size: 12px; }
+// .full { width: 100%; }
+// .spinner { margin-left: 6px; }
+// .opt { display: flex; flex-direction: column; gap: 2px;
+//   .line1 { display: flex; gap: 6px; align-items: baseline;
+//     .name { font-weight: 600; }
+//     .meta { color: rgba(0,0,0,.6); font-size: 12px; }
+//   }
+//   .line2 { display: flex; align-items: center;
+//     mat-chip { transform: scale(.9); margin-right: 2px; }
+//     .more { color: rgba(0,0,0,.5); font-size: 12px; margin-left: 4px; }
+//   }
+// }
+// .empty { color: rgba(0,0,0,.6); }
+
+
+.search-container {
+  margin: 20px auto;
+  padding: 10px;
+
+  .searchButton{
+    height: 55px;
+    margin-left: 20px;
   }
-  .line2 { display: flex; align-items: center;
-    mat-chip { transform: scale(.9); margin-right: 2px; }
-    .more { color: rgba(0,0,0,.5); font-size: 12px; margin-left: 4px; }
+
+  table {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .box-shadow {
+    box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0px 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0px 3px 14px 2px rgba(0, 0, 0, 0.12);
   }
 }
-.empty { color: rgba(0,0,0,.6); }

@@ -71,4 +71,22 @@ export class RepositoryService {
   getRefreshTokens(): Observable<RefreshToken[]> {
     return this.http.get<RefreshToken[]>(`${environment.apiUrl}/refresh-tokens`);
   }
+
+  getPatientById(id: string): Observable<Patient> {
+    return this.http.get<Patient>(`${environment.apiUrl}/Patients/${id}`);
+  }
+
+  // Add new patient
+  addPatient(patient: Patient): Observable<Patient> {
+    return this.http.post<Patient>(`${environment.apiUrl}/Patients`, patient);
+  }
+
+  updatePatient(id: string, patient: Patient): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/Patients/${id}`, patient);
+  }
+
+  // Delete patient
+  deletePatient(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/Patients/${id}`);
+  }
 }

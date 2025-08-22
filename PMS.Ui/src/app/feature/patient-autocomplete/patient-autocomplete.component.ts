@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, switchMap, Observable, startWith, of } from 'rxjs';
-import { PatientService, Patient } from '../../services/patient.service';
+import { PatientService } from '../../services/patient.service';
 import { PageEvent } from '@angular/material/paginator';
 import { MaterialModule } from '../../core/shared/material.module';
 import { CommonModule } from '@angular/common';
+import { Patient } from '../../models/patient.model';
 @Component({
   selector: 'app-patient-autocomplete',
   imports: [MaterialModule, ReactiveFormsModule, CommonModule],
