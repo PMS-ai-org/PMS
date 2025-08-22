@@ -1,12 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MedicalHistoryService } from '../../services/medical-history.service';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../core/shared/material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MedicalHistory } from '../../models/medical-history.model';
-import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-medical-history',
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule],
