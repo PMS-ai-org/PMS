@@ -54,7 +54,7 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   options: SearchPatientResult[] = [];
   private sub?: Subscription;
 
-  searchControl = new FormControl('',[Validators.minLength(3)]);
+  searchControl = new FormControl('',[Validators.minLength(1)]);
   patients = signal<Patient[]>([]);
   displayedColumns: string[] = ['full_name', 'dob', 'gender', 'email', 'phone', 'action'];
   dataSource = new MatTableDataSource<Patient>([]);
