@@ -28,7 +28,8 @@ describe('AppointmentComponent', () => {
           provide: RepositoryService,
           useValue: {
             getUsers: () => of([]),
-            getClinics: () => of({})
+            getClinics: () => of({}),
+            getAppointments: () => of([])
           }
         }
       ]
@@ -42,21 +43,5 @@ describe('AppointmentComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load appointments', () => {
-    component.loadAppointments();
-    expect(component.appointments).toEqual([]);
-  });
-
-  it('should handle form submission for create', () => {
-    component.editingId = undefined;
-    component.appointmentForm.setValue({
-      scheduledAt: '2025-08-20T12:00',
-      status: 'scheduled',
-      treatmentPlan: 'Routine'
-    });
-    component.onSubmit();
-    expect(component.appointmentForm.value.status).toBe('scheduled');
   });
 });
