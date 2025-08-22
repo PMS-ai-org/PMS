@@ -11,6 +11,7 @@ import { MedicalHistoryService } from '../../../../services/medical-history.serv
 @Component({
   selector: 'pms-medical-history-form',
   templateUrl: './medical-history-form.component.html',
+  styleUrls: ['./medical-history-form.component.scss'],
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule]
 })
 export class MedicalHistoryFormComponent implements OnInit {
@@ -26,7 +27,7 @@ export class MedicalHistoryFormComponent implements OnInit {
   isEdit = false;
   form: FormGroup;
   loading = false;
-  patientId: string = "e0d43bc2-7bb1-5b69-8a8a-fcacc203f4aa";
+  patientId?: string;
 
   constructor(
     private service: MedicalHistoryService,
@@ -47,15 +48,21 @@ export class MedicalHistoryFormComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    this.patientId = this.route.snapshot.paramMap.get('patientId') ?? '';
+
     if (id) {
+      // Edit mode
       this.isEdit = true;
       this.service.getById(id).subscribe(data => {
         this.record = data;
+        this.patientId = data.patientId;
         this.form.patchValue(this.record);
       });
     } else {
+      // Add mode
       this.isEdit = false;
-      this.record = {} as MedicalHistory;
+      this.record = { patientId: this.patientId } as MedicalHistory;
+      this.form.patchValue({ patientId: this.patientId });
     }
   }
 
@@ -63,14 +70,14 @@ export class MedicalHistoryFormComponent implements OnInit {
     this.loading = true;
 
     const record = this.form.value;
-    record.patientId = this.record?.patientId || "e0d43bc2-7bb1-5b69-8a8a-fcacc203f4aa"; //mocking patientId to bypass patient management page
+    record.patientId = this.record?.patientId;
 
     if (this.isEdit && this.record?.id) {
       this.service.update(this.record.id, record).subscribe({
         next: () => {
           this.loading = false;
           this.snack.open('Medical history updated successfully', 'Close', { duration: 3000 });
-          this.router.navigate(['/medicalHistoryList']);
+          this.router.navigate(['/medical-history', record.patientId]);
         },
         error: err => {
           this.loading = false;
@@ -82,7 +89,7 @@ export class MedicalHistoryFormComponent implements OnInit {
         next: () => {
           this.loading = false;
           this.snack.open('Medical history created successfully', 'Close', { duration: 3000 });
-          this.router.navigate(['/medicalHistoryList']);
+          this.router.navigate(['/medical-history', record.patientId]);
         },
         error: err => {
           this.loading = false;
