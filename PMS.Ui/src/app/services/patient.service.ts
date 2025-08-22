@@ -1,53 +1,87 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
-export interface Patient {
-  id?: string;
-  fullName: string;
-  dob?: string;
-  gender?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  age?: number;
-  conditions?: string[];
-  medications?: string[];
-  notes?: string;
-  createdAt?: string;
-  homeClinicId?: string;
-  homeSiteId?: string;
-}
+import { BehaviorSubject, Observable } from 'rxjs';
+import { RepositoryService } from './repository.service';
+import { Router } from '@angular/router';
+import { Patient } from '../models/patient.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PatientService {
   private apiUrl = '/api/patients';
 
-  constructor(private http: HttpClient) {}
+  private patientsSubject = new BehaviorSubject<Patient | undefined>(undefined);
+  patients$: Observable<Patient | undefined> = this.patientsSubject.asObservable();
+
+  constructor(private http: HttpClient, private repo: RepositoryService, private router: Router) { }
 
   getAll(): Observable<Patient[]> {
     return this.http.get<Patient[]>(this.apiUrl);
   }
 
- search(query: string, page: number = 1, pageSize: number = 10): Observable<{ results: Patient[], totalCount: number }> {
-  return this.http.get<{ results: Patient[], totalCount: number }>(
-    `${this.apiUrl}/search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
-  );
-}
-
-  getById(id: string): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/${id}`);
+  search(query: string, page: number = 1, pageSize: number = 10): Observable<{ results: Patient[], totalCount: number }> {
+    return this.http.get<{ results: Patient[], totalCount: number }>(
+      `${environment.apiUrl}/Patients/search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
+    );
   }
 
-  create(patient: Patient): Observable<Patient> {
-    return this.http.post<Patient>(this.apiUrl, patient);
+  loadPatientById(id: string): void {
+    this.repo.getPatientById(id).subscribe({
+      next: (patient) => {
+        this.patientsSubject.next(patient);
+      },
+      error: (err) => {
+        console.error(`❌ Error fetching patient ${id}:`, err);
+      }
+    });
   }
 
-  update(id: string, patient: Patient): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, patient);
+  savePatient(patient: Patient, patientId: string | null): void {
+    if(patientId){
+      this.repo.updatePatient(patientId, patient).subscribe({
+        next: () => {
+          this.router.navigate(['/patient/search']);
+        },
+        error: (err) => {
+          console.error('❌ Error updating patient:', err);
+        }
+      });
+    }else{
+      this.repo.addPatient(patient).subscribe({
+      next: (newPatient) => {
+        this.router.navigate(['/patient/search']);
+      },
+      error: (err) => {
+        console.error('❌ Error adding patient:', err);
+      }
+    });
+    }
   }
 
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deletePatient(id: string): void {
+    this.repo.deletePatient(id).subscribe({
+      next: () => {
+        console.log(`✅ Patient ${id} deleted successfully`);
+      },
+      error: (err) => {
+        console.error(`❌ Error deleting patient ${id}:`, err);
+      }
+    });
   }
+
+  // getById(id: string): Observable<Patient> {
+  //   return this.http.get<Patient>(`${this.apiUrl}/${id}`);
+  // }
+
+  // create(patient: Patient): Observable<Patient> {
+  //   return this.http.post<Patient>(this.apiUrl, patient);
+  // }
+
+  // update(id: string, patient: Patient): Observable<void> {
+  //   return this.http.put<void>(`${this.apiUrl}/${id}`, patient);
+  // }
+
+  // delete(id: string): Observable<void> {
+  //   return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  // }
 }

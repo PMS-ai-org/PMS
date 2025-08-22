@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PatientService, Patient } from '../../services/patient.service';
+import { RepositoryService } from '../../services/repository.service';
+import { Patient } from '../../models/patient.model';
 
 @Component({
   selector: 'app-patient-profile',
@@ -13,13 +14,13 @@ export class PatientProfileComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private patientService: PatientService
+    private repositoryService: RepositoryService
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.patientService.getById(id).subscribe(patient => {
+      this.repositoryService.getPatientById(id).subscribe(patient => {
         this.patient = patient;
         this.loading = false;
       });

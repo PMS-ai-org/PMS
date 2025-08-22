@@ -65,7 +65,7 @@ export class ReportsUiService {
     const mockPatients: Patient[] = [
       {
         id: '1',
-        fullName: 'John Doe',
+        full_name: 'John Doe',
         gender: 'Male',
         dob: '1990-01-01',
         phone: '1234567890',
@@ -82,7 +82,7 @@ export class ReportsUiService {
       },
       {
         id: '2',
-        fullName: 'Jane Smith',
+        full_name: 'Jane Smith',
         gender: 'Female',
         dob: '1985-05-15',
         phone: '0987654321',

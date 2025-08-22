@@ -30,6 +30,6 @@ describe('PatientProfileComponent', () => {
 
   it('should create and load patient', () => {
     expect(component).toBeTruthy();
-    expect(component.patient?.fullName).toEqual('Test Patient');
+    expect(component.patient?.full_name).toEqual('Test Patient');
   });
 });

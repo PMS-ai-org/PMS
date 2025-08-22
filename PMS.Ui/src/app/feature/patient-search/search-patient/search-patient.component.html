@@ -1,4 +1,4 @@
-<mat-form-field class="full" appearance="outline">
+<!-- <mat-form-field class="full" appearance="outline">
   <mat-icon matPrefix>person_search</mat-icon>
 
   <input
@@ -36,4 +36,83 @@
       <span class="empty">No matches</span>
     </mat-option>
   </mat-autocomplete>
-</mat-form-field>
+</mat-form-field> -->
+
+<div class="search-container">
+  <div class="search-bar">
+    <mat-form-field appearance="outline">
+      <mat-label>Search Patient</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Enter patient name, email, etc." />
+      <mat-icon matSuffix *ngIf="searchControl.value" (click)="clearSearchField()">close</mat-icon>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" class="searchButton" (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+      Search
+    </button>
+    <button mat-raised-button class="searchButton" (click)="createNewPatient()">
+      Register Patient
+    </button>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-full">
+
+    <!-- ID -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.id}} </td>
+    </ng-container>
+
+    <!-- Full Name -->
+    <ng-container matColumnDef="full_name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Full Name </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.full_name}} </td>
+    </ng-container>
+
+    <!-- DOB -->
+    <ng-container matColumnDef="dob">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> DOB </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.dob | date}} </td>
+    </ng-container>
+
+    <!-- Gender -->
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.gender}} </td>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.email}} </td>
+    </ng-container>
+
+    <!-- Phone -->
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.phone}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+      <td mat-cell *matCellDef="let patient">
+        <button mat-icon-button (click)="onEdit(patient.id)"> <mat-icon>edit</mat-icon> </button>
+        <button mat-icon-button (click)="deletePatient(patient)"> <mat-icon>delete</mat-icon> </button>
+      </td>
+    </ng-container>
+
+    <!-- Header & Row -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+  <mat-paginator [length]="dataSource.data.length"
+                 [pageSize]="5"
+                 [pageSizeOptions]="[5, 10, 20,50,100]"
+                 showFirstLastButtons class="box-shadow">
+  </mat-paginator>
+</div>
+
+
+
+
