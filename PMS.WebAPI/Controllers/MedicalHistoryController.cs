@@ -15,41 +15,41 @@ namespace PMS.WebAPI.Controllers
             _service = service;
         }
 
-        [HttpGet("patient/{patientId}")]
-        public async Task<IActionResult> GetByPatient(Guid patientId)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MedicalHistory>>> Get([FromQuery] Guid? patientId)
         {
-            return Ok(await _service.GetByPatientIdAsync(patientId));
+            var items = await _service.GetAllAsync(patientId);
+            return Ok(items);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<MedicalHistory>> GetById(Guid id)
         {
-            var history = await _service.GetByIdAsync(id);
-            if (history == null) return NotFound();
-            return Ok(history);
+            var item = await _service.GetByIdAsync(id);
+            if (item == null) return NotFound();
+            return Ok(item);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MedicalHistory history)
+        public async Task<ActionResult<MedicalHistory>> Create([FromBody] MedicalHistory history)
         {
-            var created = await _service.CreateAsync(history);
+            var created = await _service.AddAsync(history);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] MedicalHistory history)
         {
             var updated = await _service.UpdateAsync(id, history);
-            if (!updated) return NotFound();
+            if (updated == null) return NotFound();
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted) return NotFound();
-            return NoContent();
+            var ok = await _service.DeleteAsync(id);
+            return ok ? NoContent() : NotFound();
         }
     }
 }

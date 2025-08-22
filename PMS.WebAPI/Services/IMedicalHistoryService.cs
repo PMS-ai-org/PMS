@@ -1,13 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using PMS.WebAPI.Models;
 
 namespace PMS.WebAPI.Services
 {
     public interface IMedicalHistoryService
     {
-        Task<IEnumerable<MedicalHistory>> GetByPatientIdAsync(Guid patientId);
+        Task<IEnumerable<MedicalHistory>> GetAllAsync(Guid? patientId = null);
         Task<MedicalHistory?> GetByIdAsync(Guid id);
-        Task<MedicalHistory> CreateAsync(MedicalHistory history);
-        Task<bool> UpdateAsync(Guid id, MedicalHistory history);
+        Task<MedicalHistory> AddAsync(MedicalHistory history);
+        Task<MedicalHistory?> UpdateAsync(Guid id, MedicalHistory history);
         Task<bool> DeleteAsync(Guid id);
     }
 }
