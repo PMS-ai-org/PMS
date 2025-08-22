@@ -131,7 +131,9 @@
 
       <!-- Submit -->
       <div class="form-actions">
-        <button mat-raised-button color="primary" type="button" (click)="onCancel()"
+        <button mat-raised-button color="primary" type="button" (click)="onCancel(false)"
+          aria-label="Cancel Form">Reset</button>
+        <button mat-raised-button type="button" (click)="onCancel(true)"
           aria-label="Cancel Form">Cancel</button>
         <button mat-raised-button color="primary" type="submit" aria-label="Submit Form">Submit</button>
       </div>

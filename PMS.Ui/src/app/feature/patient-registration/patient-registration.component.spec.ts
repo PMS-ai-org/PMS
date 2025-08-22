@@ -158,7 +158,7 @@ describe('PatientRegistrationComponent', () => {
   describe('onCancel', () => {
     it('should reset the form', () => {
       component.form.get('firstName')?.setValue('John');
-      component.onCancel();
+      component.onCancel(true);
       expect(component.form.get('firstName')?.value).toBeNull();
     });
   });
