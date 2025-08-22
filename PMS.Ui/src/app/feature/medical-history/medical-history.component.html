@@ -1,5 +1,5 @@
 <div class="medical-history-wrap">
-  <h2 class="title">Medical History Details</h2>
+  <h2 class="title">{{ patientName }}'s Medical History Details</h2>
   <a mat-raised-button color="primary" routerLink="/medical-history/add">Add New Record</a><br><br>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 full-width">
@@ -33,8 +33,8 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let record">
-        <a [routerLink]="['/medical-history/edit', record.id]" mat-button color="accent">Edit</a>
-        
+        <button mat-icon-button [routerLink]="['/medical-history/edit', record.id]"> <mat-icon>edit</mat-icon> </button>        
+        <button mat-icon-button> <mat-icon>delete</mat-icon> </button>
       </td>
     </ng-container>
 

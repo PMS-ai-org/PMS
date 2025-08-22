@@ -6,29 +6,40 @@ import { MaterialModule } from '../../core/shared/material.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MedicalHistory } from '../../models/medical-history.model';
-import { RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-medical-history',
-  imports:[ CommonModule, ReactiveFormsModule, RouterLink, MaterialModule ],
-  
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule],
+
   templateUrl: './medical-history.component.html',
   styleUrls: ['./medical-history.component.scss']
 })
 export class MedicalHistoryComponent implements OnInit {
+  patientId?: string;
+  patientName = '';
   records: MedicalHistory[] = [];
-  selectedPatientId: string = 'e0d43bc2-7bb1-5b69-8a8a-fcacc203f4aa';
   dataSource = new MatTableDataSource<MedicalHistory>([]);
   displayedColumns: string[] = ['code', 'description', 'source', 'createdAt', 'actions'];
 
   constructor(private service: MedicalHistoryService,
-    private snack: MatSnackBar) { }
+    private snack: MatSnackBar,
+    private route: ActivatedRoute
+  ) { }
 
-  ngOnInit() {
-    this.loadRecords();
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const patientId = params.get('patientId');
+      if (patientId) {
+        this.patientId = patientId;
+        this.loadRecords(patientId);   // ✅ fetch only when defined
+      } else {
+        console.error('No patientId found in route');
+      }
+    });
   }
 
-  loadRecords() {
-    this.service.getByPatient(this.selectedPatientId).subscribe({
+  loadRecords(patientId: string) {
+    this.service.getByPatient(patientId).subscribe({
       next: data => {
         this.dataSource.data = data;
       },

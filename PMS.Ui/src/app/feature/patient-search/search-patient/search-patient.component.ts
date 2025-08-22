@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import { PatientService } from '../../../services/patient.service';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RepositoryService } from '../../../services/repository.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-search-patient',
@@ -28,7 +29,8 @@ import { RepositoryService } from '../../../services/repository.service';
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatTooltipModule
   ],
   templateUrl: './search-patient.component.html',
   styleUrls: ['./search-patient.component.scss']
@@ -54,13 +56,13 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   options: SearchPatientResult[] = [];
   private sub?: Subscription;
 
-  searchControl = new FormControl('',[Validators.minLength(3)]);
+  searchControl = new FormControl('', [Validators.minLength(3)]);
   patients = signal<Patient[]>([]);
-  displayedColumns: string[] = ['id', 'full_name', 'dob', 'gender', 'email', 'phone', 'action'];
+  displayedColumns: string[] = ['full_name', 'dob', 'gender', 'email', 'phone', 'action'];
   dataSource = new MatTableDataSource<Patient>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
-   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router, private patientService: PatientService, private repo: RepositoryService) {
 
   }
@@ -135,6 +137,13 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
 
   onEdit(patientId: string) {
     this.router.navigate(['/patient/register', patientId]);
+  }
+
+  onMedicalHistory(patient: Patient) {
+    this.router.navigate(
+      ['/medical-history', patient.id],
+      { queryParams: { patientName: patient.full_name } }
+    );
   }
 
   createNewPatient() {
