@@ -61,11 +61,13 @@ namespace PMS.WebAPI.Controllers
             var staffList = from ul in _context.UserLogins
                             join ud in _context.UserDetails on ul.UserId equals ud.UserId
                             join rl in _context.Roles on ul.RoleId equals rl.RoleId
+                            where ul.IsActive == true
                             select new
                             {
                                 ud.FullName,
                                 ud.Email,
-                                role = rl.RoleName
+                                role = rl.RoleName,
+                                userId = ul.UserId
                             };
             return Ok(staffList);
         }

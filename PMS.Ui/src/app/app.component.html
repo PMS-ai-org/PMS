@@ -35,7 +35,7 @@
       <div style="text-align: right;">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Select Site</mat-label>
-          <mat-select [(ngModel)]="selectedSite" (selectionChange)="onSitesChange($event.value)">
+          <mat-select [(ngModel)]="selectedSite" (selectionChange)="onSiteChange($event.value)">
             @for (site of sites; track $index) {
             <mat-option [value]="site.siteId">{{ site.siteName }}</mat-option>
             }

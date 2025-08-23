@@ -85,7 +85,8 @@ export class AppComponent {
   }
 
   onSiteChange(siteId: string) {
-    console.log('Selected site ID:', siteId);
+    this.selectedSite = siteId;
+    this.getFeaturesListForSite();
   }
 
 
