@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, switchMap, Observable, startWith, of } from 'rxjs';
-import { PatientService, Patient } from '../../services/patient.service';
+import { PatientService } from '../../services/patient.service';
 import { PageEvent } from '@angular/material/paginator';
 import { MaterialModule } from '../../core/shared/material.module';
 import { CommonModule } from '@angular/common';
+import { Patient } from '../../models/patient.model';
 @Component({
   selector: 'app-patient-autocomplete',
   imports: [MaterialModule, ReactiveFormsModule, CommonModule],
@@ -22,7 +23,7 @@ export class PatientAutocompleteComponent {
 
   @Output() patientSelected = new EventEmitter<Patient>();
 
-  displayedColumns: string[] = ['fullName', 'dob', 'gender', 'phone', 'email'];
+  displayedColumns: string[] = ['full_name', 'dob', 'gender', 'phone', 'email'];
 
   constructor(private patientService: PatientService) {
     this.filteredPatients$ = this.searchCtrl.valueChanges.pipe(
@@ -36,6 +37,7 @@ export class PatientAutocompleteComponent {
         // For autocomplete dropdown, just fetch first 5 results (do not care about totalCount)
         return this.patientService.search(value, 1, 5).pipe(
           switchMap(res => of(res.results))
+          
         );
       })
     );
@@ -66,4 +68,5 @@ export class PatientAutocompleteComponent {
   onRowClick(patient: Patient) {
     this.patientSelected.emit(patient);
   }
+
 }

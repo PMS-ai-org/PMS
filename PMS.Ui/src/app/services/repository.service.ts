@@ -21,7 +21,7 @@ export class RepositoryService {
   private http = inject(HttpClient);
 
   getUsers(): Observable<UserDetail[]> {
-    return this.http.get<UserDetail[]>(`${environment.apiUrl}/users`);
+    return this.http.get<UserDetail[]>(`${environment.apiUrl}/clinics/get-staff`);
   }
   
   getRoles(): Observable<Role[]> {
@@ -70,5 +70,29 @@ export class RepositoryService {
 
   getRefreshTokens(): Observable<RefreshToken[]> {
     return this.http.get<RefreshToken[]>(`${environment.apiUrl}/refresh-tokens`);
+  }
+
+  search(query: string, page: number = 1, pageSize: number = 10): Observable<{ results: Patient[], totalCount: number }> {
+    return this.http.get<{ results: Patient[], totalCount: number }>(
+      `${environment.apiUrl}/patients/search?query=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
+    );
+  }
+
+  getPatientById(id: string): Observable<Patient> {
+    return this.http.get<Patient>(`${environment.apiUrl}/Patients/${id}`);
+  }
+
+  // Add new patient
+  addPatient(patient: Patient): Observable<Patient> {
+    return this.http.post<Patient>(`${environment.apiUrl}/Patients`, patient);
+  }
+
+  updatePatient(id: string, patient: Patient): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/Patients/${id}`, patient);
+  }
+
+  // Delete patient
+  deletePatient(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/Patients/${id}`);
   }
 }

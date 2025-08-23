@@ -1,7 +1,7 @@
 import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Appointment extends AuditableEntity {
-   id?: string;
+  id?: string;
   patientId: string;
   bookedAt: string;
   scheduledAt: string;
@@ -13,4 +13,6 @@ export interface Appointment extends AuditableEntity {
   siteId?: string;
   clinicId?: string;
   treatmentPlan?: string;
+  notes?: string;
+  patientName?: string;
 }

@@ -1,16 +1,142 @@
-<h2>Register Patient</h2>
-<form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-  <label>Full Name: <input formControlName="fullName" required></label>
-  <label>DOB: <input type="date" formControlName="dob"></label>
-  <label>Gender: <input formControlName="gender"></label>
-  <label>Phone: <input formControlName="phone"></label>
-  <label>Email: <input formControlName="email"></label>
-  <label>Address: <input formControlName="address"></label>
-  <label>Age: <input type="number" formControlName="age"></label>
-  <label>Conditions (comma separated): <input formControlName="conditions"></label>
-  <label>Medications (comma separated): <input formControlName="medications"></label>
-  <label>Notes: <textarea formControlName="notes"></textarea></label>
-  <button type="submit" [disabled]="registrationForm.invalid">Register</button>
-</form>
-<div *ngIf="success" class="success">Patient registered!</div>
-<div *ngIf="error" class="error">{{ error }}</div>
+<div class="patient-form-container">
+  <mat-card class="auth-card">
+    <mat-card-title>Patient Information</mat-card-title>
+    <mat-card-content class="info-card">
+      <div class="info-row">
+        <div><strong>Full Name:</strong> {{ form.get('firstName')?.value }} {{ form.get('lastName')?.value }}</div>
+        <div><strong>Age:</strong> {{ calculatedAge > 0 ? calculatedAge : '' }}</div>
+      </div>
+
+      <div class="info-row">
+        <div><strong>Phone:</strong> {{ form.get('phone')?.value }}</div>
+        <div><strong>Email:</strong> {{ form.get('email')?.value }}</div>
+      </div>
+
+      <div class="info-row">
+        <div><strong>Blood Group:</strong> {{ form.get('bloodGroup')?.value }}</div>
+        <div><strong>Allergies:</strong> {{ form.get('allergies')?.value }}</div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="auth-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" aria-labelledby="patientFormHeading">
+
+      <!-- Basic Details -->
+      <h2 id="patientFormHeading">Patient Details</h2>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" required aria-required="true" aria-label="First Name" />
+          <mat-error *ngIf="form.get('firstName')?.hasError('required')">
+            First Name is required
+          </mat-error>
+          <mat-error *ngIf="form.get('firstName')?.value.length && form.get('firstName')?.value.length < 3">
+            Minimum 3 characters required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" required aria-required="true" aria-label="Last Name" />
+          <mat-error *ngIf="form.get('lastName')?.hasError('required')">
+            Last Name is required
+          </mat-error>
+          <mat-error *ngIf="form.get('lastName')?.value.length && form.get('lastName')?.value.length < 3">
+            Minimum 3 characters required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date of Birth</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" aria-label="Date of Birth"
+            (dateChange)="calculateAge()" />
+          <mat-datepicker-toggle matSuffix [for]="picker" aria-label="Choose Date of Birth"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender" aria-label="Select Gender">
+            <mat-option *ngFor="let gender of genders" [value]="gender">
+              {{ gender }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Contact Details -->
+      <h2>Contact Details</h2>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput type="tel" maxlength="10" formControlName="phone" aria-label="Phone Number" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" aria-label="Email Address" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Address</mat-label>
+          <textarea matInput formControlName="address" aria-label="Address"></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Medical Details -->
+      <h2>Medical Details</h2>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Blood Group</mat-label>
+          <mat-select formControlName="bloodGroup" aria-label="Select Blood Group">
+            <mat-option *ngFor="let bg of bloodGroups" [value]="bg">
+              {{ bg }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Allergies</mat-label>
+          <mat-select formControlName="allergies" multiple aria-label="Select Allergies">
+            <mat-option *ngFor="let allergy of allergyOptions" [value]="allergy">
+              {{ allergy }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Conditions</mat-label>
+          <mat-select formControlName="conditions" multiple aria-label="Select Conditions">
+            <mat-option *ngFor="let data of conditions" [value]="data">
+              {{ data }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Medications</mat-label>
+          <mat-select formControlName="medications" multiple aria-label="Select Medications">
+            <mat-option *ngFor="let data of medications" [value]="data">
+              {{ data }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Notes</mat-label>
+          <textarea matInput formControlName="notes" aria-label="notes"></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Submit -->
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="button" (click)="onCancel(false)"
+          aria-label="Cancel Form">Reset</button>
+        <button mat-raised-button type="button" (click)="onCancel(true)"
+          aria-label="Cancel Form">Cancel</button>
+        <button mat-raised-button color="primary" type="submit" aria-label="Submit Form">Submit</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

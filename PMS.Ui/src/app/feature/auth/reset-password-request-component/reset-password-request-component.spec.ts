@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ResetPasswordRequestComponent } from './reset-password-request-component';
+import { ClinicService } from '../../../core/auth/clinic.service';
 
 describe('ResetPasswordRequestComponent', () => {
   let component: ResetPasswordRequestComponent;
@@ -8,7 +10,8 @@ describe('ResetPasswordRequestComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResetPasswordRequestComponent]
+      imports: [ResetPasswordRequestComponent, HttpClientTestingModule],
+      providers: [ClinicService]
     })
     .compileComponents();
 

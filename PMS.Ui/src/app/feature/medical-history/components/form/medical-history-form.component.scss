@@ -1,47 +1,21 @@
-.patient-form-container {
+.history-form-container {
   padding: 20px;
   background-color: #f8f7fa;
   border-radius: 10px;
 
-  .auth-card{
+  .auth-card {
     padding: 20px;
     margin-bottom: 20px;
 
-    mat-card-title{
+    mat-card-title {
       margin-bottom: 10px;
     }
   }
 
-  .info-card {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 14px;
-  
-    .info-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: space-between;
-  
-      div {
-        min-width: 150px;
-        flex: 1;
-      }
-    }
-  }
-
-  h1 {
-    font-size: 1.8rem;
+  h2.form-title {
+    font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 15px;
-  }
-
-  h2 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 10px;
   }
 
   .form-row {
@@ -52,10 +26,6 @@
     mat-form-field {
       flex: 1 1 calc(25% - 15px); // 4 per row on desktop
       min-width: 200px;
-    }
-
-    .full-width {
-      flex: 1 1 100%;
     }
   }
 

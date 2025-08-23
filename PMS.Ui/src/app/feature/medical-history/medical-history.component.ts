@@ -1,73 +1,51 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MedicalHistoryService, MedicalHistory } from '../../services/medical-history.service';
+import { Component, OnInit } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MedicalHistoryService } from '../../services/medical-history.service';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../core/shared/material.module';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
+import { MedicalHistory } from '../../models/medical-history.model';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-medical-history',
-  imports:[MaterialModule, CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule],
+
   templateUrl: './medical-history.component.html',
   styleUrls: ['./medical-history.component.scss']
 })
 export class MedicalHistoryComponent implements OnInit {
-  @Input() patientId = '';
-  historyList: MedicalHistory[] = [];
-  editingId?: string = undefined;
-  error: string | null = null;
-historyForm: FormGroup; // Or better: FormGroup
-  
+  patientId?: string;
+  patientName = '';
+  records: MedicalHistory[] = [];
+  dataSource = new MatTableDataSource<MedicalHistory>([]);
+  displayedColumns: string[] = ['code', 'description', 'source', 'createdAt', 'actions'];
 
-  constructor(private fb: FormBuilder, private historyService: MedicalHistoryService) {
-  this.historyForm = this.fb.group({
-    code: ['', Validators.required],
-    description: ['', Validators.required],
-    source: [''],
-    clinicId: [''],
-    siteId: ['']
-  }); 
-}
+  constructor(private service: MedicalHistoryService,
+    private snack: MatSnackBar,
+    private route: ActivatedRoute
+  ) { }
+
   ngOnInit(): void {
-    if (this.patientId) {
-      this.loadHistory();
-    }
+    this.route.paramMap.subscribe(params => {
+      const patientId = params.get('patientId');
+      if (patientId) {
+        this.patientId = patientId;
+        this.loadRecords(patientId);   // ✅ fetch only when defined
+      } else {
+        console.error('No patientId found in route');
+      }
+    });
   }
 
-  loadHistory() {
-    this.historyService.getByPatient(this.patientId).subscribe(res => this.historyList = res);
-  }
-
-  onSubmit() {
-    const entry: MedicalHistory = {
-      ...this.historyForm.value,
-      patientId: this.patientId,
-      createdAt: new Date().toISOString()
-    };
-    if (this.editingId) {
-      this.historyService.update(this.editingId, entry).subscribe({
-        next: () => {
-          this.editingId = undefined;
-          this.historyForm.reset();
-          this.loadHistory();
-        },
-        error: err => this.error = err.message
-      });
-    } else {
-      this.historyService.create(entry).subscribe({
-        next: () => {
-          this.historyForm.reset();
-          this.loadHistory();
-        },
-        error: err => this.error = err.message
-      });
-    }
-  }
-
-  edit(entry: MedicalHistory) {
-    this.editingId = entry.id;
-    this.historyForm.patchValue(entry);
-  }
-
-  delete(id: string) {
-    this.historyService.delete(id).subscribe(() => this.loadHistory());
+  loadRecords(patientId: string) {
+    this.service.getByPatient(patientId).subscribe({
+      next: data => {
+        this.dataSource.data = data;
+      },
+      error: err => {
+        this.snack.open(err?.error?.message || 'Failed to load records', 'Close', { duration: 3000 });
+      }
+    });
   }
 }

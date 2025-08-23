@@ -1,0 +1,60 @@
+<div class="history-form-container">
+  <mat-card class="auth-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" aria-labelledby="historyFormHeading">
+
+      <!-- Title -->
+      <h2 id="historyFormHeading" class="form-title">
+        {{ isEdit ? 'Edit Medical History' : 'Add Medical History' }}
+      </h2>
+
+      <!-- Form Fields -->
+      <div class="form-row">
+        <!-- Code -->
+        <mat-form-field appearance="outline">
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" />
+          <mat-error *ngIf="form.get('code')?.invalid && form.get('code')?.touched">
+            Code is required
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Source -->
+        <mat-form-field appearance="outline">
+          <mat-label>Source</mat-label>
+          <input matInput formControlName="source" />
+        </mat-form-field>
+
+        <!-- Clinic ID -->
+        <mat-form-field appearance="outline">
+          <mat-label>Clinic ID</mat-label>
+          <input matInput formControlName="clinicId" />
+        </mat-form-field>
+
+        <!-- Site ID -->
+        <mat-form-field appearance="outline">
+          <mat-label>Site ID</mat-label>
+          <input matInput formControlName="siteId" />
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+        <mat-error *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+          Description is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit">
+          {{ isEdit ? 'Update' : 'Create' }}
+        </button>
+        <button mat-raised-button color="warn" type="button">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

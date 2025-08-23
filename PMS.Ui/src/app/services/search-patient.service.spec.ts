@@ -22,7 +22,7 @@ describe('SearchPatientService (standalone style)', () => {
 
   it('should call API', () => {
     service.searchPatients('a').subscribe();
-    const req = httpMock.expectOne(r => r.url.includes('/api/search/patients'));
+    const req = httpMock.expectOne(r => r.url.includes('/api/Patients/search'));
     expect(req.request.method).toBe('GET');
     req.flush({ total: 0, items: [] });
   });
