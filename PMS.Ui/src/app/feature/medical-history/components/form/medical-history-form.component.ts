@@ -12,7 +12,7 @@ import { MedicalHistoryService } from '../../../../services/medical-history.serv
   selector: 'pms-medical-history-form',
   templateUrl: './medical-history-form.component.html',
   styleUrls: ['./medical-history-form.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule]
+  imports: [CommonModule, ReactiveFormsModule, MaterialModule]
 })
 export class MedicalHistoryFormComponent implements OnInit {
   record: MedicalHistory = {

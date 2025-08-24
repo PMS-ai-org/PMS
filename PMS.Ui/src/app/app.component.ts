@@ -4,7 +4,6 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 import { MaterialModule } from './core/shared/material.module';
 import { AuthService } from './core/auth/auth.service';
 import { SearchPatientResponse, SearchPatientResult } from './services/search-patient.service';
-import { SearchPatientComponent } from "./feature/patient-search/search-patient/search-patient.component";
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { LoginComponent } from './feature/auth/login/login.component';
 import { Features, Site } from './core/models/user.models';
@@ -32,7 +31,7 @@ export class AppComponent {
   showmedicalhistory = false;
   showregister = false;
   showtreatmentPlan = false;
-  
+
   constructor(private authSession: AuthSessionService, private auth: AuthService) {
     {
       effect(() => {
@@ -40,33 +39,12 @@ export class AppComponent {
         this.role = this.authSession.session()?.role ?? "";
         this.sites = this.authSession.userAccessDetail()?.sites ?? [];
         this.selectedSite = this.sites[0]?.siteId ?? "";
-        this.getFeaturesListForSite();
+        this.onSiteChange(this.selectedSite);
       });
     }
   }
 
-  getFeaturesListForSite() {
-    const site = this.sites.find(s => s.siteId === this.selectedSite);
-    if (site) {
-      this.features = site.features ?? [];
-    } else {
-      this.features = [];
-    }
 
-    if (this.role === 'Admin') {
-      this.showappointment = true;
-      this.showprofile = true;
-      this.showmedicalhistory = true;
-      this.showregister = true;
-    }
-    else {
-      this.showprofile = this.features.some(f => f.featureName === 'Profile' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
-      this.showappointment = this.features.some(f => f.featureName === 'Appointment' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
-      this.showmedicalhistory = this.features.some(f => f.featureName === 'MedicalHistory' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
-      this.showregister = this.features.some(f => f.featureName === 'Register' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
-      this.showtreatmentPlan = this.features.some(f => f.featureName === 'TreatmentPlan' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
-    }
-  }
 
   ngOnInit() {
     this.userName = this.authSession.session()?.fullName ?? "";
@@ -86,7 +64,8 @@ export class AppComponent {
 
   onSiteChange(siteId: string) {
     this.selectedSite = siteId;
-    this.getFeaturesListForSite();
+    const site = this.sites.find(s => s.siteId === this.selectedSite);
+    this.authSession.setCurrentSelectedSite(site ?? null);
   }
 
 
