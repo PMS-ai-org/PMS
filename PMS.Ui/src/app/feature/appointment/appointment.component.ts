@@ -15,7 +15,7 @@ import { MatDateRangePicker } from '@angular/material/datepicker';
 @Component({
   selector: 'app-appointment',
   standalone: true,
-  imports: [MaterialModule,ReactiveFormsModule, CommonModule, PatientAutocompleteComponent, MatDateRangePicker],
+  imports: [MaterialModule,ReactiveFormsModule, CommonModule, PatientAutocompleteComponent],
   templateUrl: './appointment.component.html',
   styleUrls: ['./appointment.component.scss']
 })

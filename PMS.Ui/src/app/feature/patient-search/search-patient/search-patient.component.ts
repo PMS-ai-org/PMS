@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription, Observable, BehaviorSubject } from 'rxjs';
@@ -16,6 +16,8 @@ import { PatientService } from '../../../services/patient.service';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RepositoryService } from '../../../services/repository.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Features, Site } from '../../../core/models/user.models';
+import { AuthSessionService } from '../../../core/auth/auth-session.service';
 
 @Component({
   selector: 'app-search-patient',
@@ -31,7 +33,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatDialogModule,
     MatPaginatorModule,
     MatTooltipModule,
-],
+  ],
   templateUrl: './search-patient.component.html',
   styleUrls: ['./search-patient.component.scss']
 })
@@ -56,22 +58,36 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   options: SearchPatientResult[] = [];
   private sub?: Subscription;
 
-  searchControl = new FormControl('',[Validators.minLength(1)]);
+  searchControl = new FormControl('', [Validators.minLength(1)]);
   patients = signal<Patient[]>([]);
   displayedColumns: string[] = ['full_name', 'dob', 'gender', 'email', 'phone', 'action'];
   dataSource = new MatTableDataSource<Patient>([]);
-  isLoading:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  features: Features[] = [];
+  currentRole: string = '';
+  role = "";
+  showprofile = false;
+  showappointment = false;
+  showmedicalhistory = false;
+  showregister = false;
+  showtreatmentPlan = false;
+  canEditProfile = false;
+  canDeleteProfile = false;
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router, private patientService: PatientService, private repo: RepositoryService) {
-
+  constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router,
+    private patientService: PatientService, private repo: RepositoryService, private authSession: AuthSessionService) {
+    effect(() => {
+      const siteData = this.authSession.siteData();
+      this.getFeaturesListForSite(siteData);
+    })
   }
 
   ngOnInit(): void {
     this.q = this.control ?? new FormControl<string>('', { nonNullable: true });
-
+    
     this.sub = this.q.valueChanges.pipe(
       startWith(this.q.value),
       debounceTime(this.debounceMs),
@@ -167,7 +183,7 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        if(patient.id) {
+        if (patient.id) {
           this.repo.deletePatient(patient.id).subscribe({
             next: () => {
               this.dataSource.data = this.dataSource.data.filter(p => p.id !== patient.id);
@@ -185,6 +201,33 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+  }
+
+  getFeaturesListForSite(site: Site | null) {
+    
+    if (site) {
+      this.features = site.features ?? [];
+    } else {
+      this.features = [];
+    }
+
+    if (this.role === 'Admin') {
+      this.showappointment = true;
+      this.showprofile = true;
+      this.showmedicalhistory = true;
+      this.showregister = true;
+    }
+    else {
+      this.showprofile = this.features.some(f => f.featureName === 'Profile' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
+      this.showappointment = this.features.some(f => f.featureName === 'Appointment' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
+      this.showmedicalhistory = this.features.some(f => f.featureName === 'MedicalHistory' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
+      this.showregister = this.features.some(f => f.featureName === 'Register' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
+      this.showtreatmentPlan = this.features.some(f => f.featureName === 'TreatmentPlan' && (f.canAdd || f.canEdit || f.canView || f.canDelete));
+
+      this.canEditProfile = this.features.some(f => f.featureName === 'Profile' && f.canEdit);
+      this.canDeleteProfile = this.features.some(f => f.featureName === 'Profile' && f.canDelete);
+
+    }
   }
 
   ngOnDestroy(): void { this.sub?.unsubscribe(); }
