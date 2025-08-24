@@ -93,6 +93,8 @@ namespace PMS.WebAPI.Services
             if (user == null)
                 throw new Exception("Invalid credentials");
 
+            var userDetail = await _db.UserDetails.FirstOrDefaultAsync(u => u.Email == request.Username);
+
             if (user.IsLocked)
             {
                 if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTime.UtcNow)
@@ -238,7 +240,7 @@ namespace PMS.WebAPI.Services
             await _db.SaveChangesAsync();
 
             return new AuthResponse(jwt, refresh.Token, DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenExpirationMinutes),
-            user.Role.RoleName, user.UserId, user.IsFirstLogin, user.Username, result);
+            user.Role?.RoleName, user.UserId, user.IsFirstLogin, userDetail?.FullName ?? user.Username, result);
         }
 
         public async Task<AuthResponse> RefreshTokenAsync(string token, string ipAddress)
