@@ -169,7 +169,7 @@ namespace PMS.WebAPI.Controllers
                 await transaction.CommitAsync();
 
                 // 5. Send Email (non-transactional)
-                var loginUrl = "http://localhost:4200/login";
+                var loginUrl = "https://pms-ruddy-three.vercel.app/login";
                 var body = $@"
             Hi {dto.FullName},<br/><br/>
             Your account has been created.<br/>
@@ -179,7 +179,7 @@ namespace PMS.WebAPI.Controllers
             Regards,<br/>PMS Team
         ";
 
-                await _emailService.SendEmailAsync(dto.Email, "Your Doctor Account", body);
+                await _emailService.SendEmailAsync(dto.Email, "Account Activation", body);
 
                 return Ok(new { user.UserId, resetToken = reset.Token });
             }

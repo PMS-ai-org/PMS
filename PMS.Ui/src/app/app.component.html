@@ -5,13 +5,15 @@
     <mat-toolbar-row class="top-toolbar-row">
       <span class="app-title">Patient Portal</span>
 
-      <span class="spacer"></span>
-
       @if (role?.toLowerCase() == "admin") {
       <button mat-button [routerLink]="['/create-staff']">Create Staff</button>
       <button mat-button [routerLink]="['/permissions']">Permissions</button>
       }
 
+      <span class="spacer"></span>
+
+      <span class="app-title">Hi, {{userName}}</span>
+      &nbsp;&nbsp;
       @if (sites && role?.toLowerCase() != "admin") {
       <mat-form-field appearance="fill" class="site-selector">
         <mat-label>Select Site</mat-label>
