@@ -25,25 +25,14 @@ export class AppointmentComponent implements OnInit {
     {
       id: '1',
       patientId: 'p1',
-      patientName: 'John Doe',
+      patientName: 'Ricky Flores',
       bookedAt: '2025-08-20T08:00:00Z',
       scheduledAt: '2025-08-21T09:00:00Z',
       status: 'scheduled',
       clinicId: 'c1',
       treatmentPlan: '',
       notes: 'Patient is not healthy.'
-    },
-    {
-      id: '2',
-      patientId: 'p1',
-      patientName: 'John Doe',
-      bookedAt: '2025-08-22T10:00:00Z',
-      scheduledAt: '2025-08-23T11:00:00Z',
-      status: 'Scheduled',
-      clinicId: 'c1',
-      treatmentPlan: '',
-      notes: 'Regular check-up.'
-    },
+    }
   ];
   doctors: UserDetail[] = [];
   departments: Clinic[] = [];

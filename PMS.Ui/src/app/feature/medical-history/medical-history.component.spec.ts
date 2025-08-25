@@ -5,6 +5,8 @@ import { MedicalHistoryComponent } from './medical-history.component';
 import { MedicalHistoryService } from '../../services/medical-history.service';
 import { MaterialModule } from '../../core/shared/material.module';
 import { CommonModule } from '@angular/common';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 
 class MockMedicalHistoryService {
   getByPatient = jest.fn().mockReturnValue(of([]));
@@ -25,13 +27,21 @@ describe('MedicalHistoryComponent', () => {
       imports: [MedicalHistoryComponent, ReactiveFormsModule, MaterialModule, CommonModule],
       providers: [
         FormBuilder,
-        { provide: MedicalHistoryService, useValue: service }
+        { provide: MedicalHistoryService, useValue: service },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: { get: () => '1' } } }
+        },
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(MedicalHistoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 
   // describe('ngOnInit', () => {

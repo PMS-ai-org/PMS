@@ -27,7 +27,7 @@ export class MedicalHistoryComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap?.subscribe(params => {
       const patientId = params.get('patientId');
       if (patientId) {
         this.patientId = patientId;
