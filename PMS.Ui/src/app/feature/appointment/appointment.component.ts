@@ -24,24 +24,15 @@ export class AppointmentComponent implements OnInit {
   appointments: Appointment[] = [
     {
       id: '1',
-      patient_id: 'p1',
-      booked_at: '2025-08-20T08:00:00Z',
-      scheduled_at: '2025-08-21T09:00:00Z',
+      patientId: 'p1',
+      patientName: 'Ricky Flores',
+      bookedAt: '2025-08-20T08:00:00Z',
+      scheduledAt: '2025-08-21T09:00:00Z',
       status: 'scheduled',
       clinic_id: 'c1',
       treatment_plan: '',
       notes: 'Patient is not healthy.'
-    },
-    {
-      id: '2',
-      patient_id: 'p1',
-      booked_at: '2025-08-22T10:00:00Z',
-      scheduled_at: '2025-08-23T11:00:00Z',
-      status: 'Scheduled',
-      clinic_id: 'c1',
-      treatment_plan: '',
-      notes: 'Regular check-up.'
-    },
+    }
   ];
   doctors: UserDetail[] = [];
   departments: Clinic[] = [];

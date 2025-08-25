@@ -54,7 +54,7 @@
           }
         </mat-select>
       </mat-form-field>
-      
+
       <div>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -67,7 +67,7 @@
     <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
       <div class="flex justify-between mt-4">
         <button mat-raised-button matStepperPrevious>Back</button>
-        <button mat-raised-button color="primary" type="submit">Register Doctor</button>
+        <button mat-raised-button color="primary" style="margin-left: 1rem;" type="submit">Register</button>
       </div>
       <ng-template matStepLabel>Assign Sites</ng-template>
 
@@ -130,4 +130,13 @@
 
     </form>
   </mat-step>
+
+
 </mat-horizontal-stepper>
+
+<ng-template #siteAccessDialog>
+  <mat-dialog-content>
+    <p>Account Created</p>
+    <button mat-button mat-dialog-close>Ok</button>
+  </mat-dialog-content>
+</ng-template>

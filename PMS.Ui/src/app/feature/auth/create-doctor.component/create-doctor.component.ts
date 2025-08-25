@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ClinicService } from '../../../core/auth/clinic.service';
@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import { LoaderService } from '../../../services/loader.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'pms-create-doctor',
   imports: [MaterialModule, ReactiveFormsModule, CommonModule],
@@ -16,8 +17,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class CreateDoctorComponent implements OnInit {
 
   constructor(private clinicService: ClinicService, private loader: LoaderService,
-    private router: Router, private snack: MatSnackBar) { }
+    private router: Router, private snack: MatSnackBar, private dialog: MatDialog) { }
 
+  @ViewChild('siteAccessDialog') siteAccessDialog!: TemplateRef<any>;
   doctorForm!: FormGroup;
   clinics: any[] = [];
   sites: any[] = [];
@@ -137,8 +139,8 @@ export class CreateDoctorComponent implements OnInit {
       };
       this.clinicService.saveDoctor(payload).subscribe({
         next: () => {
-            this.loader.hide();
-          alert('Doctor registered successfully!');
+          this.loader.hide();
+          this.openDialog();
           this.router.navigate(['/home']);
         },
         error: (err) => {
@@ -148,5 +150,11 @@ export class CreateDoctorComponent implements OnInit {
         }
       });
     }
+  }
+
+  openDialog() {
+    this.dialog.open(this.siteAccessDialog, {
+      data: {} // optional, if you want to pass data
+    });
   }
 }

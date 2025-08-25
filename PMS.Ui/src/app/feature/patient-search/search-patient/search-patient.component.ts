@@ -230,5 +230,11 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  appointmentNavigation() {
+    this.router.navigate(
+      ['/appointment']
+    );
+  }
+
   ngOnDestroy(): void { this.sub?.unsubscribe(); }
 }
