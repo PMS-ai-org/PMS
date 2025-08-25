@@ -10,7 +10,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-medical-history',
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule],
-
   templateUrl: './medical-history.component.html',
   styleUrls: ['./medical-history.component.scss']
 })
@@ -31,7 +30,10 @@ export class MedicalHistoryComponent implements OnInit {
       const patientId = params.get('patientId');
       if (patientId) {
         this.patientId = patientId;
-        this.loadRecords(patientId);   // ✅ fetch only when defined
+        this.route.queryParamMap.subscribe(queryParams => {
+        this.patientName = queryParams.get('patientName') || '';
+        });
+        this.loadRecords(patientId);
       } else {
         console.error('No patientId found in route');
       }
