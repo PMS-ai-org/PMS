@@ -1,21 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface Appointment {
-  id?: string;
-  patientId: string;
-  bookedAt: string;
-  scheduledAt: string;
-  reminderSent?: boolean;
-  status?: string;
-  leadTimeHours?: number;
-  dow?: number;
-  hourOfDay?: number;
-  siteId?: string;
-  clinicId?: string;
-  treatmentPlan?: string;
-}
+import { Appointment } from '../models/appointment.model';
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {

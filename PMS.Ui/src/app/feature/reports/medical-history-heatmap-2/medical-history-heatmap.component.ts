@@ -20,6 +20,7 @@ import {
   CalendarComponent
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { PatientAutocompleteComponent } from '../../patient-autocomplete/patient-autocomplete.component';
 
 // 👇 Register them locally
 echarts.use([
@@ -34,7 +35,7 @@ echarts.use([
 @Component({
   selector: 'app-medical-history-heatmap',
   standalone: true,
-  imports: [CommonModule, NgxEchartsModule],
+  imports: [CommonModule, NgxEchartsModule, PatientAutocompleteComponent],
   templateUrl: './medical-history-heatmap.component.html',
   styleUrls: ['./medical-history-heatmap.component.scss']
 })
@@ -42,9 +43,19 @@ export class MedicalHistoryHeatmapComponent implements OnInit {
   private reportsUiService = inject(ReportsUiService);
   medicalHistory: MedicalHistory[] = [];
   chartOptions!: EChartsOption;
+  patientId: any;
 
   ngOnInit(): void {
-    this.reportsUiService.getMedicalHistory().subscribe(history => {
+    this.reportsUiService.getAllMedicalHistory().subscribe(history => {
+      this.medicalHistory = history;
+      this.prepareChartOptions();
+    });
+  }
+
+  onPatientSelected(patient: any) {
+    const patientId = patient?.id || patient;
+    this.patientId = patientId;
+    this.reportsUiService.getMedicalHistory(patientId).subscribe(history => {
       this.medicalHistory = history;
       this.prepareChartOptions();
     });
@@ -54,7 +65,10 @@ export class MedicalHistoryHeatmapComponent implements OnInit {
     const countsMap: Record<string, number> = {};
 
     this.medicalHistory.forEach(item => {
-      const dateObj: Date = item.created_at ? item.created_at : new Date(); // already a Date
+      const dateObj: Date = item.created_at 
+        ? new Date(item.created_at) // convert string -> Date
+        : new Date();
+
       const date = dateObj.toISOString().split('T')[0]; // yyyy-MM-dd
       countsMap[date] = (countsMap[date] || 0) + 1;
     });
@@ -77,7 +91,7 @@ export class MedicalHistoryHeatmapComponent implements OnInit {
         calculable: true,
         orient: 'horizontal',
         left: 'center',
-        bottom: 20,
+        top: 250,
         inRange: { color: ['#e0f2fe', '#0284c7'] }
       },
       calendar: {

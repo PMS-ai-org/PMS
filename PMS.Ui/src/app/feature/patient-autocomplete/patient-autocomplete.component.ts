@@ -13,6 +13,9 @@ import { Patient } from '../../models/patient.model';
   styleUrls: ['./patient-autocomplete.component.scss']
 })
 export class PatientAutocompleteComponent {
+  displayPatient(patient: Patient): string {
+    return patient && patient.full_name ? patient.full_name : '';
+  }
   searchCtrl = new FormControl('');
   filteredPatients$: Observable<Patient[]> = of([]);
   showGrid = false;
@@ -43,7 +46,7 @@ export class PatientAutocompleteComponent {
     );
   }
 
-  onOptionSelected(patient: Patient) {
+  onOptionSelected(patient: any) {
     this.patientSelected.emit(patient);
     this.showGrid = false;
   }

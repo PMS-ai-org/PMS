@@ -83,7 +83,17 @@ export class PatientVisualComponent implements OnInit {
   private buildGenderChart(patients: Patient[]) {
     const genders: { [key: string]: number } = {};
     patients.forEach(p => {
-      genders[p.gender as string] = (genders[p.gender as string] || 0) + 1;
+      let gender = (p.gender as string || '').trim().toLowerCase();
+      if (gender.startsWith('f')) {
+        gender = 'Female';
+      } else if (gender.startsWith('m')) {
+        gender = 'Male';
+      } else if (!gender) {
+        gender = "Don't want to say";
+      } else {
+        gender = p.gender as string;
+      }
+      genders[gender] = (genders[gender] || 0) + 1;
     });
 
     this.genderOptions = {

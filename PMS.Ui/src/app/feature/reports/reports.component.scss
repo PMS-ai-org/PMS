@@ -1,6 +1,5 @@
 .reports-dashboard {
   padding: 2rem;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
   min-height: 100vh;
 }
 
@@ -8,6 +7,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
+  margin-top: 2rem;
 }
 
 .tile {
@@ -20,4 +20,8 @@
 
 .tile:hover {
   box-shadow: 0 8px 32px rgba(59, 130, 246, 0.16);
+}
+
+.clinic-tile {
+  margin-top: 2rem;
 }

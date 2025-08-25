@@ -12,7 +12,7 @@ export class GroupByClinicSitePipe implements PipeTransform {
     if (!appointments) return [];
     const grouped: { [key: string]: number } = {};
     appointments.forEach(a => {
-      const key = `${a.clinicId || 'Unknown'} - ${a.siteId || 'Unknown'}`;
+      const key = `${a.clinic_id || 'Unknown'} - ${a.site_id || 'Unknown'}`;
       grouped[key] = (grouped[key] || 0) + 1;
     });
     return Object.keys(grouped).map(key => ({ name: key, value: grouped[key] }));
