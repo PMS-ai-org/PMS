@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RoleDistributionVisualComponent } from './role-distribution-visual/role-distribution-visual.component';
-import { UserAccessVisualComponent } from './user-access-visual/user-access-visual.component';
 import { PatientVisualComponent } from './patient-visual-2/patient-visual.component';
 import { AppointmentsByClinicSiteComponent } from './appointments-by-clinic-site-2/appointments-by-clinic-site.component';
 import { MedicalHistoryHeatmapComponent } from './medical-history-heatmap-2/medical-history-heatmap.component';
@@ -14,8 +12,6 @@ import { MaterialModule } from "../../core/shared/material.module";
   styleUrls: ['./reports.component.scss'],
   imports: [
     CommonModule,
-    RoleDistributionVisualComponent,
-    UserAccessVisualComponent,
     // done using chatgpt
     PatientVisualComponent,
     AppointmentsByClinicSiteComponent,

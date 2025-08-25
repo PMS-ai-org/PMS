@@ -47,8 +47,12 @@ export class ReportsService {
     return this.repository.getUserClinicSites();
   }
 
-  getMedicalHistory(): Observable<MedicalHistory[]> {
-    return this.repository.getMedicalHistory();
+  getAllMedicalHistory(): Observable<MedicalHistory[]> {
+    return this.repository.getAllMedicalHistory();
+  }
+  
+  getMedicalHistory(patientId: string): Observable<MedicalHistory[]> {
+    return this.repository.getMedicalHistory(patientId);
   }
 
   getFeatures(): Observable<Feature[]> {

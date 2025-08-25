@@ -1,8 +1,8 @@
 import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Role extends AuditableEntity {
-  RoleId: string;
-  RoleName: string;
+  roleId: string;
+  roleName: string;
 }
 export const Role = {
     Admin: 'Admin',

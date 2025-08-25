@@ -24,24 +24,22 @@ export class AppointmentComponent implements OnInit {
   appointments: Appointment[] = [
     {
       id: '1',
-      patientId: 'p1',
-      patientName: 'John Doe',
-      bookedAt: '2025-08-20T08:00:00Z',
-      scheduledAt: '2025-08-21T09:00:00Z',
+      patient_id: 'p1',
+      booked_at: '2025-08-20T08:00:00Z',
+      scheduled_at: '2025-08-21T09:00:00Z',
       status: 'scheduled',
-      clinicId: 'c1',
-      treatmentPlan: '',
+      clinic_id: 'c1',
+      treatment_plan: '',
       notes: 'Patient is not healthy.'
     },
     {
       id: '2',
-      patientId: 'p1',
-      patientName: 'John Doe',
-      bookedAt: '2025-08-22T10:00:00Z',
-      scheduledAt: '2025-08-23T11:00:00Z',
+      patient_id: 'p1',
+      booked_at: '2025-08-22T10:00:00Z',
+      scheduled_at: '2025-08-23T11:00:00Z',
       status: 'Scheduled',
-      clinicId: 'c1',
-      treatmentPlan: '',
+      clinic_id: 'c1',
+      treatment_plan: '',
       notes: 'Regular check-up.'
     },
   ];
@@ -119,13 +117,13 @@ constructor(
     const formValue = this.appointmentForm.value;
     const appt: Appointment = {
       id: this.editingId,
-      patientId: this.patientId,
-      clinicId: formValue.departmentId, // department mapped to clinic
+      patient_id: this.patientId,
+      clinic_id: formValue.departmentId, // department mapped to clinic
       notes: `Doctor: ${formValue.doctorId}${formValue.notes ? ' | ' + formValue.notes : ''}`,
-      scheduledAt: formValue.scheduledAt ?? '',
+      scheduled_at: formValue.scheduledAt ?? '',
       status: formValue.status ?? '',
-      treatmentPlan: formValue.treatmentPlan ?? '',
-      bookedAt: new Date().toISOString()
+      treatment_plan: formValue.treatmentPlan ?? '',
+      booked_at: new Date().toISOString()
     };
     if (this.editingId) {
       this.appointmentService.update(this.editingId, appt).subscribe({
@@ -153,7 +151,7 @@ constructor(
     this.editingId = appt.id;
     this.appointmentDcotorForm.patchValue({
       status: appt.status || 'scheduled',
-      treatmentPlan: appt.treatmentPlan || ''
+      treatmentPlan: appt.treatment_plan || ''
     });
   }
 
@@ -162,7 +160,7 @@ constructor(
     const updated: Appointment = {
       ...appt,
       status: formValue.status,
-      treatmentPlan: formValue.treatmentPlan
+      treatment_plan: formValue.treatmentPlan,
     };
     this.appointmentService.update(appt.id!, updated).subscribe({
       next: () => {

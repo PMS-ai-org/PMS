@@ -11,18 +11,20 @@ import { EChartsOption } from 'echarts';
 import { TreemapChart, SunburstChart, SankeyChart, ScatterChart } from 'echarts/charts';
 import { GeoComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import worldJson from '../../../../assets/maps/countries.geo.json';
+import worldJson from '../../../../assets/maps/usa.geo.json';
 import { UserClinicSite } from '../../../models/user-clinic-site.model';
 import { Clinic } from '../../../models/clinic.model';
 import { Site } from '../../../models/site.model';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { NgxEchartsDirective, NgxEchartsModule } from 'ngx-echarts';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { GraphChart } from 'echarts/charts';
 import { ReportsUiService } from '../reports-ui.service';
 import { forkJoin } from 'rxjs';
+import { MaterialModule } from "../../../core/shared/material.module";
 
 // Register charts/components
-echarts.use([TreemapChart, SunburstChart, SankeyChart, ScatterChart, GeoComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
+echarts.use([TreemapChart, GraphChart, SunburstChart, SankeyChart, ScatterChart, GeoComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 // Register world map
 echarts.registerMap('world', worldJson as any);
@@ -31,7 +33,7 @@ echarts.registerMap('world', worldJson as any);
   selector: 'app-clinic-site-analytics-dashboard',
   templateUrl: './clinic-site-analytics-dashboard.component.html',
   styleUrls: ['./clinic-site-analytics-dashboard.component.scss'],
-  imports: [FormsModule, NgxChartsModule, NgxEchartsModule, NgxEchartsDirective]
+  imports: [FormsModule, MaterialModule, ReactiveFormsModule, NgxChartsModule, NgxEchartsModule]
 })
 export class ClinicSiteAnalyticsDashboardComponent implements OnInit {
   clinics: Clinic[] = [];
@@ -50,6 +52,7 @@ export class ClinicSiteAnalyticsDashboardComponent implements OnInit {
   sunburstOptions!: EChartsOption;
   sankeyOptions!: EChartsOption;
   mapOptions!: EChartsOption;
+  graphOptions!: EChartsOption;
 
   constructor(private reportsUiService: ReportsUiService) {}
 
@@ -147,30 +150,6 @@ export class ClinicSiteAnalyticsDashboardComponent implements OnInit {
       }
     };
 
-    // Sankey
-    this.sankeyOptions = {
-      tooltip: {
-        trigger: 'item',
-        formatter: (info: any) => {
-          if (info.dataType === 'edge') {
-            return `<b>${info.data.source}</b> → <b>${info.data.target}</b><br/>Users: ${info.data.value}`;
-          }
-          return `<b>${info.name}</b>`;
-        }
-      },
-      series: {
-        type: 'sankey',
-        data: [
-          ...this.clinics.map(c => ({ name: c.name })),
-          ...this.sites.map(s => ({ name: s.name }))
-        ],
-        links: filteredData.map(u => ({
-          source: this.clinics.find(c => c.id === u.clinicId)!.name,
-          target: this.sites.find(s => s.id === u.siteId)!.name,
-          value: 1
-        }))
-      }
-    };
 
     // Map
     this.mapOptions = {
@@ -178,7 +157,11 @@ export class ClinicSiteAnalyticsDashboardComponent implements OnInit {
         trigger: 'item',
         formatter: (params: any) => {
           const [lon, lat, count] = params.value;
-          return `<b>${params.name}</b><br/>Latitude: ${lat}<br/>Longitude: ${lon}<br/>Users: ${count}`;
+            const site = this.sites.find(s => s.name === params.name);
+            if (site) {
+              return `<b>${site.name}</b><br/>${site.address}<br/>${site.city}, ${site.state}`;
+            }
+            return `<b>${params.name}</b><br/>Users: ${count}`;
         }
       },
       geo: {

@@ -25,33 +25,33 @@ export class ReportsUiService {
     const mockAppointments: Appointment[] = [
       {
         id: '1',
-        patientId: '1',
-        bookedAt: '2025-08-01T10:00:00Z',
-        scheduledAt: '2025-08-02T10:00:00Z',
-        reminderSent: true,
+        patient_id: '1',
+        booked_at: '2025-08-01T10:00:00Z',
+        scheduled_at: '2025-08-02T10:00:00Z',
+        reminder_sent: true,
         status: 'Scheduled',
-        leadTimeHours: 24,
+        lead_time_hours: 24,
         dow: 1,
-        hourOfDay: 10,
-        siteId: '1',
-        clinicId: '1',
-        treatmentPlan: '{}',
+        hour_of_day: 10,
+        site_id: '1',
+        clinic_id: '1',
+        treatment_plan: '{}',
         created_by: 'system',
         updated_by: 'system'
       },
       {
         id: '2',
-        patientId: '2',
-        bookedAt: '2025-08-03T11:00:00Z',
-        scheduledAt: '2025-08-04T11:00:00Z',
-        reminderSent: false,
+        patient_id: '2',
+        booked_at: '2025-08-03T11:00:00Z',
+        scheduled_at: '2025-08-04T11:00:00Z',
+        reminder_sent: false,
         status: 'Completed',
-        leadTimeHours: 24,
+        lead_time_hours: 24,
         dow: 2,
-        hourOfDay: 11,
-        siteId: '2',
-        clinicId: '2',
-        treatmentPlan: '{}',
+        hour_of_day: 11,
+        site_id: '2',
+        clinic_id: '2',
+        treatment_plan: '{}',
         created_by: 'system',
         updated_by: 'system'
       }
@@ -114,8 +114,8 @@ export class ReportsUiService {
   
   getRoles(): Observable<Role[]> {
     const mockRoles: Role[] = [
-      { RoleId: '1', RoleName: 'Admin', created_at: new Date('2025-08-01T09:00:00Z'), created_by: 'system', updated_at: new Date('2025-08-01T09:00:00Z'), updated_by: 'system' },
-      { RoleId: '2', RoleName: 'Doctor', created_at: new Date('2025-08-03T10:00:00Z'), created_by: 'system', updated_at: new Date('2025-08-03T10:00:00Z'), updated_by: 'system' }
+      { roleId: '1', roleName: 'Admin', created_at: new Date('2025-08-01T09:00:00Z'), created_by: 'system', updated_at: new Date('2025-08-01T09:00:00Z'), updated_by: 'system' },
+      { roleId: '2', roleName: 'Doctor', created_at: new Date('2025-08-03T10:00:00Z'), created_by: 'system', updated_at: new Date('2025-08-03T10:00:00Z'), updated_by: 'system' }
     ];
     return this.reportsService.getRoles().pipe(
       catchError(() => of(mockRoles))
@@ -198,13 +198,22 @@ getSites(): Observable<Site[]> {
   );
 }
 
+  getAllMedicalHistory(): Observable<MedicalHistory[]> {
+    const mockMedicalHistory: MedicalHistory[] = [
+      { id: '1', patientId: '1', code: 'A01', description: 'Flu', source: 'Doctor', clinicId: null, siteId: null, created_at: new Date('2025-08-01T09:00:00Z'), created_by: null, updated_at: new Date('2025-08-01T09:00:00Z'), updated_by: null },
+      { id: '2', patientId: '2', code: 'B02', description: 'Dental Check', source: 'Dentist', clinicId: null, siteId: null, created_at: new Date('2025-08-03T10:00:00Z'), created_by: null, updated_at: new Date('2025-08-03T10:00:00Z'), updated_by: null }
+    ];
+    return this.reportsService.getAllMedicalHistory().pipe(
+      catchError(() => of(mockMedicalHistory))
+    );
+  }
 
-  getMedicalHistory(): Observable<MedicalHistory[]> {
+  getMedicalHistory(patientId: string): Observable<MedicalHistory[]> {
     const mockMedicalHistory: MedicalHistory[] = [
       { id: '1', patientId: '1', code: 'A01', description: 'Flu', source: 'Doctor', clinicId: '1', siteId: '1', created_at: new Date('2025-08-01T09:00:00Z'), created_by: 'system', updated_at: new Date('2025-08-01T09:00:00Z'), updated_by: 'system' },
       { id: '2', patientId: '2', code: 'B02', description: 'Dental Check', source: 'Dentist', clinicId: '2', siteId: '2', created_at: new Date('2025-08-03T10:00:00Z'), created_by: 'system', updated_at: new Date('2025-08-03T10:00:00Z'), updated_by: 'system' }
     ];
-    return this.reportsService.getMedicalHistory().pipe(
+    return this.reportsService.getMedicalHistory(patientId).pipe(
       catchError(() => of(mockMedicalHistory))
     );
   }

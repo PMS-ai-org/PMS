@@ -12,7 +12,7 @@ export class GroupByRolePipe implements PipeTransform {
     if (!roles) return [];
     const grouped: { [key: string]: number } = {};
     roles.forEach(r => {
-      const role = r.RoleName || 'Unknown';
+      const role = r.roleName || 'Unknown';
       grouped[role] = (grouped[role] || 0) + 1;
     });
     return Object.keys(grouped).map(role => ({ name: role, value: grouped[role] }));

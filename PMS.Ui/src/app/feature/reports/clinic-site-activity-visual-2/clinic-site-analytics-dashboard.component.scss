@@ -21,8 +21,8 @@
 
 .dashboard {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); // 3 columns for first 3 charts
-  grid-gap: 20px;
+  grid-template-columns: repeat(2, 1fr); // 3 columns for first 3 charts
+  grid-gap: 2rem;
   padding: 20px;
 }
 
