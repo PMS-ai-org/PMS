@@ -1,0 +1,88 @@
+1. Initial Prompt
+I asked the API:
+	"Generate an Angular standalone component for patient registration using Angular Material reactive forms."
+✅ The API generated a standalone component (PatientRegistrationComponent) with:
+	• Angular Material form fields.
+	• Reactive form setup (FormBuilder, FormGroup, Validators).
+	• Imports for MatFormField, MatInput, MatSelect, MatDatepicker, MatButton.
+
+2. Adding Patient Fields Prompt
+Prompt:
+	"Add fields for first name, last name, DOB, age calculation, gender, phone, email, address, blood group, allergies, conditions, medications, and notes."
+The API updated the form:
+	• Added arrays for dropdowns (bloodGroups, genders, allergyOptions, conditions, medications).
+	• Reactive form controls with validators:
+		○ Required: firstName, lastName.
+		○ Pattern: Phone (10 digits).
+		○ Email: Format validation.
+	• Included multi-select fields for allergies, conditions, and medications.
+
+
+3. Age Calculation Prompt
+Prompt:
+	"Auto-calculate age when a date of birth is selected."
+The API generated:
+	• calculateAge() method:
+		○ Subtracts DOB from today’s date.
+		○ Adjusts if birthday not reached in current year.
+	• Updates calculatedAge property dynamically.
+
+
+4. Load Patient Data (Edit Mode) Prompt
+Prompt:
+	"When editing a patient, load data by ID from API and patch form values."
+The API added:
+	• ngOnInit() checks route param (id).
+	• If patient exists:
+		○ Calls patientService.loadPatientById(id).
+		○ Subscribes to patients$ observable.
+		○ Calls loadPatientDetails() to split full name, patch values into the form, and update calculatedAge.
+
+
+5. Submit & Cancel Prompt
+Prompt:
+	"Add submit button that saves patient record and cancel button that navigates back to search."
+The API created:
+	• onSubmit():
+		○ Validates form.
+		○ Calls patientService.savePatient().
+		○ Uses mapPatientRecord() to format data for API.
+	• onCancel(reset: boolean):
+		○ If reset = true → navigate back to /patient/search.
+		○ Else → reset the form only.
+
+6. Preview Card Prompt
+Prompt:
+	"Show a card above the form that previews entered patient info (full name, age, phone, email, blood group, allergies)."
+The API added:
+	• A Material Card displaying:
+		○ Full Name
+		○ Age
+		○ Phone
+		○ Email
+		○ Blood Group
+		○ Allergies
+Values are bound directly from form.get(...)?.value.
+
+7. Form Template Prompt
+Prompt:
+	"Use Angular Material form fields with proper accessibility labels, error messages, and grouping (Basic Details, Contact Details, Medical Details)."
+The API structured the template:
+	• Sections with <h2> headings:
+		○ Patient Details
+		○ Contact Details
+		○ Medical Details
+	• Each <mat-form-field> has:
+		○ aria-label for accessibility.
+		○ mat-error for validation messages.
+	• Multi-select dropdowns for Allergies, Conditions, Medications.
+
+8. API Data Mapping Prompt
+Prompt:
+	"When submitting, map form values to a Patient model (id, full_name, dob, gender, phone, email, address, age, conditions, medications, notes)."
+The API added:
+	• mapPatientRecord():
+		○ Combines firstName + lastName → full_name.
+		○ Uses calculatedAge from DOB.
+		○ Maps conditions, medications, notes.
+Preserves id, created_at, and sets updated_at if editing.
