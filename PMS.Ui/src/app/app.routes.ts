@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './feature/auth/login/login.component';
+import { RegisterComponent } from './feature/auth/register/register.component';
+import { ReportsDashboardComponent } from './feature/reports-dashboard/reports-dashboard.component';
 import { AuthGuard } from './core/auth/auth.guard';
 import { CreateDoctorComponent } from './feature/auth/create-doctor.component/create-doctor.component';
 import { ResetPasswordComponent } from './feature/auth/reset-password-component/reset-password-component';
@@ -18,6 +20,10 @@ import { MedicalHistoryFormComponent } from './feature/medical-history/component
 export const appRoutes: Routes = [
   { path: '', component: AppComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'reports', component: ReportsDashboardComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'todos', canActivate: [authGuard], loadComponent: () => import('./feature/todo/todo.component').then(m => m.TodoComponent) },
+  { path: '**', redirectTo: '' }
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'create-staff', component: CreateDoctorComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
   { path: 'patient/profile/:id', component: PatientProfileComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },

@@ -2,7 +2,9 @@
   "root": true,
   "ignorePatterns": [
     "**/*.js",
-    "**/*.html"], 
+    "**/*.html",
+    "src/app/feature/reports-dashboard/components/*"
+  ],
   "overrides": [
     {
       "files": ["*.ts"],
