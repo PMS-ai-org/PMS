@@ -8,9 +8,22 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   exports: [
+    CommonModule,
     MatButtonModule,
     MatInputModule,
     MatCardModule,
@@ -19,7 +32,18 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatProgressSpinnerModule,
     MatDividerModule,
     MatSnackBarModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatListModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatStepperModule,
+    MatDialogModule,
+    MatAutocompleteModule,
+    MatPaginatorModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

@@ -1,0 +1,15 @@
+Can you get the Patient Profile Management Application - Project Requirement Document (PRD)
+-- Used the following prompt to get the PRD details
+Come up with the Login page user case for Practice Management System
+-- Used to get the Login page related use case
+Can you get the detailed use case table for Profile Management
+-- Used to get the use case table for Profile Management
+Can you get Patient Demographic Reports typically generated within a Patient Management System
+--Used to get the Patient Demographic reports within a PMS
+Can you get the detailed user stories related to Appointment Scheduling & Management in a Patient Management System
+--Used to get the user stories related to Appointment Scheduling & Management in PMS
+Can you get the Medical History related use cases in the Patient Management Application
+--Used to get Medical History related use cases in the Patient Management Application
+
+
+

@@ -1,0 +1,32 @@
+## Prompts used
+--Generate an Angular component for Medical History with a reactive form including fields like code, description, source, clinicId, siteId.
+Result: Got a boilerplate form with Angular Material design.
+Pitfall: Form fields were not styled properly → needed refinement prompts.
+
+--How do I connect Angular service with backend API endpoints /api/MedicalHistory for GET, POST, PUT, DELETE?
+Result: Received reusable service methods with HttpClient.
+
+--Navigate from search-patient component to medical-history with patientId as parameter.
+Result: Got router.navigate(['/medical-history', patientId]).
+Pitfall: PatientId was showing as undefined. Resolved by prompting AI to review the navigation & ActivatedRoute usage.
+
+--When API fails or data is empty, how to show mock data in Angular Material Table?
+Result: Implemented fallback mock dataset with *ngIf + No records found. message.
+Pitfall: Message didn’t appear first → AI suggested using dataSource.length check.
+
+--Apply same styling as my patient form to medical history form using Angular Material and SCSS.
+Result: Got structured SCSS with .form-row, .form-actions, and responsiveness.
+Pitfall: Needed extra refinements for consistent spacing → solved with iterative prompts.
+
+## Troubleshooting Common Issues-
+-Undefined patientId: AI helped check route parameters.
+-404 API calls: AI guided to verify Swagger endpoints vs Angular calls.
+-Empty table UI: AI provided condition checks for rendering fallback message.
+-Form validation errors: Got prompt-driven validation patterns.
+-CSS/style issues: with multiple prompts it helped to achieve expected style.
+
+## Key Takeaways
+-Smart prompting saved time (hours → minutes).
+-AI acted like a pair programmer for logic + debugging.
+-Iterative prompting was needed for accuracy.
+-Major learning: AI doesn’t replace coding, but accelerates it.

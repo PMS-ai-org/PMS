@@ -1,18 +1,21 @@
 import { AuditableEntity } from "./auditable-entity.model";
 
 export interface Appointment extends AuditableEntity {
-  Id: string;
-  PatientId: string;
-  DoctorId: string;// not present in DB table
-  BookedAt: string;
-  ScheduledAt: string;
-  ReminderSent: string;
-  Status: string;
-  LeadTimeHours: number;
-  Dow: number;
-  HourOfDay: number;
-  SiteId: string;
-  ClinicId: string;
-  TreatmentPlan: string;
-  MedicalHistory: string;// not present in DB table
+  id?: string;
+  patient_id?: string;
+  patientId?: string;
+  patientName?: string;
+  booked_at?: string;
+  bookedAt?: string;
+  scheduled_at?: string;
+  scheduledAt?: string;
+  reminder_sent?: boolean;
+  status?: string;
+  lead_time_hours?: number;
+  dow?: number;
+  hour_of_day?: number;
+  site_id?: string;
+  clinic_id?: string;
+  treatment_plan?: string;
+  notes?: string;
 }

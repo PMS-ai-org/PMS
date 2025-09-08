@@ -1,0 +1,14 @@
+<div class="tile" style="grid-column: 1 / -1;">
+    <div
+        echarts
+        [options]="options$ | async"
+        style="height: 400px; width: 100%;"
+    ></div>
+</div>
+<div class="tile" style="margin-top: 2rem;">
+    <div
+        echarts
+        [options]="treatmentStackedBarOptions$ | async"
+        style="height: 400px; width: 100%;"
+    ></div>
+</div>

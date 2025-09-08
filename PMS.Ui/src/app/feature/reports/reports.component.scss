@@ -1,0 +1,27 @@
+.reports-dashboard {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.tile {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(59, 130, 246, 0.08);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.tile:hover {
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.16);
+}
+
+.clinic-tile {
+  margin-top: 2rem;
+}

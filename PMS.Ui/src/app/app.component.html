@@ -1,13 +1,45 @@
-<mat-toolbar color="primary">
-  <span>PMS UI</span>
-  <span class="spacer"></span>
+@if(isLoggedIn()){
+<mat-sidenav-container class="app-container">
+  @if(role?.length > 0){
+  <mat-toolbar color="primary">
+    <mat-toolbar-row class="top-toolbar-row">
+      <span class="app-title">Patient Portal</span>
 
-  <ng-container *ngIf="auth.isAuthorized()">
-    <button mat-button routerLink="/todos">Todos</button>
-    <button mat-button (click)="auth.logout()">Logout</button>
-  </ng-container>
-</mat-toolbar>
+      @if (role?.toLowerCase() == "admin") {
+      <button mat-button [routerLink]="['/create-staff']">Create Staff</button>
+      <button mat-button [routerLink]="['/permissions']">Permissions</button>
+      }
 
-<main class="main-wrap">
-  <router-outlet></router-outlet>
-</main>
+      <span class="spacer"></span>
+
+      <span class="app-title">Hi, {{userName}}</span>
+      &nbsp;&nbsp;
+      @if (sites && role?.toLowerCase() != "admin") {
+      <mat-form-field appearance="fill" class="site-selector">
+        <mat-label>Select Site</mat-label>
+        <mat-select [(ngModel)]="selectedSite" (selectionChange)="onSiteChange($event.value)">
+          @for (site of sites; track $index) {
+          <mat-option [value]="site.siteId">{{ site.siteName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      }
+
+      <button mat-button class="logout-btn" (click)="logout()">Logout</button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  }
+
+  <mat-topnav-content>
+    <div class="mat-nav-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-topnav-content>
+</mat-sidenav-container>
+}
+@else{
+<pms-login></pms-login>
+}
+
+<pms-loader-component></pms-loader-component>

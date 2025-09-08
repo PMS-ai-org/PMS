@@ -1,0 +1,23 @@
+<div class="filters">
+  <mat-label>Clinic:</mat-label>
+  <mat-select [(ngModel)]="selectedClinicId" (selectionChange)="onClinicChange()">
+    <mat-option [value]="null">All Clinics</mat-option>
+    <mat-option *ngFor="let clinic of clinics" [value]="clinic.id">
+      {{ clinic.name }}
+    </mat-option>
+  </mat-select>
+  
+  <mat-label>Site:</mat-label>
+  <mat-select [(ngModel)]="selectedSiteId" (selectionChange)="onSiteChange()">
+    <mat-option [value]="null">All Sites</mat-option>
+    <mat-option *ngFor="let site of filteredSites" [value]="site.id">
+      {{ site.name }}
+    </mat-option>
+  </mat-select>
+</div>
+
+<div class="dashboard">
+  <div class="chart-card"><div echarts [options]="treemapOptions" class="chart"></div></div>
+  <div class="chart-card"><div echarts [options]="sunburstOptions" class="chart"></div></div>
+  <div class="chart-card map-card"><div echarts [options]="mapOptions" class="chart map"></div></div>
+</div>

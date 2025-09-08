@@ -1,0 +1,118 @@
+<div class="staff-access-container">
+    <mat-card>
+        <mat-card-title>Staff List</mat-card-title>
+        @if(staffList().data.length === 0) {
+        <p>No staff members found.</p>
+        } @else {
+        <mat-table [dataSource]="staffList()" class="mat-elevation-z2 staff-table">
+            <!-- Name -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                <mat-cell *matCellDef="let staff" (click)="onSelectStaff(staff)" class="clickable">
+                    {{ staff.fullName }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+                <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+                <mat-cell *matCellDef="let staff"> {{ staff.email }} </mat-cell>
+            </ng-container>
+
+            <!-- Role -->
+            <ng-container matColumnDef="role">
+                <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+                <mat-cell *matCellDef="let staff"> {{ staff.role }} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="['name','email','role']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['name','email', 'role'];"></mat-row>
+        </mat-table>
+        }
+    </mat-card>
+
+    <ng-template #siteAccessDialog>
+        <form [formGroup]="siteGroupForm" (ngSubmit)="onSubmit()">
+            @if (selectedStaff) {
+            <h2 mat-dialog-title>Patient Access - {{ selectedStaff.fullName }}</h2>
+            }
+            <mat-dialog-content>
+                <mat-card>
+                    <mat-card-title></mat-card-title>
+
+                    <ng-template matStepLabel>Assign Sites</ng-template>
+
+                    @if (sitesDataSource) {
+                    <!-- Table for Sites & Features -->
+                    <table mat-table [dataSource]="sitesDataSource" class="mat-elevation-z8 w-full mt-4">
+
+                        <!-- Site Name -->
+                        <ng-container matColumnDef="siteName">
+                            <th mat-header-cell *matHeaderCellDef>Site</th>
+                            <td mat-cell *matCellDef="let siteGroup">{{ siteGroup.get('siteName')?.value }}</td>
+                        </ng-container>
+
+                        <!-- Features Table -->
+                        <ng-container matColumnDef="features">
+                            <th mat-header-cell *matHeaderCellDef>Features</th>
+                            <td mat-cell *matCellDef="let siteGroup">
+                                <table mat-table [dataSource]="siteGroup.get('features').controls" class="w-full">
+                                    <ng-container matColumnDef="featureName">
+                                        <th mat-header-cell *matHeaderCellDef>Feature</th>
+                                        <td mat-cell *matCellDef="let feature">{{ feature.get('featureName')?.value }}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="canView">
+                                        <th mat-header-cell *matHeaderCellDef>View</th>
+                                        <td mat-cell *matCellDef="let feature">
+                                            <mat-checkbox [formControl]="feature.get('canView')"></mat-checkbox>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="canAdd">
+                                        <th mat-header-cell *matHeaderCellDef>Add</th>
+                                        <td mat-cell *matCellDef="let feature">
+                                            <mat-checkbox [formControl]="feature.get('canAdd')"></mat-checkbox>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="canEdit">
+                                        <th mat-header-cell *matHeaderCellDef>Edit</th>
+                                        <td mat-cell *matCellDef="let feature">
+                                            <mat-checkbox [formControl]="feature.get('canEdit')"></mat-checkbox>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="canDelete">
+                                        <th mat-header-cell *matHeaderCellDef>Delete</th>
+                                        <td mat-cell *matCellDef="let feature">
+                                            <mat-checkbox [formControl]="feature.get('canDelete')"></mat-checkbox>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row
+                                        *matHeaderRowDef="['featureName','canView','canAdd','canEdit','canDelete']">
+                                    </tr>
+                                    <tr mat-row
+                                        *matRowDef="let row; columns: ['featureName','canView','canAdd','canEdit','canDelete']">
+                                    </tr>
+                                </table>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="['siteName','features']"></tr>
+                        <tr mat-row *matRowDef="let row; columns: ['siteName','features']"></tr>
+                    </table>
+                    }
+
+                </mat-card>
+            </mat-dialog-content>
+
+
+            <mat-dialog-actions align="end">
+                <button mat-button mat-dialog-close>Cancel</button>
+                <button mat-raised-button color="primary" type="submit">Save</button>
+            </mat-dialog-actions>
+        </form>
+    </ng-template>
+</div>

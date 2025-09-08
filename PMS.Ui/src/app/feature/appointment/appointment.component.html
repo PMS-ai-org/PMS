@@ -1,0 +1,103 @@
+<h2 *ngIf="userRole === 'Staff'">Appointments</h2>
+<h2 *ngIf="userRole === 'Doctor'">My Appointments</h2>
+<!-- Receptionist View -->
+<div *ngIf="userRole === 'Staff'" class="appointment-container">
+
+  <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+    <!-- Search Patient -->
+    <app-patient-autocomplete (patientSelected)="onPatientSelected($event)"></app-patient-autocomplete>
+
+    <!-- Doctor + Department -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Doctor</mat-label>
+        <mat-select formControlName="doctorId">
+          <mat-option *ngFor="let doctor of doctors" [value]="doctor.userId">
+            {{ doctor.fullName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Department</mat-label>
+        <mat-select formControlName="departmentId">
+          <mat-option *ngFor="let dept of departments" [value]="dept.id">
+            {{ dept.name }}<span *ngIf="dept.speciality"> ({{ dept.speciality }})</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Date + Time -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Time</mat-label>
+        <input matInput type="time" formControlName="time">
+      </mat-form-field>
+    </div>
+
+    <!-- Reason -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Reason for Visit</mat-label>
+      <textarea matInput formControlName="reason"></textarea>
+    </mat-form-field>
+
+    <!-- Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes"></textarea>
+    </mat-form-field>
+
+    <!-- Submit -->
+    <button mat-raised-button color="primary" class="submit-btn" [disabled]="!appointmentForm.valid">
+      Create Appointment
+    </button>
+  </form>
+</div>
+
+<!-- Doctor View -->
+<div *ngIf="userRole === 'Doctor'" class="appointment-container">
+  <form [formGroup]="appointmentDcotorForm" (ngSubmit)="edit()" [disable]="!appointmentDcotorForm.touched || !appointmentDcotorForm.valid">
+  <mat-card *ngFor="let appointment of appointments" class="doctor-card">
+    <mat-card-title>
+      Patient Name: {{ appointment.patientName }}
+    </mat-card-title>
+    <mat-card-subtitle>
+      Booked At: {{ appointment.bookedAt | date:'fullDate' }}<br>
+      Scheduled At: {{ appointment.scheduledAt | date:'fullDate' }}
+    </mat-card-subtitle>
+    <mat-card-content>
+      <p><strong>Notes:</strong> {{ appointment.notes }}</p>
+    </mat-card-content>
+    <mat-card-content *ngIf="editingId === appointment.id; else viewMode">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="scheduled">Scheduled</mat-option>
+          <mat-option value="done">Done</mat-option>
+          <mat-option value="cancelled">Cancelled</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Treatment Plan</mat-label>
+        <textarea matInput formControlName="treatmentPlan"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="submit-btn" (click)="updateAppointment(appointment)" type="button">Update</button>
+      <button mat-button color="warn" (click)="cancelEdit()" type="button">Cancel</button>
+    </mat-card-content>
+    <ng-template #viewMode>
+      <button mat-button color="primary" (click)="editAppointment(appointment)">Edit</button>
+      <button mat-button color="warn" (click)="deleteAppointment(appointment)">Delete</button>
+    </ng-template>
+  </mat-card>
+</form>
+</div>
+
+

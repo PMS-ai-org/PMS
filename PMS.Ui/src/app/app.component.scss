@@ -1,2 +1,57 @@
-.spacer { flex: 1 1 auto; }
-.main-wrap { padding: 16px; }
+mat-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+.mat-nav-content {
+  margin-top: 64px; // Adjust to your toolbar height
+  padding: 2rem 1rem;
+  background: #fafafa;
+  border-radius: 0.5rem;
+  min-height: 60vh;
+}
+@media (max-width: 599px) {
+  .mat-nav-content {
+    margin-top: 56px; // For mobile
+  }
+}.top-toolbar-row {
+  display: flex;
+  align-items: center;
+  height: 64px; /* Default toolbar height */
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Form field wrapper */
+.site-selector {
+  //background-color: white;
+  margin-top: 30px;
+  border-radius: 4px;
+  min-width: 260px;
+  margin-right: 16px;
+}
+
+/* Make sure mat-select fits toolbar height */
+.site-selector .mat-form-field-flex {
+  height: 40px;
+  align-items: center;
+  padding: 0 8px;
+}
+
+/* Optional: fine-tune padding */
+.site-selector .mat-select-trigger {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+/* Logout button */
+.logout-btn {
+  color: white;
+  font-weight: bold;
+  margin-right: 16px;
+}

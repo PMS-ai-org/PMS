@@ -1,0 +1,17 @@
+.tile {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+  h3 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .chart {
+    width: 100%;
+    height: 322px;
+  }
+}

@@ -1,0 +1,33 @@
+Prompt 1:
+“Generate an Angular component named appointment with a reactive form to capture patient name, date, time, and reason for appointment. 
+Include form validation and Material UI form controls.”
+
+Prompt 2:
+“Create an Angular service for CRUD operations (GET, POST, PUT, DELETE) on appointments.
+Integrate this service with the appointment component so that the form submission creates a new appointment and displays the updated appointment list.”
+
+Prompt 3:
+“Enhance the appointment component to fetch and display a list of appointments from the API on initialization.
+Include a loader while the data is being fetched and handle API errors.”
+
+Prompt 4:
+“Add update and delete functionality in the appointment component. 
+Integrate with the API to allow editing and deleting appointments, with confirmation dialogs and success/error notifications.”
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+Learnings:
+
+## Gained hands-on experience in integrating Angular Material UI with backend APIs for seamless data flow.
+
+## Improved skills in designing modular and reusable components for scheduling workflows.
+
+## Enhanced understanding of handling form validations, error states, and user-friendly UI interactions.
+
+## Learned to leverage AI tools for faster problem-solving, debugging assistance, and exploring alternative design approaches.
+
+Challenges:
+
+## Ensuring smooth synchronization between frontend forms and backend CRUD operations.
+
+## Balancing UI customization with maintaining consistency in Material design standards.

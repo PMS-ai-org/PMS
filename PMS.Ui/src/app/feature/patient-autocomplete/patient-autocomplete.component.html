@@ -1,0 +1,49 @@
+<mat-form-field class="full-width" appearance="outline">
+  <mat-label>Search Patients</mat-label>
+  <input matInput [formControl]="searchCtrl" [matAutocomplete]="auto" (keyup.enter)="onSearchClick()">
+  <button mat-button *ngIf="searchCtrl.value" matSuffix mat-icon-button aria-label="Clear" (click)="searchCtrl.setValue('')">
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-form-field>
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)" [displayWith]="displayPatient.bind(this)">
+  <mat-option *ngFor="let patient of filteredPatients$ | async" [value]="patient">
+    {{ patient.full_name }}
+  </mat-option>
+</mat-autocomplete>
+
+<div *ngIf="showGrid && results.length > 0" class="patient-grid">
+  <table mat-table [dataSource]="results" class="mat-elevation-z2">
+    <ng-container matColumnDef="fullName">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let patient" (click)="onRowClick(patient)"> {{patient.full_name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="dob">
+      <th mat-header-cell *matHeaderCellDef> DOB </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.dob | date}} </td>
+    </ng-container>
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef> Gender </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.gender}} </td>
+    </ng-container>
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef> Phone </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.phone}} </td>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> Email </th>
+      <td mat-cell *matCellDef="let patient"> {{patient.email}} </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></tr>
+  </table>
+  <mat-paginator
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</div>
+<mat-card *ngIf="showGrid && results.length === 0" class="no-results-card">
+  <mat-card-content>No patients found.</mat-card-content>
+</mat-card>

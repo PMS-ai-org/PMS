@@ -1,0 +1,62 @@
+1. Initial Prompt
+I started by asking the API to generate an Angular component for Medical History with a reactive form, including fields like:
+	• code
+	• description
+	• source
+	• clinicId
+	• siteId
+This gave me a boilerplate reactive form with Angular Material, but it was not styled properly.
+➡️ Refinement Needed: Adjusted Material form layout and styling.
+
+2. Service Integration Prompt
+Next, I asked:
+	"How do I connect Angular service with backend API endpoints /api/MedicalHistory for GET, POST, PUT, DELETE?"
+The API generated:
+	• A reusable Angular service using HttpClient.
+	• CRUD methods for the /api/MedicalHistory endpoints.
+
+3. Patient Search Page Prompt
+Then, I prompted:
+	"Generate a patient search component with Angular Material table, search bar, pagination, and sorting."
+The API produced:
+	• Angular Material table setup (MatTableDataSource, MatSort, MatPaginator).
+	• A search input field with debounce using RxJS (debounceTime, distinctUntilChanged).
+	• Pagination & sorting logic.
+
+4. Action Buttons Prompt
+I asked:
+	"Add action buttons for edit, delete, medical history, and appointments with role-based access control."
+The API updated the component with:
+	• Action column in the table.
+	• Edit → Navigates to patient register.
+	• Delete → Opens a confirmation dialog.
+
+
+5. Delete Confirmation Prompt
+Prompt:
+	"Add a confirmation dialog before deleting a patient record."
+The API suggested a ConfirmDialogComponent:
+	• Used Angular Material Dialog.
+	• Message: “Are you sure you want to delete {patient_name}?”
+	• If confirmed, API call deletes patient and updates the table.
+
+6. Loader & UX Prompt
+Prompt:
+	"Show a loader (spinner) while fetching patient results."
+The API added:
+	• BehaviorSubject<boolean> → isLoading.
+	• Loader overlay with mat-progress-spinner.
+	• Display toggle based on API request state.
+
+7. API Endpoint Prompt
+Finally, I asked:
+	"Define the REST API endpoints for search, delete, and patient details navigation."
+The API documented:
+	• Search Patients → GET /api/patients/search?query={term}&page={page}&pageSize={pageSize}
+	• Delete Patient → DELETE /api/patients/{id}
+	• Navigation endpoints for:
+		○ Register Patient
+		○ Profile Page
+		○ Medical History
+		○ Appointment
+
