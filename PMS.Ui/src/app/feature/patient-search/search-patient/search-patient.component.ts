@@ -18,6 +18,7 @@ import { RepositoryService } from '../../../services/repository.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Features, Site } from '../../../core/models/user.models';
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-search-patient',
@@ -78,7 +79,7 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router,
-    private patientService: PatientService, private repo: RepositoryService, private authSession: AuthSessionService) {
+    private patientService: PatientService, private repo: RepositoryService, private authSession: AuthSessionService, private toastService: ToastService) {
     effect(() => {
       const siteData = this.authSession.siteData();
       this.getFeaturesListForSite(siteData);
@@ -188,9 +189,10 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
             next: () => {
               this.dataSource.data = this.dataSource.data.filter(p => p.id !== patient.id);
               this.paginator.length = this.dataSource.data.length;
+              this.toastService.success(`Successfully deleted patient ${patient.full_name}`);
             },
             error: () => {
-              console.error(`❌ Error deleting patient ${patient.id}:`);
+              this.toastService.error(`Error deleting patient ${patient.full_name}`);
             }
           });
         }
