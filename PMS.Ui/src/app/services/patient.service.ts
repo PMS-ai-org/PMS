@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { RepositoryService } from './repository.service';
 import { Router } from '@angular/router';
 import { Patient } from '../models/patient.model';
-import { environment } from '../../environments/environment';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class PatientService {
@@ -13,7 +13,7 @@ export class PatientService {
   private patientsSubject = new BehaviorSubject<Patient | undefined>(undefined);
   patients$: Observable<Patient | undefined> = this.patientsSubject.asObservable();
 
-  constructor(private http: HttpClient, private repositoryService: RepositoryService, private repo: RepositoryService, private router: Router) { }
+  constructor(private http: HttpClient, private repositoryService: RepositoryService, private repo: RepositoryService, private router: Router,  private toast: ToastService) { }
 
   getAll(): Observable<Patient[]> {
     return this.http.get<Patient[]>(this.apiUrl);
@@ -29,28 +29,32 @@ export class PatientService {
         this.patientsSubject.next(patient);
       },
       error: (err) => {
-        console.error(`❌ Error fetching patient ${id}:`, err);
+        this.toast.error(`Error fetching patient ${id}: ${err.message}`);
       }
     });
   }
 
-  savePatient(patient: Patient, patientId: string | null): void {
+  savePatient(patient: Patient, patientId: string | null, isNavigate = true): void {
     if(patientId){
       this.repo.updatePatient(patientId, patient).subscribe({
         next: () => {
-          this.router.navigate(['/patient/profile', patientId]);
+          if (isNavigate) {
+            this.router.navigate(['/patient/profile', patientId]);
+          }
+          this.toast.success('Patient saved successfully');
         },
         error: (err) => {
-          console.error('❌ Error updating patient:', err);
+          this.toast.error('Error updating patient');
         }
       });
     }else{
       this.repo.addPatient(patient).subscribe({
       next: (newPatient) => {
         this.router.navigate(['/patient/profile', newPatient.id]);
+        this.toast.success('Patient added successfully');
       },
       error: (err) => {
-        console.error('❌ Error adding patient:', err);
+        this.toast.error('Error adding patient');
       }
     });
     }
@@ -66,20 +70,4 @@ export class PatientService {
       }
     });
   }
-
-  // getById(id: string): Observable<Patient> {
-  //   return this.http.get<Patient>(`${this.apiUrl}/${id}`);
-  // }
-
-  // create(patient: Patient): Observable<Patient> {
-  //   return this.http.post<Patient>(this.apiUrl, patient);
-  // }
-
-  // update(id: string, patient: Patient): Observable<void> {
-  //   return this.http.put<void>(`${this.apiUrl}/${id}`, patient);
-  // }
-
-  // delete(id: string): Observable<void> {
-  //   return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  // }
 }

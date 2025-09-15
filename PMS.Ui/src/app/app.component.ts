@@ -8,11 +8,12 @@ import { AuthSessionService } from './core/auth/auth-session.service';
 import { LoginComponent } from './feature/auth/login/login.component';
 import { Features, Site } from './core/models/user.models';
 import { LoaderComponent } from './core/shared/loader-component/loader-component';
+import { ToastContainerComponent } from './shared/toast-container/toast-container.component';
 
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'pms-root',
-  imports: [RouterOutlet, RouterModule, MaterialModule, FormsModule, LoginComponent, LoaderComponent],
+  imports: [RouterOutlet, RouterModule, MaterialModule, FormsModule, LoginComponent, LoaderComponent, ToastContainerComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

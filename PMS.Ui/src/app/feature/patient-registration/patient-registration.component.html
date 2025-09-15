@@ -1,33 +1,80 @@
 <div class="patient-form-container">
-  <mat-card class="auth-card">
-    <mat-card-title>Patient Information</mat-card-title>
-    <mat-card-content class="info-card">
-      <div class="info-row">
-        <div><strong>Full Name:</strong> {{ form.get('firstName')?.value }} {{ form.get('lastName')?.value }}</div>
-        <div><strong>Age:</strong> {{ calculatedAge > 0 ? calculatedAge : '' }}</div>
+  <mat-card class="auth-card snapshot-card" aria-labelledby="snapshotHeading">
+    <div class="snapshot-header">
+      <div class="avatar" [attr.aria-label]="'Initials avatar for ' + (fullName || 'patient')">{{ initials }}</div>
+      <div class="title-block">
+        <h2 id="snapshotHeading">Patient Snapshot</h2>
+        <div class="subline">Completion {{ completionPercent }}%</div>
+        <mat-progress-bar mode="determinate" [value]="completionPercent"></mat-progress-bar>
       </div>
-
-      <div class="info-row">
-        <div><strong>Phone:</strong> {{ form.get('phone')?.value }}</div>
-        <div><strong>Email:</strong> {{ form.get('email')?.value }}</div>
+      <span class="snapshot-spacer"></span>
+      <button mat-icon-button matTooltip="Refresh" type="button" aria-label="Refresh snapshot"
+        (click)="onCancel(false)">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="snapshot-sections">
+      <div class="meta">
+        <div class="field"><label>Name</label><span [matTooltip]="fullName || 'Not provided'">{{ fullName || '—'
+            }}</span></div>
+        <div class="field"><label>Age</label><span>{{ calculatedAge || '—' }}</span></div>
+        <div class="field"><label>Gender</label><span>{{ form.value.gender || '—' }}</span></div>
+        <div class="field"><label>Phone</label><span>{{ form.value.phone || '—' }}<button *ngIf="form.value.phone"
+              mat-icon-button type="button" (click)="copy(form.value.phone,'Phone')" matTooltip="Copy phone"
+              class="mini-icon"><mat-icon>content_copy</mat-icon></button></span></div>
+        <div class="field"><label>Email</label><span class="truncate" [matTooltip]="form.value.email">{{
+            form.value.email || '—' }}<button *ngIf="form.value.email" mat-icon-button type="button"
+              (click)="copy(form.value.email,'Email')" matTooltip="Copy email"
+              class="mini-icon"><mat-icon>content_copy</mat-icon></button></span></div>
+        <div class="field" *ngIf="addressSummary"><label>Address</label><span class="truncate"
+            [matTooltip]="addressSummary">{{ addressSummary }}</span></div>
+        <div class="field" *ngIf="showBloodGroup"><label>Blood Group</label><span>{{ form.value.bloodGroup || '—'
+            }}</span></div>
       </div>
-
-      <div class="info-row">
-        <div><strong>Blood Group:</strong> {{ form.get('bloodGroup')?.value }}</div>
-        <div><strong>Allergies:</strong> {{ form.get('allergies')?.value }}</div>
+      <div class="tags" *ngIf="conditionsList.length">
+        <div class="tag-header">
+          <label>Conditions</label>
+          <div class="tag-meta" *ngIf="conditionsList.length">
+            <span class="count" matTooltip="Total conditions">{{ conditionsList.length }}</span>
+            <button mat-icon-button type="button" (click)="toggleConditions()" *ngIf="conditionsList.length>6"
+              [matTooltip]="showAllConditions? 'Collapse' : 'Expand'">
+              <mat-icon>{{ showAllConditions ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+        <mat-chip-listbox aria-label="Conditions list">
+          <mat-chip *ngFor="let c of conditionsVisible" color="primary" selected>{{ c }}</mat-chip>
+        </mat-chip-listbox>
       </div>
-    </mat-card-content>
+      <div class="tags" *ngIf="medicationsList.length">
+        <div class="tag-header">
+          <label>Medications</label>
+          <div class="tag-meta" *ngIf="medicationsList.length">
+            <span class="count" matTooltip="Total medications">{{ medicationsList.length }}</span>
+            <button mat-icon-button type="button" (click)="toggleMedications()" *ngIf="medicationsList.length>6"
+              [matTooltip]="showAllMedications? 'Collapse' : 'Expand'">
+              <mat-icon>{{ showAllMedications ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+        <mat-chip-listbox aria-label="Medications list">
+          <mat-chip *ngFor="let m of medicationsVisible" color="accent" selected>{{ m }}</mat-chip>
+        </mat-chip-listbox>
+      </div>
+    </div>
   </mat-card>
 
-  <mat-card class="auth-card">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" aria-labelledby="patientFormHeading">
+  <mat-card class="auth-card form-card compact-surface">
+    <form class="compact-form" [formGroup]="form" (ngSubmit)="onSubmit()" aria-labelledby="patientFormHeading">
 
       <!-- Basic Details -->
       <h2 id="patientFormHeading">Patient Details</h2>
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>First Name</mat-label>
-          <input matInput formControlName="firstName" required aria-required="true" aria-label="First Name" />
+          <input matInput formControlName="firstName" maxlength="64" required aria-required="true"
+            aria-label="First Name" />
           <mat-error *ngIf="form.get('firstName')?.hasError('required')">
             First Name is required
           </mat-error>
@@ -38,7 +85,8 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Last Name</mat-label>
-          <input matInput formControlName="lastName" required aria-required="true" aria-label="Last Name" />
+          <input matInput formControlName="lastName" maxlength="64" required aria-required="true"
+            aria-label="Last Name" />
           <mat-error *ngIf="form.get('lastName')?.hasError('required')">
             Last Name is required
           </mat-error>
@@ -48,11 +96,13 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Date of Birth</mat-label>
+          <mat-label>Date of Birth (MM/DD/YYYY)</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" aria-label="Date of Birth"
-            (dateChange)="calculateAge()" />
+            (dateChange)="calculateAge()" (input)="onDobInput($event)" />
           <mat-datepicker-toggle matSuffix [for]="picker" aria-label="Choose Date of Birth"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="form.get('dateOfBirth')?.hasError('required')">DOB is required</mat-error>
+          <mat-error *ngIf="form.get('dateOfBirth')?.hasError('invalidDate')">Invalid date</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -69,34 +119,51 @@
       <h2>Contact Details</h2>
       <div class="form-row">
         <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
-          <input matInput type="tel" maxlength="10" formControlName="phone" aria-label="Phone Number" />
+          <mat-label>Phone (###-###-####)</mat-label>
+          <input matInput type="tel" maxlength="12" formControlName="phone" (input)="onPhoneInput($event)"
+            aria-label="Phone Number" />
+          <mat-error *ngIf="form.get('phone')?.invalid">Invalid phone format</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" aria-label="Email Address" />
+          <input matInput formControlName="email" maxlength="64" aria-label="Email Address" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Address</mat-label>
-          <textarea matInput formControlName="address" aria-label="Address"></textarea>
+          <mat-label>Address Line</mat-label>
+          <input matInput formControlName="addressLine" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>City</mat-label>
+          <input matInput formControlName="city" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>State</mat-label>
+          <input matInput formControlName="state" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Zip</mat-label>
+          <input matInput formControlName="zip" inputmode="numeric" minlength="6" maxlength="10" (input)="onZipInput($event)" />
+          <mat-error *ngIf="zipCtrl?.value && zipCtrl?.hasError('minlength')">Minimum 6 digits</mat-error>
+          <mat-error *ngIf="zipCtrl?.value && zipCtrl?.hasError('maxlength')">Maximum 10 digits</mat-error>
+          <mat-error *ngIf="zipCtrl?.value && zipCtrl?.hasError('pattern')">Digits only</mat-error>
         </mat-form-field>
       </div>
 
       <!-- Medical Details -->
       <h2>Medical Details</h2>
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Blood Group</mat-label>
-          <mat-select formControlName="bloodGroup" aria-label="Select Blood Group">
-            <mat-option *ngFor="let bg of bloodGroups" [value]="bg">
-              {{ bg }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <div class="form-row medical-row compact-row">
+        <ng-container *ngIf="showBloodGroup">
+          <mat-form-field appearance="outline">
+            <mat-label>Blood Group</mat-label>
+            <mat-select formControlName="bloodGroup" aria-label="Select Blood Group">
+              <mat-option *ngFor="let bg of bloodGroups" [value]="bg">{{ bg }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" [matTooltip]="getAllergiesTooltip()" matTooltipPosition="above">
           <mat-label>Allergies</mat-label>
           <mat-select formControlName="allergies" multiple aria-label="Select Allergies">
             <mat-option *ngFor="let allergy of allergyOptions" [value]="allergy">
@@ -105,38 +172,45 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" [matTooltip]="getConditionsTooltip()" matTooltipPosition="above">
           <mat-label>Conditions</mat-label>
           <mat-select formControlName="conditions" multiple aria-label="Select Conditions">
-            <mat-option *ngFor="let data of conditions" [value]="data">
-              {{ data }}
-            </mat-option>
+            <mat-option *ngFor="let data of conditions" [value]="data">{{ data }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field class="compact-field" appearance="outline" [matTooltip]="getMedicationsTooltip()"
+          matTooltipPosition="above">
           <mat-label>Medications</mat-label>
           <mat-select formControlName="medications" multiple aria-label="Select Medications">
-            <mat-option *ngFor="let data of medications" [value]="data">
-              {{ data }}
-            </mat-option>
+            <mat-option *ngFor="let data of medications" [value]="data">{{ data }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="notes-field">
           <mat-label>Notes</mat-label>
-          <textarea matInput formControlName="notes" aria-label="notes"></textarea>
+          <textarea matInput rows="3" formControlName="notes" aria-label="notes"></textarea>
         </mat-form-field>
       </div>
 
       <!-- Submit -->
       <div class="form-actions">
-        <button mat-raised-button color="primary" type="button" (click)="onCancel(false)"
-          aria-label="Cancel Form">Reset</button>
-        <button mat-raised-button type="button" (click)="onCancel(true)"
-          aria-label="Cancel Form">Cancel</button>
-        <button mat-raised-button color="primary" type="submit" aria-label="Submit Form">Submit</button>
+        <button mat-stroked-button type="button" (click)="onCancel(false)">Reset</button>
+        <button mat-button type="button" (click)="onCancel(true)">Cancel</button>
+        <span class="spacer"></span>
+        <button mat-flat-button *ngIf="!patientId" color="primary" type="button" (click)="saveAndAddAnother()"
+          [disabled]="savingAnother || submitting">
+          <mat-progress-spinner *ngIf="savingAnother" diameter="18" mode="indeterminate"></mat-progress-spinner>
+          <span *ngIf="!savingAnother">Save & Add Another</span>
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="submitting || savingAnother">
+          <mat-progress-spinner *ngIf="submitting" diameter="18" mode="indeterminate"></mat-progress-spinner>
+          <span *ngIf="!submitting">Save</span>
+        </button>
       </div>
     </form>
+    <div class="loading-overlay" *ngIf="submitting || savingAnother">
+      <mat-progress-spinner diameter="60" mode="indeterminate"></mat-progress-spinner>
+    </div>
   </mat-card>
 </div>
