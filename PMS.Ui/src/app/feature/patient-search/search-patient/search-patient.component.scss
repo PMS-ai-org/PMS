@@ -1,25 +1,109 @@
-.search-container {
-  margin: 20px auto;
-  padding: 10px;
+// Variables (light theming hooks)
+$bg: var(--bg, #ffffff);
+$surface: #ffffff;
+$border: #e0e6ed;
+$primary: #5a27c5;
+$primary-hover: #4a19b9;
+$text-muted: #5f6b7a;
+$row-hover: #f5f7fa;
 
-  .searchButton{
-    height: 55px;
-    margin-left: 20px;
+.search-container {
+  padding: 1rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .search-card, .results-card {
+    background: $surface;
   }
 
-  .flex{
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+
+  .search-field { flex: 1 1 300px; }
+
+  .actions {
+    display: flex;
+    gap: .75rem;
+    button { height: 54px; }
+  }
+
+  .results-card { padding: 0 0 .5rem; }
+
+  .table-wrapper {
+    position: relative;
+    overflow: auto;
+    max-height: calc(100vh - 330px);
+    border-top: 1px solid $border;
+  }
+
+  table { width: 100%; border-spacing: 0; }
+
+  th.mat-header-cell { font-weight: 600; color: #2f3a48; background: #fafbfc; }
+  .sticky-header { position: sticky; top: 0; z-index: 2; }
+
+  tr.data-row:nth-child(even) { background: #fcfdff; }
+  tr.data-row:hover { background: $row-hover; }
+
+  td.mat-cell, th.mat-header-cell { border-bottom: 1px solid $border; }
+
+  .actions-cell { white-space: nowrap; }
+  .actions-cell button { margin-right: 2px; }
+
+  .loader-overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
     justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(2px);
+    background: rgba(255,255,255,0.6);
+    z-index: 5;
   }
 
-  table {
-    width: 100%;
-    margin-top: 20px;
-  }
+  .empty-start { text-align: center; margin-top: 4rem; color: $text-muted; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+  .empty-start mat-icon { font-size: 48px; width: 48px; height: 48px; color: $primary; opacity: .35; }
 
-  .box-shadow {
-    box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
-              0px 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  .empty-row .empty { text-align: center; padding: 2rem 1rem; color: $text-muted; font-style: italic; }
+
+  .link { padding: 0 !important; min-width: 0; font-weight: 600; }
+
+  mat-paginator { border-top: 1px solid $border; background: transparent; }
+
+  @media (max-width: 900px) {
+    .actions { width: 100%; justify-content: flex-start; }
+    .table-wrapper { max-height: unset; }
+    th.mat-header-cell, td.mat-cell { padding: .5rem .75rem; }
   }
+}
+
+// Compact variant (smaller field & buttons)
+.search-container.compact {
+  // Narrower field width and smaller height
+  .search-field { flex: 0 1 420px; }
+
+  // Angular Material (MDC) form field structure overrides
+  // Deep selectors to override MDC default (only for this component scope)
+  ::ng-deep .compact-field .mat-mdc-text-field-wrapper { min-height: 36px !important; height: 36px !important; }
+  ::ng-deep .compact-field .mat-mdc-form-field-infix { padding: 4px 0 4px 0 !important; }
+  ::ng-deep .compact-field .mat-mdc-form-field-flex { align-items: center; }
+  ::ng-deep .compact-field input.mat-mdc-input-element { padding: 0 8px !important; height: 26px !important; font-size: 13px; }
+  ::ng-deep .compact-field .mat-mdc-form-field-subscript-wrapper { display: none; }
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+
+  // Buttons
+  .actions button.mat-mdc-button-base { 
+    height: 36px; 
+    min-height: 36px; 
+    line-height: 36px; 
+    padding: 0 14px; 
+    font-size: 13px; 
+    font-weight: 500;
+  }
+  .actions span { font-size: 13px; }
+  .toolbar { gap: .6rem; }
 }
