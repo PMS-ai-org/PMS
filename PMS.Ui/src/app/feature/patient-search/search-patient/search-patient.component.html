@@ -58,24 +58,19 @@
         </ng-container>
 
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef>Action</th>
-          <td mat-cell *matCellDef="let patient" class="actions-cell">
-            @if(canEditProfile){
-            <button mat-icon-button color="primary" matTooltip="Edit" (click)="onEdit(patient.id)">
-              <mat-icon>edit</mat-icon>
-            </button>}
-            @if(canDeleteProfile){
-            <button mat-icon-button color="warn" matTooltip="Delete" (click)="deletePatient(patient)">
-              <mat-icon>delete</mat-icon>
-            </button>}
-            @if(showmedicalhistory){
-            <button mat-icon-button matTooltip="Medical History" (click)="onMedicalHistory(patient)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+          <td mat-cell *matCellDef="let patient">
+            <button mat-icon-button (click)="onEdit(patient.id)"> <mat-icon>edit</mat-icon> </button>
+          
+            <button mat-icon-button (click)="deletePatient(patient)"> <mat-icon>delete</mat-icon> </button>
+            
+            <button mat-icon-button (click)="onMedicalHistory(patient)" matTooltip="View Medical History">
               <mat-icon>medical_services</mat-icon>
-            </button>}
-            @if(showappointment){
+            </button>
+            
             <button mat-icon-button matTooltip="View Appointments" (click)="appointmentNavigation()">
               <mat-icon>event</mat-icon>
-            </button>}
+            </button>
           </td>
         </ng-container>
 

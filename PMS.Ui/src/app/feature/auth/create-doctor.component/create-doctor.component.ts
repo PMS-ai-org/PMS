@@ -66,7 +66,8 @@ export class CreateDoctorComponent implements OnInit {
 
   onClinicChange(clinicId: string) {
     this.clinicService.getSitesByClinic(clinicId).subscribe(data => {
-      this.sites = data;
+      this.sites = data.sort((a: any, b: any) => a.name.localeCompare(b.name));
+      
     });
   }
 
@@ -77,30 +78,32 @@ export class CreateDoctorComponent implements OnInit {
   onSitesChange(selectedSiteIds: string[]): void {
     this.sitesFormArray.clear();
 
-    selectedSiteIds.forEach(id => {
-      const site = this.sites.find(s => s.id === id);
-      if (site) {
-        const featuresArray = new FormArray(
-          this.features.map(f => new FormGroup({
-            featureId: new FormControl(f.featureId),
-            featureName: new FormControl(f.featureName),
-            canView: new FormControl(false),
-            canAdd: new FormControl(false),
-            canEdit: new FormControl(false),
-            canDelete: new FormControl(false)
-          }))
-        );
+  // Sort the selected sites based on site name
+  const sortedSites = this.sites
+    .filter(s => selectedSiteIds.includes(s.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-        this.sitesFormArray.push(
-          new FormGroup({
-            siteId: new FormControl(site.id),
-            siteName: new FormControl(site.name),
-            features: featuresArray
-          })
-        );
-      }
-    });
-  }
+  sortedSites.forEach(site => {
+    const featuresArray = new FormArray(
+      this.features.map(f => new FormGroup({
+        featureId: new FormControl(f.featureId),
+        featureName: new FormControl(f.featureName),
+        canView: new FormControl(false),
+        canAdd: new FormControl(false),
+        canEdit: new FormControl(false),
+        canDelete: new FormControl(false)
+      }))
+    );
+
+       this.sitesFormArray.push(
+      new FormGroup({
+        siteId: new FormControl(site.id),
+        siteName: new FormControl(site.name),
+        features: featuresArray
+      })
+    );
+  });
+}
 
   get sitesDataSource() {
     return this.sitesFormArray.controls.slice();

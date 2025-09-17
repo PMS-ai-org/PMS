@@ -1,6 +1,6 @@
 <div class="staff-access-container">
     <mat-card>
-        <mat-card-title>Staff List</mat-card-title>
+        <mat-card-title class="staff-header">Staff List</mat-card-title>
         @if(staffList().data.length === 0) {
         <p>No staff members found.</p>
         } @else {
@@ -9,7 +9,7 @@
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
                 <mat-cell *matCellDef="let staff" (click)="onSelectStaff(staff)" class="clickable">
-                    {{ staff.fullName }}
+                    <a mat-button color="primary">{{ staff.fullName }}</a>
                 </mat-cell>
             </ng-container>
 

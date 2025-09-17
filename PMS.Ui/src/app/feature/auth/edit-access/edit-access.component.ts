@@ -50,7 +50,10 @@ export class EditAccess {
   }
 
   onSelectStaff(staff: any) {
-    console.log(staff);
+    if (this.dialog.openDialogs.length > 0) {
+    return;
+    }
+
     this.selectedStaff = staff;
     this.clinicService.getStaffPermission(staff.userId).subscribe((res: any[]) => {
       this.patientAccess.set(new MatTableDataSource(res));
@@ -59,7 +62,7 @@ export class EditAccess {
       const siteData = this.patientAccess().data[0] as any;
 
       const sites = siteData?.sites as any[];
-      sites?.forEach((id: any) => {
+      sites?.sort((a, b) => a.siteName.localeCompare(b.siteName))?.forEach((id: any) => {
         const featuresArray = new FormArray(
           id?.features.map((f: any) => new FormGroup({
             featureId: new FormControl(f.featureId),
@@ -85,6 +88,10 @@ export class EditAccess {
   }
 
   openDialog() {
+     // Prevent multiple dialogs from opening
+    if (this.dialog.openDialogs.length > 0) {
+      return;
+    }
     this.dialog.open(this.siteAccessDialog, {
       width: '800px',
       data: {} // optional, if you want to pass data
