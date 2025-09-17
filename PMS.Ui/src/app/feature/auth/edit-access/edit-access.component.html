@@ -9,7 +9,7 @@
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
                 <mat-cell *matCellDef="let staff" (click)="onSelectStaff(staff)" class="clickable">
-                    {{ staff.fullName }}
+                    <a mat-button color="primary">{{ staff.fullName }}</a>
                 </mat-cell>
             </ng-container>
 

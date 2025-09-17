@@ -48,9 +48,7 @@
         <mat-label>Select Sites</mat-label>
         <mat-select multiple (selectionChange)="onSitesChange($event.value)">
           @for (site of sites; track $index) {
-          <mat-option [value]="site.id">
-            {{ site.name }}
-          </mat-option>
+          <mat-option [value]="site.id">{{ site.name }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
