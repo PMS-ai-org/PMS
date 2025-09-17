@@ -1,4 +1,4 @@
-<h2 *ngIf="userRole === 'Staff'">Appointments</h2>
+<h2 *ngIf="userRole === 'Staff' || userRole === 'Admin'">Appointments</h2>
 <h2 *ngIf="userRole === 'Doctor'">My Appointments</h2>
 <!-- Receptionist View -->
 <div *ngIf="userRole === 'Staff'" class="appointment-container">
@@ -63,7 +63,7 @@
 </div>
 
 <!-- Doctor View -->
-<div *ngIf="userRole === 'Doctor'" class="appointment-container">
+<div *ngIf="userRole === 'Doctor' || userRole === 'Admin'" class="appointment-container">
   <form [formGroup]="appointmentDcotorForm" (ngSubmit)="edit()" [disable]="!appointmentDcotorForm.touched || !appointmentDcotorForm.valid">
   <mat-card *ngFor="let appointment of appointments" class="doctor-card">
     <mat-card-title>
