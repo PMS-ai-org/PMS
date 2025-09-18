@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, effect, EventEmitter, Input, OnDestroy, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription, Observable, BehaviorSubject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription, BehaviorSubject, tap } from 'rxjs';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { SearchPatientResponse, SearchPatientResult, SearchPatientService } from '../../../services/search-patient.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+// Removed MatSort imports (sorting disabled)
 import { Patient } from '../../../models/patient.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,7 +28,6 @@ import { ToastService } from '../../../services/toast.service';
     ReactiveFormsModule,
     MaterialModule,
     MatTableModule,
-    MatSortModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
@@ -65,6 +64,11 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   dataSource = new MatTableDataSource<Patient>([]);
   isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  /** Pagination state */
+  totalCount = 0;               // server provided total
+  pageIndex = 0;                // zero based for mat-paginator
+  tablePageSize = 10;           // default page size (can be changed by user)
+
   features: Features[] = [];
   currentRole: string = '';
   role = "";
@@ -76,7 +80,6 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   canEditProfile = false;
   canDeleteProfile = false;
 
-  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router,
     private patientService: PatientService, private repo: RepositoryService, private authSession: AuthSessionService, private toastService: ToastService) {
@@ -137,24 +140,44 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
     this.dataSource.data = [];
   }
 
+  /** Trigger a new search resetting to first page */
   onSearch() {
-    this.isLoading.next(true);
-    const query = this.searchControl.value || '';
-    this.patientService.search(query).subscribe(response => {
-      this.isLoading.next(false);
-      this.dataSource.data = response.results;
-    }, () => {
-      this.isLoading.next(false);
-      console.error('Search error');
-    });
+    this.pageIndex = 0;
+    this.loadPage();
   }
 
+  /** Paginator change */
   onPageChange(event: PageEvent) {
-    const query = this.searchControl.value || '';
-    this.patientService.search(query, event.pageIndex + 1, event.pageSize).subscribe(response => {
-      this.dataSource.data = response.results;
-      this.paginator.length = response.totalCount; // API should return total count
-    });
+    this.pageIndex = event.pageIndex;
+    this.tablePageSize = event.pageSize;
+    this.loadPage();
+  }
+
+
+  /** Core loader contacting API (currently API lacks sorting params, extend when backend ready) */
+  private loadPage() {
+    const query = this.searchControl.value?.trim() || '';
+    if (!query) {
+      this.dataSource.data = [];
+      this.totalCount = 0;
+      return;
+    }
+    this.isLoading.next(true);
+    this.patientService
+      .search(query, this.pageIndex + 1, this.tablePageSize)
+      .pipe(
+        tap(() => this.isLoading.next(false))
+      )
+      .subscribe({
+        next: (response) => {
+            this.dataSource.data = response.results;
+            this.totalCount = response.totalCount;
+        },
+        error: () => {
+          this.dataSource.data = [];
+          this.totalCount = 0;
+        }
+      });
   }
 
   onEdit(patientId: string) {
@@ -187,9 +210,13 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
         if (patient.id) {
           this.repo.deletePatient(patient.id).subscribe({
             next: () => {
-              this.dataSource.data = this.dataSource.data.filter(p => p.id !== patient.id);
-              this.paginator.length = this.dataSource.data.length;
+              // Update current page after deletion
               this.toastService.success(`Successfully deleted patient ${patient.full_name}`);
+              // If last item on page removed & not first page, go back a page
+              if (this.dataSource.data.length === 1 && this.pageIndex > 0) {
+                this.pageIndex -= 1;
+              }
+              this.loadPage();
             },
             error: () => {
               this.toastService.error(`Error deleting patient ${patient.full_name}`);
@@ -201,7 +228,6 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
   }
 
