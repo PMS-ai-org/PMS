@@ -21,7 +21,6 @@ $row-hover: #f5f7fa;
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    align-items: flex-end;
   }
 
   .search-field { flex: 1 1 300px; }
@@ -82,28 +81,5 @@ $row-hover: #f5f7fa;
 }
 
 // Compact variant (smaller field & buttons)
-.search-container.compact {
-  // Narrower field width and smaller height
-  .search-field { flex: 0 1 420px; }
-
-  // Angular Material (MDC) form field structure overrides
-  // Deep selectors to override MDC default (only for this component scope)
-  ::ng-deep .compact-field .mat-mdc-text-field-wrapper { min-height: 36px !important; height: 36px !important; }
-  ::ng-deep .compact-field .mat-mdc-form-field-infix { padding: 4px 0 4px 0 !important; }
-  ::ng-deep .compact-field .mat-mdc-form-field-flex { align-items: center; }
-  ::ng-deep .compact-field input.mat-mdc-input-element { padding: 0 8px !important; height: 26px !important; font-size: 13px; }
-  ::ng-deep .compact-field .mat-mdc-form-field-subscript-wrapper { display: none; }
-  .mat-mdc-form-field-subscript-wrapper { display: none; }
-
-  // Buttons
-  .actions button.mat-mdc-button-base { 
-    height: 36px; 
-    min-height: 36px; 
-    line-height: 36px; 
-    padding: 0 14px; 
-    font-size: 13px; 
-    font-weight: 500;
-  }
-  .actions span { font-size: 13px; }
-  .toolbar { gap: .6rem; }
-}
+/* Compact variant stripped of all deep Material overrides per request */
+.search-container.compact { .search-field { flex: 0 1 420px; } }

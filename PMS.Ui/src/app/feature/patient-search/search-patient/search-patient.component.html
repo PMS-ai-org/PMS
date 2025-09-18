@@ -27,10 +27,10 @@
         <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
       </div>
 
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2" matSortDisableClear>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
         <!-- Full Name -->
         <ng-container matColumnDef="full_name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="full_name">Full Name</th>
+          <th mat-header-cell *matHeaderCellDef>Full Name</th>
           <td mat-cell *matCellDef="let patient">
             <button mat-button color="primary" class="link"
               (click)="navigateToProfilePage(patient.id)">{{patient.full_name}}</button>
@@ -38,27 +38,27 @@
         </ng-container>
 
         <ng-container matColumnDef="dob">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="dob">DOB</th>
+          <th mat-header-cell *matHeaderCellDef>DOB</th>
           <td mat-cell *matCellDef="let patient">{{patient.dob | date:'MMM d, y'}}</td>
         </ng-container>
 
         <ng-container matColumnDef="gender">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="gender">Gender</th>
+          <th mat-header-cell *matHeaderCellDef>Gender</th>
           <td mat-cell *matCellDef="let patient">{{patient.gender}}</td>
         </ng-container>
 
         <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="email">Email</th>
+          <th mat-header-cell *matHeaderCellDef>Email</th>
           <td mat-cell *matCellDef="let patient">{{patient.email}}</td>
         </ng-container>
 
         <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="phone">Phone</th>
+          <th mat-header-cell *matHeaderCellDef>Phone</th>
           <td mat-cell *matCellDef="let patient">{{patient.phone}}</td>
         </ng-container>
 
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+          <th mat-header-cell *matHeaderCellDef> Action </th>
           <td mat-cell *matCellDef="let patient">
             <button mat-icon-button (click)="onEdit(patient.id)"> <mat-icon>edit</mat-icon> </button>
           
@@ -83,7 +83,7 @@
       </table>
     </div>
     <mat-paginator [length]="totalCount" [pageIndex]="pageIndex" [pageSize]="tablePageSize"
-      [pageSizeOptions]="[5,10,20,50,100]" (page)="onPageChange($event)" showFirstLastButtons>
+      [pageSizeOptions]="[10,20,50,100]" (page)="onPageChange($event)" showFirstLastButtons>
     </mat-paginator>
   </mat-card>
 
