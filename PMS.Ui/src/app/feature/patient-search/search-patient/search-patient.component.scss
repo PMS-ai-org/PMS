@@ -69,7 +69,7 @@ $row-hover: #f5f7fa;
 
   .empty-row .empty { text-align: center; padding: 2rem 1rem; color: $text-muted; font-style: italic; }
 
-  .link { padding: 0 !important; min-width: 0; color:#4a1fb5;}
+  .link { padding: 0 !important; min-width: 0; color:#4a1fb5; cursor: pointer;}
   .hl { font-weight:600; color:#4a1fb5; }
   /* Stronger visibility for highlighted text in Full Name column */
   .name-col .hl { 
