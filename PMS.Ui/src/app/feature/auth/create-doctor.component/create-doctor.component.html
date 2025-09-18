@@ -46,11 +46,16 @@
       <!-- Multi Select Sites -->
       <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Select Sites</mat-label>
-        <mat-select multiple (selectionChange)="onSitesChange($event.value)">
+        <mat-select multiple (selectionChange)="onSitesChange($event.value)"
+          [disabled]="!doctorForm.get('clinicId')?.value">
+          <!-- disable until clinic selected -->
           @for (site of sites; track $index) {
           <mat-option [value]="site.id">{{ site.name }}</mat-option>
           }
         </mat-select>
+        <mat-error *ngIf="!doctorForm.get('clinicId')?.value">
+          Please select a clinic first
+        </mat-error>
       </mat-form-field>
 
       <div>
