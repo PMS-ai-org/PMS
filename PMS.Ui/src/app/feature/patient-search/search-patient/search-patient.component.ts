@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscript
 import { MaterialModule } from '../../../core/shared/material.module';
 import { SearchPatientResponse, SearchPatientResult, SearchPatientService } from '../../../services/search-patient.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+// Removed MatSort imports (sorting disabled)
 import { Patient } from '../../../models/patient.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,7 +28,6 @@ import { ToastService } from '../../../services/toast.service';
     ReactiveFormsModule,
     MaterialModule,
     MatTableModule,
-    MatSortModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
@@ -65,12 +64,10 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   dataSource = new MatTableDataSource<Patient>([]);
   isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  /** Pagination / sorting state */
+  /** Pagination state */
   totalCount = 0;               // server provided total
   pageIndex = 0;                // zero based for mat-paginator
   tablePageSize = 10;           // default page size (can be changed by user)
-  sortField: string = 'full_name';
-  sortDirection: 'asc' | 'desc' = 'asc';
 
   features: Features[] = [];
   currentRole: string = '';
@@ -83,7 +80,6 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   canEditProfile = false;
   canDeleteProfile = false;
 
-  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router,
     private patientService: PatientService, private repo: RepositoryService, private authSession: AuthSessionService, private toastService: ToastService) {
@@ -157,19 +153,6 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
     this.loadPage();
   }
 
-  /** Sort change (matSortChange) */
-  onSortChange(sort: Sort) {
-    if (!sort.direction) {
-      // reset to default
-      this.sortField = 'full_name';
-      this.sortDirection = 'asc';
-    } else {
-      this.sortField = sort.active;
-      this.sortDirection = sort.direction as 'asc' | 'desc';
-    }
-    this.pageIndex = 0; // go back to first page for new sort
-    this.loadPage();
-  }
 
   /** Core loader contacting API (currently API lacks sorting params, extend when backend ready) */
   private loadPage() {
@@ -187,14 +170,7 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
       )
       .subscribe({
         next: (response) => {
-          // Client side sorting fallback until server supports (field, direction)
-          const sorted = [...response.results].sort((a: any, b: any) => {
-            const fa = (a as any)[this.sortField] ?? '';
-            const fb = (b as any)[this.sortField] ?? '';
-            const comp = fa > fb ? 1 : fa < fb ? -1 : 0;
-            return this.sortDirection === 'asc' ? comp : -comp;
-          });
-            this.dataSource.data = sorted;
+            this.dataSource.data = response.results;
             this.totalCount = response.totalCount;
         },
         error: () => {
@@ -252,10 +228,7 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    // Listen to sort changes
-    this.sort.sortChange.subscribe(s => this.onSortChange(s));
   }
 
   getFeaturesListForSite(site: Site | null) {
