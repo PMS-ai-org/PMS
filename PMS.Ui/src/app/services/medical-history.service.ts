@@ -13,24 +13,24 @@ export class MedicalHistoryService {
   constructor(private http: HttpClient) { }
 
   getByPatient(patientId: string): Observable<MedicalHistory[]> {
-    return this.http
-      .get<any[]>(`${this.baseUrl}?patientId=${patientId}`)
-      .pipe(
-        map(records => records.map(r => ({
-          id: r.id,
-          patientId: r.patient_id,
-          code: r.code,
-          description: r.description,
-          source: r.source,
-          createdAt: r.created_at,
-          clinicId: r.clinic_id,
-          siteId: r.site_id,
-          created_by: r.created_by,
-          updated_at: r.updated_at,
-          updated_by: r.updated_by
-        })))
-      );
-  }
+  return this.http
+    .get<any[]>(`${this.baseUrl}?patientId=${patientId}`)
+    .pipe(
+      map(records => records.map(r => ({
+        id: r.id,
+        patientId: r.patientId,
+        clinicId: r.clinicId,  
+        siteId: r.siteId,      
+        code: r.code,
+        description: r.description,
+        source: r.source,
+        createdAt: r.created_at,
+        created_by: r.created_by,
+        updated_at: r.updated_at,
+        updated_by: r.updated_by
+      })))
+    );
+}
 
   getById(id: string): Observable<MedicalHistory> {
     return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
