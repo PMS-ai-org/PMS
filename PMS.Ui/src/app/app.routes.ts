@@ -20,7 +20,7 @@ export const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'create-staff', component: CreateDoctorComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
-  { path: 'patient/profile/:id', component: PatientProfileComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: 'Admin' } },
+  { path: 'patient/profile/:id', component: PatientProfileComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Admin', 'Staff', 'Doctor'] } },
   { path: 'patient/register', component: PatientRegistrationComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Admin', 'Staff', 'Doctor'] } },
   { path: 'patient/register/:id', component: PatientRegistrationComponent, canActivate: [AuthGuard, RoleGuard], data: { roles: ['Admin', 'Staff', 'Doctor'] } },
   { path: 'patient/search', component: SearchPatientComponent},

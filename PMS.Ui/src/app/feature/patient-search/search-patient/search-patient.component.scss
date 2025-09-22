@@ -69,7 +69,17 @@ $row-hover: #f5f7fa;
 
   .empty-row .empty { text-align: center; padding: 2rem 1rem; color: $text-muted; font-style: italic; }
 
-  .link { padding: 0 !important; min-width: 0; font-weight: 600; }
+  .link { padding: 0 !important; min-width: 0; color:#4a1fb5; cursor: pointer;}
+  .hl { font-weight:600; color:#4a1fb5; }
+  /* Stronger visibility for highlighted text in Full Name column */
+  .name-col .hl { 
+    background:#ede8fb; 
+    color:#3d1994; 
+    padding:2px 4px; 
+    border-radius:4px; 
+    display:inline-block; 
+    line-height:1.1; 
+  }
 
   mat-paginator { border-top: 1px solid $border; background: transparent; }
 

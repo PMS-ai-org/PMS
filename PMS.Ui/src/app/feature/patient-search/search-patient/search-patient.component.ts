@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, startWith, switchMap, of, Subscription, BehaviorSubject, tap } from 'rxjs';
 import { MaterialModule } from '../../../core/shared/material.module';
 import { SearchPatientResponse, SearchPatientResult, SearchPatientService } from '../../../services/search-patient.service';
+import { HighlightPipe } from './highlight.pipe';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 // Removed MatSort imports (sorting disabled)
 import { Patient } from '../../../models/patient.model';
@@ -32,7 +33,8 @@ import { ToastService } from '../../../services/toast.service';
     MatIconModule,
     MatDialogModule,
     MatPaginatorModule,
-    MatTooltipModule,
+  MatTooltipModule,
+  HighlightPipe,
   ],
   templateUrl: './search-patient.component.html',
   styleUrls: ['./search-patient.component.scss']
