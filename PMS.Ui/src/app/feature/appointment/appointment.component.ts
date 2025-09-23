@@ -13,7 +13,6 @@ import { scheduled, Subject, takeUntil } from 'rxjs';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 import { ActivatedRoute } from '@angular/router';
 import { PatientService } from '../../services/patient.service';
-import { Patient } from '../../models/patient.model';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -115,8 +114,6 @@ export class AppointmentComponent implements OnInit {
               this.loadAppointment(this.patientId);
             }
           });
-
-
       }
     });
 
