@@ -6,6 +6,9 @@ import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { PatientAutocompleteComponent } from '../patient-autocomplete/patient-autocomplete.component';
 import { RepositoryService } from '../../services/repository.service';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { ActivatedRoute } from '@angular/router';
 
 describe('AppointmentComponent', () => {
   let component: AppointmentComponent;
@@ -30,6 +33,13 @@ describe('AppointmentComponent', () => {
             getUsers: () => of([]),
             getClinics: () => of({}),
             getAppointments: () => of([])
+          }
+        },
+        provideHttpClient(), provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of({ get: () => '' }) // mock route params
           }
         }
       ]
