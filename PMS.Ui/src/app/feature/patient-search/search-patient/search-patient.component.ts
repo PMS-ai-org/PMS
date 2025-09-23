@@ -260,9 +260,9 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
-  appointmentNavigation() {
+  appointmentNavigation(patientId: string) {
     this.router.navigate(
-      ['/appointment']
+      ['/appointment',patientId]
     );
   }
 
