@@ -60,7 +60,7 @@ export class MedicalHistoryFormComponent implements OnInit {
 
       if (params.clinicId) {
         this.form.patchValue({ clinicId: params.clinicId });
-        this.loadMasterData(params.clinicId); // ✅ only call here
+        this.loadMasterData(params.clinicId);
       } else {
         this.loadMasterData();
       }
