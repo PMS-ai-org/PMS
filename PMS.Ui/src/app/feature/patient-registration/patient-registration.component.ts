@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, AfterViewInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,12 +17,16 @@ import { MatSnackBar } from '@angular/material/snack-bar'; // legacy usage (to b
 import { ToastService } from '../../services/toast.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Subject, takeUntil } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { Subject, takeUntil, Observable, of, BehaviorSubject } from 'rxjs';
+import { finalize, debounceTime, distinctUntilChanged, switchMap, map, filter, tap } from 'rxjs/operators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { RepositoryService } from '../../services/repository.service';
+import { InsurancePlan, InsuranceProvider, PatientInsurance, PatientInsuranceDto } from '../../models/insurance';
 
 @Component({
   selector: 'app-patient-registration',
@@ -39,17 +43,19 @@ import { MatChipsModule } from '@angular/material/chips';
     MatRadioModule,
     MatButtonModule,
     MaterialModule,
-  MatTableModule,
-  MatTooltipModule,
-  MatProgressSpinnerModule,
-  MatIconModule,
-  MatChipsModule,
-  MatProgressBarModule
+    MatTableModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatChipsModule,
+    MatProgressBarModule,
+    MatDialogModule,
+    MatAutocompleteModule
   ],
   templateUrl: './patient-registration.component.html',
   styleUrls: ['./patient-registration.component.scss']
 })
-export class PatientRegistrationComponent implements OnInit, OnDestroy {
+export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterViewInit {
   form: FormGroup;
   bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
   genders = ['Male', 'Female', 'Unknown'];
@@ -63,13 +69,32 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
   showAllConditions = false;
   showAllMedications = false;
   private requiredFields: string[] = ['firstName','lastName','dateOfBirth'];
+  // Responsible person & insurance feature state
+  responsibleSearchLoading = false;
+  selectedResponsiblePatient?: Patient;
+  responsibleFiltered$!: Observable<Patient[]>; // autocomplete data
+  responsibleMinLength = 1; // characters before querying
+  insuranceForm!: FormGroup;
+  providers: InsuranceProvider[] = [];
+  otherPolicyHolderResults: Patient[] = [];
+  otherPolicyHolderSearchLoading = false;
+  selectedOtherPolicyHolder?: Patient;
+  @ViewChild('underAgeTpl') underAgeTpl!: TemplateRef<any>;
+  @ViewChild(MatAutocompleteTrigger) responsibleAutocompleteTrigger!: MatAutocompleteTrigger;
 
   // Toggle to optionally show blood group (requirement #9) - could be driven by configuration
   showBloodGroup = false; // US context default hide
   patientData!: Patient;
   private destroy$ = new Subject<void>();
+  insurancePlans: InsurancePlan[] = [];
+  insuranceProviders: InsuranceProvider[] = [];
+  private providersLoaded$ = new BehaviorSubject<boolean>(false);
+  private plansLoaded$ = new BehaviorSubject<boolean>(false);
+  private insuranceLoaded = false; // prevent double binding
+  private selfPatientInsuranceLoaded = false; // track self load vs responsible load
+  showResponsibleHolderOption = false; // controls visibility of responsible person in policy holder dropdown
 
-  constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService) {
+  constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService, private dialog: MatDialog, private repoService: RepositoryService) {
     this.form = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(3)]],
       lastName: ['', [Validators.required, Validators.minLength(3)]],
@@ -82,14 +107,35 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
       addressLine: [''],
       city: [''],
       state: [''],
-  zip: ['', [Validators.minLength(6), Validators.maxLength(10), Validators.pattern(/^[0-9]*$/)]],
+      zip: ['', [Validators.minLength(6), Validators.maxLength(10), Validators.pattern(/^[0-9]*$/)]],
       bloodGroup: [''],
       allergies: [[]],
       conditions: [[]],
       medications: [[]],
-      notes: ['']
+      notes: [''],
+      // New responsible person controls
+      responsibleIsPatient: [false], // yes | no
+      responsibleSearch: ['', Validators.minLength(3)],
+      responsiblePatientId: ['']
+    });
+
+    // Secondary Insurance form (separate form group)
+    this.insuranceForm = this.fb.group({
+      policyHolderType: ['Self', Validators.required], // Self | Other
+      providerId: ['', Validators.required],
+      planId: [''], // becomes required after provider selection
+      policyNumber: [''], // required when plan list visible (after provider chosen)
+      priority: ['1'], // Primary default
+      insuranceType: ['Primary', Validators.required], // Primary | Secondary (mirrors priority but user may see both labels)
+      effectiveDate: [new Date(), Validators.required],
+      expirationDate: [{ value: this.addOneYear(new Date()), disabled: false }, Validators.required],
+      memberId: [''],
+      otherPolicyHolderSearch: [''],
+      otherPolicyHolderPatientId: ['']
     });
   }
+
+  private addOneYear(d: Date): Date { const nd = new Date(d); nd.setFullYear(nd.getFullYear() + 1); return nd; }
 
   // Snapshot computed helpers
   get fullName(): string {
@@ -161,7 +207,8 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
         .subscribe(patient => {
           if (patient) {
             this.patientData = patient;
-            this.loadPatientDetails(patient)
+            this.loadPatientDetails(patient);
+            this.tryLoadExistingInsurance();
           }
         });
     }
@@ -171,7 +218,99 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.calculateAge());
 
-  // Removed obsolete dynamic validator subscriptions for insurance/responsible person fields (controls no longer present)
+    // Fetch providers & plans
+    this.loadInsuranceProvider();
+    this.loadInsurancePlan();
+
+    // Dynamic validation & visibility logic for insurance form
+    this.insuranceForm.get('providerId')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(val => {
+      const planCtrl = this.insuranceForm.get('planId');
+      const policyCtrl = this.insuranceForm.get('policyNumber');
+      const priorityCtrl = this.insuranceForm.get('priority');
+      if (val) {
+        planCtrl?.setValidators([Validators.required]);
+        policyCtrl?.setValidators([Validators.required, Validators.minLength(5)]);
+        priorityCtrl?.setValidators([Validators.required]);
+        // Reset dependent fields when provider changes
+        planCtrl?.setValue('', { emitEvent: false });
+        policyCtrl?.setValue(this.generatePolicyNumber(val), { emitEvent: false });
+      } else {
+        planCtrl?.clearValidators();
+        policyCtrl?.clearValidators();
+        priorityCtrl?.clearValidators();
+      }
+      planCtrl?.updateValueAndValidity({ emitEvent: false });
+      policyCtrl?.updateValueAndValidity({ emitEvent: false });
+      priorityCtrl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.insuranceForm.get('planId')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(planId => {
+      const memberIdCtrl = this.insuranceForm.get('memberId');
+      const effectiveCtrl = this.insuranceForm.get('effectiveDate');
+      const expirationCtrl = this.insuranceForm.get('expirationDate');
+      if (planId) {
+        memberIdCtrl?.setValidators([Validators.required, Validators.minLength(5)]);
+        if (!memberIdCtrl?.value) memberIdCtrl?.setValue(this.generateMemberId(planId), { emitEvent: false });
+        // Ensure expiration date is one year after effective date
+        const eff = effectiveCtrl?.value ? new Date(effectiveCtrl.value) : new Date();
+        expirationCtrl?.setValue(this.addOneYear(eff), { emitEvent: false });
+      } else {
+        memberIdCtrl?.clearValidators();
+      }
+      memberIdCtrl?.updateValueAndValidity({ emitEvent: false });
+      expirationCtrl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.insuranceForm.get('effectiveDate')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(dt => {
+      if (!dt) return;
+      const expirationCtrl = this.insuranceForm.get('expirationDate');
+      const exp = this.addOneYear(new Date(dt));
+      expirationCtrl?.setValue(exp, { emitEvent: false });
+    });
+
+    // Keep insuranceType synced with priority (1=Primary,2=Secondary)
+    this.insuranceForm.get('priority')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(v => {
+      const insType = this.insuranceForm.get('insuranceType');
+      if (v === '1') insType?.setValue('Primary', { emitEvent: false });
+      else if (v === '2') insType?.setValue('Secondary', { emitEvent: false });
+    });
+    this.insuranceForm.get('insuranceType')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(v => {
+      const pr = this.insuranceForm.get('priority');
+      if (v === 'Primary') pr?.setValue('1', { emitEvent: false });
+      else if (v === 'Secondary') pr?.setValue('2', { emitEvent: false });
+    });
+
+    // Removed obsolete dynamic validator subscriptions for insurance/responsible person fields (controls no longer present)
+
+    // React to policy holder selection (Self or responsible adult GUID)
+    this.insuranceForm.get('policyHolderType')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(val => {
+        if (!val) return;
+        if (val === 'Self') {
+          // User explicitly chose Self; hide responsible option and fully clear insurance fields
+          this.showResponsibleHolderOption = false;
+          this.resetInsuranceSection(true); // do NOT reload self insurance; leave blank for fresh entry
+        } else {
+          // assume GUID of responsible patient
+          this.showResponsibleHolderOption = true;
+          this.resetInsuranceSection(true); // clear current values before load
+          this.loadInsuranceForPatient(val as string, false, false);
+        }
+      });
+
+    // When user selects responsibleIsPatient = No (false), clear responsible selection & insurance holder option
+    this.form.get('responsibleIsPatient')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(v => {
+        if (v === 'false' || v === false) {
+          this.selectedResponsiblePatient = undefined;
+          this.showResponsibleHolderOption = false;
+          // Force policy holder back to Self and reset all insurance fields
+          this.insuranceForm.get('policyHolderType')?.setValue('Self', { emitEvent: true });
+          this.resetInsuranceSection(false);
+        }
+      });
   }
 
   loadPatientDetails(patient: Patient) {
@@ -199,6 +338,148 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
       notes: patient.notes,
     });
     this.calculatedAge = patient.age || 0;
+  }
+
+  // Autocomplete selection handler
+  onResponsibleOptionSelected(event: MatAutocompleteSelectedEvent) {
+    const patient: Patient | undefined = event.option.value;
+    if (patient) this.selectResponsiblePatient(patient);
+  }
+
+  displayResponsible(opt: Patient | string): string {
+    return typeof opt === 'string' ? opt : (opt?.full_name || '');
+  }
+
+  selectResponsiblePatient(p: Patient) {
+    const age = p.age ?? 0;
+    if (age < 18) {
+      const ref = this.dialog.open(this.underAgeTpl);
+      // After dialog close clear selection & field so user must pick another
+      ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.selectedResponsiblePatient = undefined;
+    this.showResponsibleHolderOption = false;
+        this.form.get('responsiblePatientId')?.setValue('');
+        const searchCtrl = this.form.get('responsibleSearch');
+        searchCtrl?.setValue('', { emitEvent: true });
+        // Reopen panel for quicker reselection
+        setTimeout(() => this.responsibleAutocompleteTrigger?.openPanel(), 0);
+      });
+      return;
+    }
+    // Valid adult selection
+    this.selectedResponsiblePatient = p;
+  this.showResponsibleHolderOption = true;
+    this.form.get('responsiblePatientId')?.setValue(p.id || '');
+  }
+
+  // Other policy holder search within insurance form
+  onOtherPolicyHolderSearch(term: string) {
+    this.insuranceForm.get('otherPolicyHolderSearch')?.setValue(term, { emitEvent: false });
+    if (!term || term.trim().length < 3) {
+      this.otherPolicyHolderResults = [];
+      return;
+    }
+    this.otherPolicyHolderSearchLoading = true;
+    this.repoService.search(term.trim(), 1, 10)
+      .pipe(finalize(() => this.otherPolicyHolderSearchLoading = false))
+      .subscribe({
+        next: res => { this.otherPolicyHolderResults = res.results; },
+        error: () => { this.otherPolicyHolderResults = []; }
+      });
+  }
+
+  selectOtherPolicyHolder(p: Patient) {
+    this.selectedOtherPolicyHolder = p;
+    this.insuranceForm.get('otherPolicyHolderPatientId')?.setValue(p.id || '');
+  }
+
+  private loadInsurancePlan() {
+    this.repoService.getPlans().subscribe({
+      next: plans => { this.insurancePlans = plans; this.plansLoaded$.next(true); this.tryLoadExistingInsurance(); },
+      error: () => { this.insurancePlans = []; this.plansLoaded$.next(true); }
+    });
+  }
+
+  private loadInsuranceProvider() {
+    this.repoService.getProviders().subscribe({
+      next: providers => { this.insuranceProviders = providers; this.providersLoaded$.next(true); this.tryLoadExistingInsurance(); },
+      error: () => { this.insuranceProviders = []; this.providersLoaded$.next(true); }
+    });
+  }
+
+  private tryLoadExistingInsurance() {
+    if (this.insuranceLoaded) return;
+    if (!this.patientId) return;
+    if (!this.providersLoaded$.value || !this.plansLoaded$.value) return; // wait until lookup data
+    this.loadInsuranceForPatient(this.patientId, true, true);
+  }
+
+  private loadInsuranceForPatient(patientId: string, markLoaded: boolean = false, isSelf: boolean = false) {
+    if (!patientId) return;
+    this.repoService.getPatientInsurances(patientId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (list: any[]) => {
+          if (list && list.length) {
+            const primary = list.find(i => i.isPrimary === true) || list[0];
+            this.insuranceForm.patchValue({
+              providerId: primary.providerId || '',
+              planId: primary.planId || '',
+              policyNumber: primary.policyNumber || '',
+              memberId: primary.memberId || '',
+              priority: primary.priority ? String(primary.priority) : (primary.isPrimary ? '1' : '2'),
+              insuranceType: (primary.priority === 1 || primary.isPrimary) ? 'Primary' : 'Secondary',
+              effectiveDate: primary.effectiveDate ? new Date(primary.effectiveDate) : new Date(),
+              expirationDate: primary.expirationDate ? new Date(primary.expirationDate) : this.addOneYear(new Date())
+            }, { emitEvent: false });
+            if (isSelf) this.selfPatientInsuranceLoaded = true;
+          } else {
+            // No insurance records for chosen holder -> clear
+            this.resetInsuranceSection(true);
+          }
+          if (markLoaded) this.insuranceLoaded = true;
+        },
+        error: () => { if (markLoaded) this.insuranceLoaded = true; }
+      });
+  }
+
+  private resetInsuranceSection(keepHolder: boolean = false) {
+    const holder = this.insuranceForm.get('policyHolderType')?.value;
+    this.insuranceForm.patchValue({
+      providerId: '',
+      planId: '',
+      policyNumber: '',
+      memberId: '',
+      priority: '1',
+      insuranceType: 'Primary',
+      effectiveDate: new Date(),
+      expirationDate: this.addOneYear(new Date())
+    }, { emitEvent: false });
+    if (!keepHolder) {
+      this.insuranceForm.get('policyHolderType')?.setValue('Self', { emitEvent: false });
+    } else {
+      // re-apply holder value to retrigger UI if needed
+      this.insuranceForm.get('policyHolderType')?.setValue(holder, { emitEvent: false });
+    }
+  }
+
+  saveInsurance() {
+    if (this.insuranceForm.invalid) {
+      this.insuranceForm.markAllAsTouched();
+      this.toast.error('Please complete required insurance fields.');
+      return;
+    }
+    const raw = this.insuranceForm.getRawValue();
+    const payload: PatientInsuranceDto = {
+      providerId: raw.providerId,
+      planId: raw.planId,
+      policyNumber: raw.policyNumber,
+      memberId: raw.memberId,
+      isPrimary: raw.priority === '1',
+      effectiveDate: raw.effectiveDate,
+      expirationDate: raw.expirationDate,
+      priority: Number(raw.priority)
+    };
   }
 
   calculateAge() {
@@ -231,8 +512,19 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.insuranceForm.invalid) { this.insuranceForm.markAllAsTouched(); return; }
+
     this.submitting = true;
     const data: Patient = this.mapPatientRecord(this.form);
+
+    if (this.insuranceForm.valid && this.insuranceForm.get('planId')?.value?.length) {
+      const insuranceData = this.mapInsuranceRecord(this.insuranceForm);
+      if (insuranceData) {
+        data.insurance = insuranceData;
+      }
+    }
+    console.log('Saving patient with insurance:', data);
+
     // Reuse existing service but keep navigation; show bottom snackbar
     this.patientService.savePatient(data, this.patientId);
     this.submitting = false;
@@ -240,8 +532,19 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
 
   saveAndAddAnother() {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.insuranceForm.invalid) { this.insuranceForm.markAllAsTouched(); return; }
     this.savingAnother = true;
     const data: Patient = this.mapPatientRecord(this.form);
+
+    // Map insurance form values to patient data
+    if (this.insuranceForm.valid && this.insuranceForm.get('planId')?.value?.length) {
+      const insuranceData = this.mapInsuranceRecord(this.insuranceForm);
+      if (insuranceData) {
+        data.insurance = insuranceData;
+      }
+    }
+    console.log('Saving patient with insurance:', data);
+    
     // Manually call repository to control toast timing
     const obs$ = this.patientId
       ? this.patientService['repo'].updatePatient(this.patientId, data)
@@ -259,6 +562,20 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
           this.toast.error('Save failed. Please try again.');
         }
       );
+  }
+
+  mapInsuranceRecord(data: FormGroup): PatientInsuranceDto | undefined {
+    if (data.invalid) return undefined;
+    return {
+      providerId: data.value.providerId,
+      planId: data.value.planId,
+      policyNumber: data.value.policyNumber,
+      memberId: data.value.memberId,
+      isPrimary: data.value.priority === '1',
+      effectiveDate: data.value.effectiveDate,
+      expirationDate: data.value.expirationDate,
+      priority: Number(data.value.priority)
+    };
   }
 
   mapPatientRecord(data: FormGroup): Patient {
@@ -371,5 +688,71 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy {
       const ctrl = this.form.get(c);
       if (ctrl) ctrl.setValue([], { emitEvent: true });
     });
+    // Reset new fields
+    this.form.patchValue({
+  responsibleIsPatient: 'false',
+      responsibleSearch: '',
+      responsiblePatientId: ''
+    });
+    this.selectedResponsiblePatient = undefined;
+    this.insuranceForm.reset({
+      policyHolderType: 'Self',
+      providerId: '',
+      planId: '',
+      policyNumber: '',
+      priority: '1',
+      insuranceType: 'Primary',
+      effectiveDate: new Date(),
+      expirationDate: this.addOneYear(new Date()),
+      memberId: '',
+      otherPolicyHolderSearch: '',
+      otherPolicyHolderPatientId: ''
+    });
+  }
+
+  ngAfterViewInit() {
+    const ctrl = this.form.get('responsibleSearch');
+    if (ctrl) {
+      this.responsibleFiltered$ = ctrl.valueChanges.pipe(
+        debounceTime(150),
+        distinctUntilChanged(),
+        map(v => typeof v === 'string' ? v.trim() : ''),
+        tap(v => { if (v.length < this.responsibleMinLength) { this.responsibleSearchLoading = false; } }),
+        switchMap(term => {
+          if (term.length < this.responsibleMinLength) return of([] as Patient[]);
+          this.responsibleSearchLoading = true;
+          return this.repoService.search(term, 1, 10).pipe(
+            finalize(() => this.responsibleSearchLoading = false),
+            map(res => res.results)
+          );
+        })
+      );
+
+      // Side effect: open/close panel reactively while typing
+      this.responsibleFiltered$.pipe(takeUntil(this.destroy$)).subscribe(list => {
+        if (!ctrl.value || (typeof ctrl.value === 'string' && ctrl.value.trim().length < this.responsibleMinLength)) {
+          if (this.responsibleAutocompleteTrigger?.panelOpen) {
+            this.responsibleAutocompleteTrigger.closePanel();
+          }
+          return;
+        }
+        if (list && list.length && !this.responsibleAutocompleteTrigger?.panelOpen) {
+          // Allow view to settle before opening
+          Promise.resolve().then(() => this.responsibleAutocompleteTrigger?.openPanel());
+        }
+      });
+    }
+  }
+
+  private generatePolicyNumber(providerId: string): string {
+    const prov = this.insuranceProviders.find(p => p.id === providerId);
+    const prefix = prov?.name ? prov.name.split(/\s+/).map(w=>w[0]).join('').toUpperCase() : 'POL';
+    return `POL-${prefix}-${Math.floor(Math.random()*900+100)}`;
+  }
+
+  private generateMemberId(planId: string): string {
+    const plan = this.insurancePlans.find(p => p.id === planId);
+    const prefix = plan?.name ? plan.name.replace(/[^A-Za-z0-9]/g,'').substring(0,5).toUpperCase() : 'MEM';
+    return `MEM-${prefix}-${Math.floor(Math.random()*900+100)}`;
   }
 }

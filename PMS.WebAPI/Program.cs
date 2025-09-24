@@ -81,6 +81,8 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IMedicalHistoryRepository, MedicalHistoryRepository>();
 builder.Services.AddScoped<IMedicalHistoryService, MedicalHistoryService>();
+builder.Services.AddScoped<IInsuranceRepository, InsuranceRepository>();
+builder.Services.AddScoped<IInsuranceService, InsuranceService>();
 
 // --- App Services ---
 builder.Services.AddControllers();
