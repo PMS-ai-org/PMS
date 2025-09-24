@@ -38,6 +38,29 @@ export class PatientService {
     if(patientId){
       this.repo.updatePatient(patientId, patient).subscribe({
         next: () => {
+          // After patient update decide how to handle insurance per request:
+          // "if hasInsurance true then call addPatientInsurance api if its false call updatePatientInsurance"
+          // (Note: this appears inverted logically, but implemented as specified.)
+          if (patient.insurance) {
+            if (patient.hasInsurance) {
+              // Update requires an insurance id; if not present we skip
+              const insuranceId: any = (patient.insurance as any).id;
+              if (insuranceId) {
+                this.repo.updatePatientInsurance(insuranceId, patient.insurance).subscribe({
+                  next: () => this.toast.success('Insurance updated'),
+                  error: () => this.toast.error('Error updating insurance')
+                });
+              }
+              
+            } else {
+              // Call add (spec as given)
+              patient.insurance.patientId = patientId;
+              this.repo.addPatientInsurance(patientId!, patient.insurance).subscribe({
+                next: () => this.toast.success('Insurance added'),
+                error: () => this.toast.error('Error adding insurance')
+              });
+            }
+          } 
           if (isNavigate) {
             this.router.navigate(['/patient/profile', patientId]);
           }
@@ -50,6 +73,17 @@ export class PatientService {
     }else{
       this.repo.addPatient(patient).subscribe({
       next: (newPatient) => {
+        if(newPatient.id && patient.insurance){
+          patient.insurance.patientId = newPatient.id;
+          this.repo.addPatientInsurance(newPatient.id, patient.insurance).subscribe({
+            next: () => {
+              this.toast.success('Patient added successfully with insurance');
+            },
+            error: (err) => {
+              this.toast.error('Error adding patient insurance');
+            }
+          });
+        }
         this.router.navigate(['/patient/profile', newPatient.id]);
         this.toast.success('Patient added successfully');
       },
@@ -70,4 +104,17 @@ export class PatientService {
       }
     });
   }
+
+  getInsurancePlan(id: string): void {
+    this.repo.getPatientInsurances(id).subscribe({
+      next: (insurances) => {
+        console.log(`✅ Patient ${id} insurances fetched successfully`, insurances);
+      },
+      error: (err) => {
+        console.error(`❌ Error fetching patient ${id} insurances:`, err);
+      }
+    });
+  }
+
+  // this.insuranceService.getPlans(providerId).subscribe(plans => this.plans = plans);
 }

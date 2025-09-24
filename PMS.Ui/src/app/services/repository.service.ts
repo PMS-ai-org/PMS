@@ -15,6 +15,7 @@ import { UserAccess } from '../models/user-access.model';
 import { UserLogin } from '../models/user-login.model';
 import { PasswordResetToken } from '../models/password-reset-token.model';
 import { RefreshToken } from '../models/refresh-token.model';
+import { InsurancePlan, InsuranceProvider, PatientInsurance, PatientInsuranceDto } from '../models/insurance';
 
 @Injectable({ providedIn: 'root' })
 export class RepositoryService {
@@ -99,4 +100,14 @@ export class RepositoryService {
   deletePatient(id: string): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/Patients/${id}`);
   }
+
+  //Insurance APIs
+  getProviders() { return this.http.get<InsuranceProvider[]>(`${environment.apiUrl}/insurance/providers`); }
+  getPlans() { return this.http.get<InsurancePlan[]>(`${environment.apiUrl}/insurance/plans`); }
+  getPatientInsurances(patientId: string) { return this.http.get<PatientInsurance[]>(`${environment.apiUrl}/insurance/patients/${patientId}/insurances`); }
+  addPatientInsurance(patientId: string, payload: PatientInsuranceDto){ return this.http.post(`${environment.apiUrl}/insurance/patients/${patientId}/insurances`, payload); }
+  updatePatientInsurance(id: string, payload: PatientInsuranceDto){ return this.http.put(`${environment.apiUrl}/insurance/patient-insurances/${id}`, payload); }
+
+  getPlansByProviderId(providerId: string) { return this.http.get<InsurancePlan[]>(`${environment.apiUrl}/insurance/providers/${providerId}/plans`); }
+  deletePatientInsurance(patientId: string, id: string){ return this.http.delete(`${environment.apiUrl}/insurance/patients/${patientId}/insurances/${id}`); }
 }

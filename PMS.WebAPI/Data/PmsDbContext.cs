@@ -36,6 +36,10 @@ namespace PMS.WebAPI.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<MedicalHistory> MedicalHistories { get; set; }
         // =====================================================
+    // Insurance domain
+    public DbSet<InsuranceProvider> InsuranceProviders { get; set; }
+    public DbSet<InsurancePlan> InsurancePlans { get; set; }
+    public DbSet<PatientInsurance> PatientInsurances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -62,10 +66,42 @@ namespace PMS.WebAPI.Data
                 .WithOne(d => d.UserLogin)
                 .HasForeignKey<UserDetail>(d => d.UserId);
 
+            builder.Entity<Appointment>()
+                .Property(a => a.treatment_plan)
+                .HasColumnType("jsonb");
+
             // ===== Optionally add indexes/relations for new tables =====
             // e.g., builder.Entity<Patient>().HasIndex(p => p.PatientNumber).IsUnique();
             // e.g., builder.Entity<Appointment>().HasOne(a => a.Patient).WithMany(p => p.Appointments).HasForeignKey(a => a.PatientId);
             // ===========================================================
+
+            // Insurance relations & indexes
+            builder.Entity<InsurancePlan>()
+                .HasIndex(p => new { p.id, p.name, p.price });
+
+                        // PatientInsurance legacy table mapping (PatientInsurances_old)
+                        builder.Entity<PatientInsurance>(pi =>
+                        {
+                                pi.HasOne(p => p.provider)
+                                    .WithMany()
+                                    .HasForeignKey(p => p.providerId)
+                                    .OnDelete(DeleteBehavior.Restrict);
+
+                                pi.HasOne(p => p.plan)
+                                    .WithMany()
+                                    .HasForeignKey(p => p.planId)
+                                    .OnDelete(DeleteBehavior.Restrict);
+
+                                pi.HasIndex(p => p.patientId)
+                                    .HasDatabaseName("idx_patient_insurances_patient");
+
+                                // Unique composite index (patientId, policyNumber) defined via attribute; ensuring alignment here if needed
+                                // Filtered unique index for single primary per patient
+                                pi.HasIndex(p => new { p.patientId, p.isPrimary })
+                                    .HasFilter("\"isPrimary\" = true")
+                                    .IsUnique()
+                                    .HasDatabaseName("ux_patient_single_primary");
+                        });
 
         }
 
