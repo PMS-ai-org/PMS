@@ -62,7 +62,7 @@ export class MedicalHistoryFormComponent implements OnInit {
         this.form.patchValue({ clinicId: params.clinicId });
         this.loadMasterData(params.clinicId); // ✅ only call here
       } else {
-        this.loadMasterData(); // ✅ load clinics without preselect if no clinicId
+        this.loadMasterData();
       }
 
       if (params.siteId) {
