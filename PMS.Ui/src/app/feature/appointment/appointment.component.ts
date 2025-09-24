@@ -54,18 +54,24 @@ export class AppointmentComponent implements OnInit {
     { label: 'Type 1 Diabetes', value: 'type1_diabetes' },
     { label: 'Pre-diabetes', value: 'pre_diabetes' },
     { label: 'Gestational Diabetes', value: 'gestational_diabetes' },
-    { label: 'Hypertension', value: 'hypertension' }
+    { label: 'Hypertension', value: 'hypertension' },
+    { label: 'General', value: 'general' }
   ];
 
   lifestyleOptions = [
     'carb counting',
     'HbA1c every 3 months',
+    'avoid triggers',
+    'low-salt diet',
+    '30min walk daily',
     'daily exercise',
     'calorie tracking'
   ];
 
   medicationOptions = [
     'metformin',
+    'albuterol inhaler',
+    'lisinopril',
     'insulin',
     'sulfonylureas'
   ];
