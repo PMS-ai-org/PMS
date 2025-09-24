@@ -32,7 +32,7 @@
     <div class="row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
+        <input matInput [matDatepicker]="picker" [min]="today" formControlName="date">
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>

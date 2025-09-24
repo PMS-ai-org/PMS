@@ -48,6 +48,7 @@ export class AppointmentComponent implements OnInit {
   appointmentForm: FormGroup;
   appointmentDcotorForm: FormGroup;
   userRole: string = '';
+  today: Date = new Date();
   diagnosisOptions = [
     { label: 'Type 2 Diabetes', value: 'type2_diabetes' },
     { label: 'Type 1 Diabetes', value: 'type1_diabetes' },
