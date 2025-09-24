@@ -7,6 +7,8 @@ import { PatientRegistrationComponent } from './patient-registration.component';
 import { PatientService } from '../../services/patient.service';
 import { MaterialModule } from '../../core/shared/material.module';
 import { Patient } from '../../models/patient.model';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 
 class MockPatientService {
   loadPatientById = jest.fn();
@@ -259,7 +261,4 @@ describe('PatientRegistrationComponent', () => {
     });
   });
 });
-function provideHttpClient(): any {
-  throw new Error('Function not implemented.');
-}
 
