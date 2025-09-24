@@ -154,4 +154,9 @@ export class MedicalHistoryFormComponent implements OnInit {
       });
     }
   }
+
+  cancel(): void {
+    // this.router.navigate(['/medical-history', this.patientId || this.record?.patientId]);
+    this.router.navigate(['/medical-history', this.patientId]);
+  }
 }

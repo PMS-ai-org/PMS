@@ -63,7 +63,7 @@
         <button mat-raised-button color="primary" type="submit">
           {{ isEdit ? 'Update' : 'Create' }}
         </button>
-        <button mat-raised-button color="warn" type="button">
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">
           Cancel
         </button>
       </div>
