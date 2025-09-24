@@ -51,6 +51,7 @@ describe('PatientRegistrationComponent', () => {
         NoopAnimationsModule
       ],
       providers: [
+        provideHttpClient(), provideHttpClient(),
         FormBuilder,
         { provide: PatientService, useValue: mockPatientService },
         { provide: Router, useValue: mockRouter },
@@ -258,3 +259,7 @@ describe('PatientRegistrationComponent', () => {
     });
   });
 });
+function provideHttpClient(): any {
+  throw new Error('Function not implemented.');
+}
+
