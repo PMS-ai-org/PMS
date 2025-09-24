@@ -6,9 +6,9 @@
   </a><br><br>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 full-width">
-    <!-- Code Column -->
-    <ng-container matColumnDef="code">
-      <th mat-header-cell *matHeaderCellDef> Code </th>
+    <!-- Allergy Column -->
+    <ng-container matColumnDef="allergy">
+      <th mat-header-cell *matHeaderCellDef> Allergy </th>
       <td mat-cell *matCellDef="let record"> {{ record.code }} </td>
     </ng-container>
 

@@ -34,24 +34,29 @@
         <!-- Clinic ID -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Clinic</mat-label>
-          <input matInput [value]="selectedClinicName" disabled />
+          <input matInput [value]="selectedClinicName" readonly />
         </mat-form-field>
 
         <!-- Site ID -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Site</mat-label>
+          <mat-select formControlName="siteId">
+            <mat-option *ngFor="let site of sites" [value]="site.id">
+              {{ site.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+
+        <!-- Description -->
         <mat-form-field appearance="outline">
-          <mat-label>Site ID</mat-label>
-          <input matInput formControlName="siteId" disabled />
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description" />
+          <mat-error *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+            Description is required
+          </mat-error>
         </mat-form-field>
       </div>
-
-      <!-- Description -->
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
-        <input matInput formControlName="description" />
-        <mat-error *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
-          Description is required
-        </mat-error>
-      </mat-form-field>
 
       <!-- Actions -->
       <div class="form-actions">
