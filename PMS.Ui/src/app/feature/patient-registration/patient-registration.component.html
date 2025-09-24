@@ -81,6 +81,9 @@
           <mat-error *ngIf="form.get('firstName')?.value.length && form.get('firstName')?.value.length < 3">
             Minimum 3 characters required
           </mat-error>
+          <mat-error *ngIf="form.get('firstName')?.hasError('pattern')">
+            Only letters allowed
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -93,11 +96,14 @@
           <mat-error *ngIf="form.get('lastName')?.value.length && form.get('lastName')?.value.length < 3">
             Minimum 3 characters required
           </mat-error>
+          <mat-error *ngIf="form.get('lastName')?.hasError('pattern')">
+            Only letters allowed
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Date of Birth (MM/DD/YYYY)</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" aria-label="Date of Birth"
+          <input matInput [matDatepicker]="picker"  [max]="today" formControlName="dateOfBirth" aria-label="Date of Birth"
             (dateChange)="calculateAge()" (input)="onDobInput($event)" />
           <mat-datepicker-toggle matSuffix [for]="picker" aria-label="Choose Date of Birth"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
@@ -244,19 +250,19 @@
             </mat-select>
           </mat-form-field>
 
-            <mat-form-field appearance="outline" class="provider-field">
-              <mat-label>Provider</mat-label>
-              <mat-select formControlName="providerId" placeholder="Select Provider">
-                <mat-option *ngFor="let p of insuranceProviders" [value]="p.id">{{ p.name }}</mat-option>
-              </mat-select>
-              <mat-error *ngIf="insuranceForm.get('providerId')?.hasError('required')">Provider required</mat-error>
-            </mat-form-field>
+          <mat-form-field appearance="outline" class="provider-field">
+            <mat-label>Provider</mat-label>
+            <mat-select formControlName="providerId" placeholder="Select Provider">
+              <mat-option *ngFor="let p of insuranceProviders" [value]="p.id">{{ p.name }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="insuranceForm.get('providerId')?.hasError('required')">Provider required</mat-error>
+          </mat-form-field>
 
-            <mat-form-field appearance="outline" class="policy-number-field">
-              <mat-label>Policy Number</mat-label>
+          <mat-form-field appearance="outline" class="policy-number-field">
+            <mat-label>Policy Number</mat-label>
               <input matInput formControlName="policyNumber" maxlength="32" [disabled]="!insuranceForm.value.providerId" />
               <mat-error *ngIf="insuranceForm.get('policyNumber')?.hasError('required')">Policy number required</mat-error>
-            </mat-form-field>
+          </mat-form-field>
         </div>
 
         <!-- Row 2: Plan / Member ID / Priority (provider selected) -->

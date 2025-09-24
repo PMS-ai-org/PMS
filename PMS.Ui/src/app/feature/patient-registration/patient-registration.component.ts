@@ -93,11 +93,12 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   private insuranceLoaded = false; // prevent double binding
   private selfPatientInsuranceLoaded = false; // track self load vs responsible load
   showResponsibleHolderOption = false; // controls visibility of responsible person in policy holder dropdown
+  today: Date = new Date();
 
   constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService, private dialog: MatDialog, private repoService: RepositoryService) {
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(3)]],
-      lastName: ['', [Validators.required, Validators.minLength(3)]],
+      firstName: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[A-Za-z]+$')]],
+      lastName: ['', [Validators.required, Validators.minLength(3), Validators.pattern('^[A-Za-z]+$')]],
       dateOfBirth: ['', [Validators.required, this.dateValidator]],
       age: [{ value: '', disabled: true }],
       gender: [''],
@@ -137,6 +138,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
 
   private addOneYear(d: Date): Date { const nd = new Date(d); nd.setFullYear(nd.getFullYear() + 1); return nd; }
 
+  
   // Snapshot computed helpers
   get fullName(): string {
     const f = this.form?.get('firstName')?.value || '';
@@ -192,7 +194,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     if (!value) { return; }
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(value).then(()=>{
-      this.toast.info(`${label} copied`);
+        this.toast.info(`${label} copied`);
       });
     }
   }
@@ -357,7 +359,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       // After dialog close clear selection & field so user must pick another
       ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
         this.selectedResponsiblePatient = undefined;
-    this.showResponsibleHolderOption = false;
+        this.showResponsibleHolderOption = false;
         this.form.get('responsiblePatientId')?.setValue('');
         const searchCtrl = this.form.get('responsibleSearch');
         searchCtrl?.setValue('', { emitEvent: true });
@@ -368,7 +370,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     }
     // Valid adult selection
     this.selectedResponsiblePatient = p;
-  this.showResponsibleHolderOption = true;
+    this.showResponsibleHolderOption = true;
     this.form.get('responsiblePatientId')?.setValue(p.id || '');
   }
 
@@ -504,10 +506,9 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     this.calculatedAge = age;
   }
 
-
   onCancel(reset: boolean) {
-  this.resetForm();
-  if (reset) this.router.navigate(['/patient/search']);
+    this.resetForm();
+    if (reset) this.router.navigate(['/patient/search']);
   }
 
   onSubmit() {
@@ -544,7 +545,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       }
     }
     console.log('Saving patient with insurance:', data);
-    
+
     // Manually call repository to control toast timing
     const obs$ = this.patientId
       ? this.patientService['repo'].updatePatient(this.patientId, data)
@@ -654,8 +655,8 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     if (!ctrl) return;
     let digits = (event.target as HTMLInputElement).value.replace(/[^0-9]/g, '');
     if (digits.length > 10) digits = digits.substring(0,10);
-  ctrl.setValue(digits, { emitEvent: false });
-  ctrl.updateValueAndValidity({ emitEvent: false });
+    ctrl.setValue(digits, { emitEvent: false });
+    ctrl.updateValueAndValidity({ emitEvent: false });
   }
 
   ngOnDestroy(): void {
@@ -690,7 +691,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     });
     // Reset new fields
     this.form.patchValue({
-  responsibleIsPatient: 'false',
+      responsibleIsPatient: 'false',
       responsibleSearch: '',
       responsiblePatientId: ''
     });
