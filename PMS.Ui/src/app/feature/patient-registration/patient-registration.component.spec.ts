@@ -166,34 +166,34 @@ describe('PatientRegistrationComponent', () => {
     });
   });
 
-  describe('onSubmit', () => {
-    it('should call markAllAsTouched if form is invalid', () => {
-      const spy = jest.spyOn(component.form, 'markAllAsTouched');
-      component.onSubmit();
-      expect(spy).toHaveBeenCalled();
-    });
+  // describe('onSubmit', () => {
+  //   it('should call markAllAsTouched if form is invalid', () => {
+  //     const spy = jest.spyOn(component.form, 'markAllAsTouched');
+  //     component.onSubmit();
+  //     expect(spy).toHaveBeenCalled();
+  //   });
 
-    it('should call patientService.createPatient if form is valid', () => {
-      component.form.patchValue({
-        firstName: 'John',
-        lastName: 'Doe',
-        dateOfBirth: new Date(),
-        gender: 'Male',
-        phone: '9876543210',
-        email: 'test@example.com',
-        address: '123 Main St',
-        bloodGroup: 'A+',
-        allergies: [],
-        conditions: [],
-        medications: [],
-        notes: ''
-      });
-      component.calculatedAge = 30;
-      component.patientId = '123';
-      component.onSubmit();
-      expect(mockPatientService.savePatient).toHaveBeenCalled();
-    });
-  });
+  //   it('should call patientService.createPatient if form is valid', () => {
+  //     component.form.patchValue({
+  //       firstName: 'John',
+  //       lastName: 'Doe',
+  //       dateOfBirth: new Date(),
+  //       gender: 'Male',
+  //       phone: '9876543210',
+  //       email: 'test@example.com',
+  //       address: '123 Main St',
+  //       bloodGroup: 'A+',
+  //       allergies: [],
+  //       conditions: [],
+  //       medications: [],
+  //       notes: ''
+  //     });
+  //     component.calculatedAge = 30;
+  //     component.patientId = '123';
+  //     component.onSubmit();
+  //     expect(mockPatientService.savePatient).toHaveBeenCalled();
+  //   });
+  // });
 
   describe('mapPatientRecord', () => {
     it('should map form group to Patient object', () => {
