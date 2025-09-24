@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MedicalHistory } from '../../../../models/medical-history.model';
 import { MedicalHistoryService } from '../../../../services/medical-history.service';
 import { ClinicService } from '../../../../core/auth/clinic.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'pms-medical-history-form',
@@ -31,6 +31,7 @@ export class MedicalHistoryFormComponent implements OnInit {
   record?: MedicalHistory;
   clinicList: any[] = [];
   selectedClinicName = '';
+  sites: any[] = [];
 
   constructor(
     private service: MedicalHistoryService,
@@ -49,27 +50,28 @@ export class MedicalHistoryFormComponent implements OnInit {
       siteId: ['']
     });
   }
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params.patientId) {
         this.patientId = params.patientId;
         this.form.patchValue({ patientId: params.patientId });
       }
+
       if (params.clinicId) {
         this.form.patchValue({ clinicId: params.clinicId });
-
-        // once clinicList is loaded, find the name
-        this.loadMasterData(params.clinicId);
+        this.loadMasterData(params.clinicId); // ✅ only call here
+      } else {
+        this.loadMasterData(); // ✅ load clinics without preselect if no clinicId
       }
-      if (params.siteId) this.form.patchValue({ siteId: params.siteId });
+
+      if (params.siteId) {
+        this.form.patchValue({ siteId: params.siteId });
+      }
     });
 
-    this.loadMasterData();
-
     const id = this.route.snapshot.paramMap.get('id');
-
     if (id) {
-      // Edit mode
       this.isEdit = true;
       this.service.getById(id).subscribe(data => {
         this.record = data;
@@ -77,7 +79,6 @@ export class MedicalHistoryFormComponent implements OnInit {
         this.form.patchValue(this.record);
       });
     } else {
-      // Add mode
       this.isEdit = false;
       this.record = { patientId: this.patientId } as MedicalHistory;
       this.form.patchValue({ patientId: this.patientId });
@@ -86,13 +87,21 @@ export class MedicalHistoryFormComponent implements OnInit {
 
   loadMasterData(clinicId?: string) {
     forkJoin({
-      clinics: this.clinicService.getClinics()
+      clinics: this.clinicService.getClinics(),
+      sites: clinicId ? this.clinicService.getSitesByClinic(clinicId) : of([]) // return empty if no clinicId
     }).subscribe({
-      next: ({ clinics }) => {
+      next: ({ clinics, sites }) => {
         this.clinicList = clinics;
+
         if (clinicId) {
+          // ✅ set selected clinic name
           const clinic = this.clinicList.find(c => c.id === clinicId);
           this.selectedClinicName = clinic ? clinic.name : '';
+
+          // ✅ set sites, sorted by name
+          this.sites = sites.sort((a: any, b: any) =>
+            a.name.localeCompare(b.name)
+          );
         }
       },
       error: (err) => {

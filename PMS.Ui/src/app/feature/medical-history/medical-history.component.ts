@@ -19,7 +19,7 @@ export class MedicalHistoryComponent implements OnInit {
   patientName = '';
   records: MedicalHistory[] = [];
   dataSource = new MatTableDataSource<MedicalHistory>([]);
-  displayedColumns: string[] = ['code', 'description', 'source', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['allergy', 'description', 'source', 'createdAt', 'actions'];
   clinicId = '';
   siteId = '';
 
