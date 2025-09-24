@@ -115,6 +115,43 @@
         </mat-form-field>
       </div>
 
+      <!-- Responsible Person Section -->
+      <h2>Responsible Person</h2>
+      <div class="form-row">
+        <div class="responsible-radio-group" role="radiogroup" aria-label="Is patient the responsible person?">
+          <label class="group-label">Is patient the responsible person?</label>
+          <mat-radio-group formControlName="responsibleIsPatient" class="inline-radios">
+            <mat-radio-button value="false">No</mat-radio-button>
+            <mat-radio-button value="true">Yes</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <ng-container *ngIf="form.value.responsibleIsPatient === 'true'">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Search Patient</mat-label>
+            <input type="text" matInput formControlName="responsibleSearch" [matAutocomplete]="respAuto"
+              placeholder="Type to search patient" />
+            <mat-progress-spinner *ngIf="responsibleSearchLoading" matSuffix diameter="20"
+              mode="indeterminate"></mat-progress-spinner>
+            <mat-error *ngIf="form.get('responsibleSearch')?.hasError('required')">Responsible patient search is
+              required</mat-error>
+          </mat-form-field>
+          <mat-autocomplete #respAuto="matAutocomplete" (optionSelected)="onResponsibleOptionSelected($event)"
+            [displayWith]="displayResponsible.bind(this)">
+            <mat-option *ngFor="let p of responsibleFiltered$ | async" [value]="p">
+              <div class="auto-item">
+                <div class="name">{{ p.full_name }}</div>
+                <div class="meta">{{ p.email || '—' }} • {{ p.phone || '—' }}</div>
+              </div>
+            </mat-option>
+            <mat-option *ngIf="(responsibleFiltered$ | async)?.length === 0 && !responsibleSearchLoading && form.get('responsibleSearch')?.valid">No matches</mat-option>
+          </mat-autocomplete>
+        </ng-container>
+      </div>
+      <!-- Autocomplete replaces manual results list -->
+      <div *ngIf="selectedResponsiblePatient" class="selected-chip">
+        Selected: {{ selectedResponsiblePatient.full_name }} (Age: {{ selectedResponsiblePatient.age || '—' }})
+      </div>
+
       <!-- Contact Details -->
       <h2>Contact Details</h2>
       <div class="form-row">
@@ -144,7 +181,8 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Zip</mat-label>
-          <input matInput formControlName="zip" inputmode="numeric" minlength="6" maxlength="10" (input)="onZipInput($event)" />
+          <input matInput formControlName="zip" inputmode="numeric" minlength="6" maxlength="10"
+            (input)="onZipInput($event)" />
           <mat-error *ngIf="zipCtrl?.value && zipCtrl?.hasError('minlength')">Minimum 6 digits</mat-error>
           <mat-error *ngIf="zipCtrl?.value && zipCtrl?.hasError('maxlength')">Maximum 10 digits</mat-error>
           <mat-error *ngIf="zipCtrl?.value && zipCtrl?.hasError('pattern')">Digits only</mat-error>
@@ -193,6 +231,80 @@
         </mat-form-field>
       </div>
 
+      <!-- Insurance Section (separate form) -->
+      <h2>Insurance Details</h2>
+      <form [formGroup]="insuranceForm" class="insurance-form" aria-label="Insurance form">
+        <!-- Row 1: Policy Holder / Provider / Policy Number -->
+        <div class="form-row stage-row">
+          <mat-form-field appearance="outline" class="policy-holder-field">
+            <mat-label>Policy Holder</mat-label>
+            <mat-select formControlName="policyHolderType">
+              <mat-option value="Self">Self</mat-option>
+              <mat-option *ngIf="showResponsibleHolderOption && selectedResponsiblePatient && (selectedResponsiblePatient.age || 0) >= 18" [value]="selectedResponsiblePatient.id">{{ selectedResponsiblePatient.full_name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+            <mat-form-field appearance="outline" class="provider-field">
+              <mat-label>Provider</mat-label>
+              <mat-select formControlName="providerId" placeholder="Select Provider">
+                <mat-option *ngFor="let p of insuranceProviders" [value]="p.id">{{ p.name }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="insuranceForm.get('providerId')?.hasError('required')">Provider required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="policy-number-field">
+              <mat-label>Policy Number</mat-label>
+              <input matInput formControlName="policyNumber" maxlength="32" [disabled]="!insuranceForm.value.providerId" />
+              <mat-error *ngIf="insuranceForm.get('policyNumber')?.hasError('required')">Policy number required</mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- Row 2: Plan / Member ID / Priority (provider selected) -->
+        <div class="form-row stage-row" *ngIf="insuranceForm.value.providerId">
+          <mat-form-field appearance="outline" class="plan-field">
+            <mat-label>Plan</mat-label>
+            <mat-select formControlName="planId" placeholder="Select Plan">
+              <mat-option *ngFor="let plan of insurancePlans" [value]="plan.id">{{ plan.name }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="insuranceForm.get('planId')?.hasError('required')">Plan required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="member-id-field">
+            <mat-label>Member ID</mat-label>
+            <input matInput formControlName="memberId" maxlength="32" [disabled]="!insuranceForm.value.planId" />
+            <mat-error *ngIf="insuranceForm.get('memberId')?.hasError('required')">Member ID required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="priority-field">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option value="1">Primary</mat-option>
+              <mat-option value="2">Secondary</mat-option>
+            </mat-select>
+            <mat-error *ngIf="insuranceForm.get('priority')?.hasError('required')">Priority required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Row 3: Effective / Expiration Dates + Save (plan selected) -->
+        <div class="form-row stage-row" *ngIf="insuranceForm.value.planId">
+          <mat-form-field appearance="outline" class="effective-date-field">
+            <mat-label>Effective Date</mat-label>
+            <input matInput [matDatepicker]="effectivePicker" formControlName="effectiveDate" />
+            <mat-datepicker-toggle matSuffix [for]="effectivePicker"></mat-datepicker-toggle>
+            <mat-datepicker #effectivePicker></mat-datepicker>
+            <mat-error *ngIf="insuranceForm.get('effectiveDate')?.hasError('required')">Effective date required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="expiration-date-field">
+            <mat-label>Expiration Date</mat-label>
+            <input matInput [matDatepicker]="expirationPicker" formControlName="expirationDate" />
+            <mat-datepicker-toggle matSuffix [for]="expirationPicker"></mat-datepicker-toggle>
+            <mat-datepicker #expirationPicker></mat-datepicker>
+            <mat-error *ngIf="insuranceForm.get('expirationDate')?.hasError('required')">Expiration date required</mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+
       <!-- Submit -->
       <div class="form-actions">
         <button mat-stroked-button type="button" (click)="onCancel(false)">Reset</button>
@@ -214,3 +326,12 @@
     </div>
   </mat-card>
 </div>
+
+<!-- Under Age Warning Dialog -->
+<ng-template #underAgeTpl>
+  <h2 mat-dialog-title>Under Age Warning</h2>
+  <mat-dialog-content>The selected responsible person is under 18. Please choose an adult.</mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</ng-template>

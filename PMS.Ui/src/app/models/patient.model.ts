@@ -1,4 +1,5 @@
 import { AuditableEntity } from "./auditable-entity.model";
+import { PatientInsuranceDto } from "./insurance";
 
 export interface Patient extends AuditableEntity {
   id?: string;
@@ -15,4 +16,6 @@ export interface Patient extends AuditableEntity {
   createdAt?: string;
   homeClinicId?: string;
   homeSiteId?: string;
+  hasInsurance?: boolean;      // backend flag to decide add vs update insurance
+  insurance?: PatientInsuranceDto;
 }
