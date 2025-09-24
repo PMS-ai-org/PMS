@@ -68,7 +68,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   savingAnother = false;
   showAllConditions = false;
   showAllMedications = false;
-  private requiredFields: string[] = ['firstName','lastName','dateOfBirth'];
+  private requiredFields: string[] = ['firstName', 'lastName', 'dateOfBirth'];
   // Responsible person & insurance feature state
   responsibleSearchLoading = false;
   selectedResponsiblePatient?: Patient;
@@ -93,11 +93,12 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   private insuranceLoaded = false; // prevent double binding
   private selfPatientInsuranceLoaded = false; // track self load vs responsible load
   showResponsibleHolderOption = false; // controls visibility of responsible person in policy holder dropdown
+  today: Date = new Date();
 
   constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService, private dialog: MatDialog, private repoService: RepositoryService) {
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(3)]],
-      lastName: ['', [Validators.required, Validators.minLength(3)]],
+      firstName: ['', [Validators.required, Validators.minLength(3), this.whiteSpaceValidator]],
+      lastName: ['', [Validators.required, Validators.minLength(3), this.whiteSpaceValidator]],
       dateOfBirth: ['', [Validators.required, this.dateValidator]],
       age: [{ value: '', disabled: true }],
       gender: [''],
@@ -137,6 +138,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
 
   private addOneYear(d: Date): Date { const nd = new Date(d); nd.setFullYear(nd.getFullYear() + 1); return nd; }
 
+
   // Snapshot computed helpers
   get fullName(): string {
     const f = this.form?.get('firstName')?.value || '';
@@ -147,43 +149,43 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   get displayConditions(): string {
     const list: string[] = this.form?.get('conditions')?.value || [];
     if (!list.length) return '—';
-    return list.length > 3 ? `${list.slice(0,3).join(', ')} +${list.length - 3} more` : list.join(', ');
+    return list.length > 3 ? `${list.slice(0, 3).join(', ')} +${list.length - 3} more` : list.join(', ');
   }
 
   get displayMedications(): string {
     const list: string[] = this.form?.get('medications')?.value || [];
     if (!list.length) return '—';
-    return list.length > 3 ? `${list.slice(0,3).join(', ')} +${list.length - 3} more` : list.join(', ');
+    return list.length > 3 ? `${list.slice(0, 3).join(', ')} +${list.length - 3} more` : list.join(', ');
   }
 
   get initials(): string {
     if (!this.fullName) return '?';
-    const parts = this.fullName.split(' ').filter(p=>p);
-    return parts.slice(0,2).map(p=>p[0].toUpperCase()).join('');
+    const parts = this.fullName.split(' ').filter(p => p);
+    return parts.slice(0, 2).map(p => p[0].toUpperCase()).join('');
   }
 
   get conditionsList(): string[] { return this.form?.get('conditions')?.value || []; }
   get medicationsList(): string[] { return this.form?.get('medications')?.value || []; }
 
   get conditionsVisible(): string[] {
-    return this.showAllConditions ? this.conditionsList : this.conditionsList.slice(0,6);
+    return this.showAllConditions ? this.conditionsList : this.conditionsList.slice(0, 6);
   }
 
   get medicationsVisible(): string[] {
-    return this.showAllMedications ? this.medicationsList : this.medicationsList.slice(0,6);
+    return this.showAllMedications ? this.medicationsList : this.medicationsList.slice(0, 6);
   }
 
   toggleConditions() { this.showAllConditions = !this.showAllConditions; }
   toggleMedications() { this.showAllMedications = !this.showAllMedications; }
 
   get addressSummary(): string | null {
-    const parts = ['addressLine','city','state','zip'].map(k=>this.form.get(k)?.value).filter((x:string)=>!!x);
+    const parts = ['addressLine', 'city', 'state', 'zip'].map(k => this.form.get(k)?.value).filter((x: string) => !!x);
     return parts.length ? parts.join(', ') : null;
   }
 
   get completionPercent(): number {
     const completed = this.requiredFields.filter(f => !!this.form.get(f)?.value).length;
-    return Math.round((completed/this.requiredFields.length)*100);
+    return Math.round((completed / this.requiredFields.length) * 100);
   }
 
   get zipCtrl() { return this.form.get('zip'); }
@@ -191,8 +193,8 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   copy(value: string | null | undefined, label: string) {
     if (!value) { return; }
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(value).then(()=>{
-      this.toast.info(`${label} copied`);
+      navigator.clipboard.writeText(value).then(() => {
+        this.toast.info(`${label} copied`);
       });
     }
   }
@@ -357,7 +359,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       // After dialog close clear selection & field so user must pick another
       ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
         this.selectedResponsiblePatient = undefined;
-    this.showResponsibleHolderOption = false;
+        this.showResponsibleHolderOption = false;
         this.form.get('responsiblePatientId')?.setValue('');
         const searchCtrl = this.form.get('responsibleSearch');
         searchCtrl?.setValue('', { emitEvent: true });
@@ -368,7 +370,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     }
     // Valid adult selection
     this.selectedResponsiblePatient = p;
-  this.showResponsibleHolderOption = true;
+    this.showResponsibleHolderOption = true;
     this.form.get('responsiblePatientId')?.setValue(p.id || '');
   }
 
@@ -504,10 +506,9 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     this.calculatedAge = age;
   }
 
-
   onCancel(reset: boolean) {
-  this.resetForm();
-  if (reset) this.router.navigate(['/patient/search']);
+    this.resetForm();
+    if (reset) this.router.navigate(['/patient/search']);
   }
 
   onSubmit() {
@@ -544,7 +545,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       }
     }
     console.log('Saving patient with insurance:', data);
-    
+
     // Manually call repository to control toast timing
     const obs$ = this.patientId
       ? this.patientService['repo'].updatePatient(this.patientId, data)
@@ -610,6 +611,12 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     return isNaN(val.getTime()) ? { invalidDate: true } : null;
   }
 
+  whiteSpaceValidator(control: AbstractControl) {
+    if (!control.value) return null;
+    const isWhitespace = (control.value || '').trim().length === 0;
+    return isWhitespace ? { whitespace: true } : null;
+  }
+
   getConditionsTooltip(): string {
     const v = this.form.get('conditions')?.value as string[];
     return v && v.length ? v.join(', ') : 'Select medical conditions';
@@ -653,9 +660,9 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     const ctrl = this.form.get('zip');
     if (!ctrl) return;
     let digits = (event.target as HTMLInputElement).value.replace(/[^0-9]/g, '');
-    if (digits.length > 10) digits = digits.substring(0,10);
-  ctrl.setValue(digits, { emitEvent: false });
-  ctrl.updateValueAndValidity({ emitEvent: false });
+    if (digits.length > 10) digits = digits.substring(0, 10);
+    ctrl.setValue(digits, { emitEvent: false });
+    ctrl.updateValueAndValidity({ emitEvent: false });
   }
 
   ngOnDestroy(): void {
@@ -684,13 +691,13 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     });
     this.calculatedAge = 0;
     // Ensure select/multi-select controls emit changes for UI refresh
-    ['allergies','conditions','medications'].forEach(c => {
+    ['allergies', 'conditions', 'medications'].forEach(c => {
       const ctrl = this.form.get(c);
       if (ctrl) ctrl.setValue([], { emitEvent: true });
     });
     // Reset new fields
     this.form.patchValue({
-  responsibleIsPatient: 'false',
+      responsibleIsPatient: 'false',
       responsibleSearch: '',
       responsiblePatientId: ''
     });
@@ -746,13 +753,13 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
 
   private generatePolicyNumber(providerId: string): string {
     const prov = this.insuranceProviders.find(p => p.id === providerId);
-    const prefix = prov?.name ? prov.name.split(/\s+/).map(w=>w[0]).join('').toUpperCase() : 'POL';
-    return `POL-${prefix}-${Math.floor(Math.random()*900+100)}`;
+    const prefix = prov?.name ? prov.name.split(/\s+/).map(w => w[0]).join('').toUpperCase() : 'POL';
+    return `POL-${prefix}-${Math.floor(Math.random() * 900 + 100)}`;
   }
 
   private generateMemberId(planId: string): string {
     const plan = this.insurancePlans.find(p => p.id === planId);
-    const prefix = plan?.name ? plan.name.replace(/[^A-Za-z0-9]/g,'').substring(0,5).toUpperCase() : 'MEM';
-    return `MEM-${prefix}-${Math.floor(Math.random()*900+100)}`;
+    const prefix = plan?.name ? plan.name.replace(/[^A-Za-z0-9]/g, '').substring(0, 5).toUpperCase() : 'MEM';
+    return `MEM-${prefix}-${Math.floor(Math.random() * 900 + 100)}`;
   }
 }
