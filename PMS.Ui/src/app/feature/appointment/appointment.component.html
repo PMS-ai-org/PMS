@@ -1,7 +1,7 @@
 <h2 *ngIf="userRole === 'Staff' || userRole === 'Admin'">Appointments</h2>
 <h2 *ngIf="userRole === 'Doctor'">My Appointments</h2>
 <!-- Receptionist View -->
-<div *ngIf="userRole === 'Staff'" class="appointment-container">
+<div *ngIf="mode === 'create'" class="appointment-container">
 
   <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
     <!-- Search Patient -->
@@ -63,7 +63,9 @@
 </div>
 
 <!-- Doctor View -->
-<div *ngIf="userRole === 'Doctor' || userRole === 'Admin'" class="appointment-container">
+<div *ngIf="mode === 'view' && (userRole === 'Doctor' || userRole === 'Admin' || userRole === 'Staff')"
+  class="appointment-container">
+  <p *ngIf="appointments?.length === 0">No appointments found.</p>
   <mat-card *ngFor="let appointment of appointments" class="doctor-card"
     [formGroup]="appointmentForms[appointment.id!]">
     <mat-card-title>

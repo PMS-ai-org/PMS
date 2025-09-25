@@ -14,6 +14,8 @@ import { MatDateRangePicker } from '@angular/material/datepicker';
 import { ActivatedRoute } from '@angular/router';
 import { PatientService } from '../../services/patient.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { ToastService } from '../../services/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appointment',
@@ -37,6 +39,7 @@ export class AppointmentComponent implements OnInit {
   //     notes: 'Patient is not healthy.'
   //   }
   // ];
+  mode: 'create' | 'view' = 'view';
   private destroy$ = new Subject<void>();
   patientName: string = '';
   appointments: Appointment[] = [];
@@ -84,7 +87,9 @@ export class AppointmentComponent implements OnInit {
     private repositoryService: RepositoryService,
     private patientService: PatientService,
     private route: ActivatedRoute,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private toast: ToastService,
+    private router: Router
   ) {
     this.appointmentForm = this.fb.group({
       doctorId: ['', Validators.required],
@@ -122,6 +127,10 @@ export class AppointmentComponent implements OnInit {
             }
           });
       }
+    });
+
+    this.route.queryParams.subscribe(params => {
+      this.mode = params['mode'] || 'view';
     });
 
     this.userRole = this.authSession.session()?.role ?? '';
@@ -267,7 +276,12 @@ export class AppointmentComponent implements OnInit {
         next: () => {
           this.editingId = undefined;
           this.appointmentForm.reset({ status: 'scheduled' });
-          this.loadAppointments();
+          //this.loadAppointment(this.patientId);
+          this.toast.success('Appointment updated successfully');
+          this.router.navigate(
+            ['/appointment', this.patientId],
+            { queryParams: { mode: 'view' } }
+          );
         },
         error: err => this.error = err.message
       });
@@ -275,7 +289,12 @@ export class AppointmentComponent implements OnInit {
       this.appointmentService.create(appt).subscribe({
         next: () => {
           this.appointmentForm.reset({ status: 'scheduled' });
-          this.loadAppointments();
+          //this.loadAppointment(this.patientId);
+          this.toast.success('Appointment created successfully');
+          this.router.navigate(
+            ['/appointment', this.patientId],
+            { queryParams: { mode: 'view' } }
+          );
         },
         error: err => this.error = err.message
       });
