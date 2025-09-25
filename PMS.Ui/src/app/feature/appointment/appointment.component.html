@@ -64,9 +64,6 @@
 
 <!-- Doctor View -->
 <div *ngIf="userRole === 'Doctor' || userRole === 'Admin'" class="appointment-container">
-  <p *ngIf="appointments?.length === 0">No appointments found.</p>
-  <p *ngIf="appointments?.length">{{ appointments.length }} appointments loaded.</p>
-
   <mat-card *ngFor="let appointment of appointments" class="doctor-card"
     [formGroup]="appointmentForms[appointment.id!]">
     <mat-card-title>
@@ -82,8 +79,9 @@
         <mat-label>Status</mat-label>
         <mat-select formControlName="status">
           <mat-option value="scheduled">Scheduled</mat-option>
-          <mat-option value="done">Done</mat-option>
           <mat-option value="cancelled">Cancelled</mat-option>
+          <mat-option value="completed">Completed</mat-option>
+          <mat-option value="no_show">No Show</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -135,5 +133,3 @@
     </ng-template>
   </mat-card>
 </div>
-
-
