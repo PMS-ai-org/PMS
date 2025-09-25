@@ -1,5 +1,5 @@
 <div class="filters">
-  <mat-label>Clinic:</mat-label>
+  <mat-label>Specialization:</mat-label>
   <mat-select [(ngModel)]="selectedClinicId" (selectionChange)="onClinicChange()">
     <mat-option [value]="null">All Clinics</mat-option>
     <mat-option *ngFor="let clinic of clinics" [value]="clinic.id">
