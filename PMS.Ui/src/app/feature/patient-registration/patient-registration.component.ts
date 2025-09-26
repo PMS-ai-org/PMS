@@ -96,6 +96,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   showResponsibleHolderOption = false; // controls visibility of responsible person in policy holder dropdown
   private originalPatientSnapshot?: Patient; // snapshot used to restore on reset while editing
   private originalInsuranceSnapshot: any | null = null; // raw insurance form values snapshot
+  today: Date = new Date();
 
   constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService, private dialog: MatDialog, private repoService: RepositoryService) {
     // Custom validator to ensure name has at least 3 alphabetic characters (ignoring spaces) and not only whitespace
