@@ -66,6 +66,10 @@ namespace PMS.WebAPI.Data
                 .WithOne(d => d.UserLogin)
                 .HasForeignKey<UserDetail>(d => d.UserId);
 
+            builder.Entity<Appointment>()
+                .Property(a => a.treatment_plan)
+                .HasColumnType("jsonb");
+
             // ===== Optionally add indexes/relations for new tables =====
             // e.g., builder.Entity<Patient>().HasIndex(p => p.PatientNumber).IsUnique();
             // e.g., builder.Entity<Appointment>().HasOne(a => a.Patient).WithMany(p => p.Appointments).HasForeignKey(a => a.PatientId);

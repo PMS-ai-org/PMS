@@ -7,6 +7,8 @@ import { MaterialModule } from '../../core/shared/material.module';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 class MockMedicalHistoryService {
   getByPatient = jest.fn().mockReturnValue(of([]));
@@ -26,6 +28,13 @@ describe('MedicalHistoryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MedicalHistoryComponent, ReactiveFormsModule, MaterialModule, CommonModule],
       providers: [
+        provideHttpClient(), provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of({ get: () => '' }) // mock route params
+          }
+        },
         FormBuilder,
         { provide: MedicalHistoryService, useValue: service },
         {

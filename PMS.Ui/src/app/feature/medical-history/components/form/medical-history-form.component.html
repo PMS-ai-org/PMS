@@ -10,48 +10,60 @@
       <!-- Form Fields -->
       <div class="form-row">
         <!-- Code -->
-        <mat-form-field appearance="outline">
-          <mat-label>Code</mat-label>
-          <input matInput formControlName="code" />
-          <mat-error *ngIf="form.get('code')?.invalid && form.get('code')?.touched">
-            Code is required
-          </mat-error>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Allergies</mat-label>
+          <mat-select formControlName="code">
+            <mat-option *ngFor="let c of codesList" [value]="c">
+              {{ c }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
+        <mat-error *ngIf="form.get('code')?.invalid && form.get('code')?.touched">
+          Code is required
+        </mat-error>
 
         <!-- Source -->
         <mat-form-field appearance="outline">
           <mat-label>Source</mat-label>
-          <input matInput formControlName="source" />
+          <mat-select formControlName="source">
+            <mat-option value="patient-reported">Patient Reported</mat-option>
+            <mat-option value="lab-report">Lab Report</mat-option>
+          </mat-select>
         </mat-form-field>
 
         <!-- Clinic ID -->
-        <mat-form-field appearance="outline">
-          <mat-label>Clinic ID</mat-label>
-          <input matInput formControlName="clinicId" />
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Specialization</mat-label>
+          <input matInput [value]="selectedClinicName" disabled />
         </mat-form-field>
 
         <!-- Site ID -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Site</mat-label>
+          <mat-select formControlName="siteId">
+            <mat-option *ngFor="let site of sites" [value]="site.id">
+              {{ site.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+
+        <!-- Description -->
         <mat-form-field appearance="outline">
-          <mat-label>Site ID</mat-label>
-          <input matInput formControlName="siteId" />
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description" />
+          <mat-error *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+            Description is required
+          </mat-error>
         </mat-form-field>
       </div>
-
-      <!-- Description -->
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
-        <input matInput formControlName="description" />
-        <mat-error *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
-          Description is required
-        </mat-error>
-      </mat-form-field>
 
       <!-- Actions -->
       <div class="form-actions">
         <button mat-raised-button color="primary" type="submit">
           {{ isEdit ? 'Update' : 'Create' }}
         </button>
-        <button mat-raised-button color="warn" type="button">
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">
           Cancel
         </button>
       </div>

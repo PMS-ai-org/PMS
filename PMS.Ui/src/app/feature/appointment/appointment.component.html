@@ -1,7 +1,7 @@
 <h2 *ngIf="userRole === 'Staff' || userRole === 'Admin'">Appointments</h2>
 <h2 *ngIf="userRole === 'Doctor'">My Appointments</h2>
 <!-- Receptionist View -->
-<div *ngIf="userRole === 'Staff'" class="appointment-container">
+<div *ngIf="mode === 'create'" class="appointment-container">
 
   <form class="appointment-form" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
     <!-- Search Patient -->
@@ -32,7 +32,7 @@
     <div class="row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date">
+        <input matInput [matDatepicker]="picker" [min]="today" formControlName="date">
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
@@ -63,33 +63,70 @@
 </div>
 
 <!-- Doctor View -->
-<div *ngIf="userRole === 'Doctor' || userRole === 'Admin'" class="appointment-container">
-  <form [formGroup]="appointmentDcotorForm" (ngSubmit)="edit()" [disable]="!appointmentDcotorForm.touched || !appointmentDcotorForm.valid">
-  <mat-card *ngFor="let appointment of appointments" class="doctor-card">
+<div *ngIf="mode === 'view' && (userRole === 'Doctor' || userRole === 'Admin' || userRole === 'Staff')"
+  class="appointment-container">
+  <p *ngIf="appointments?.length === 0">No appointments found.</p>
+  <mat-card *ngFor="let appointment of appointments" class="doctor-card"
+    [formGroup]="appointmentForms[appointment.id!]">
     <mat-card-title>
       Patient Name: {{ appointment.patientName }}
     </mat-card-title>
     <mat-card-subtitle>
-      Booked At: {{ appointment.bookedAt | date:'fullDate' }}<br>
+      Booked At: {{ appointment.bookedAt | date:'fullDate' }}<br />
       Scheduled At: {{ appointment.scheduledAt | date:'fullDate' }}
     </mat-card-subtitle>
-    <mat-card-content>
-      <p><strong>Notes:</strong> {{ appointment.notes }}</p>
-    </mat-card-content>
+
     <mat-card-content *ngIf="editingId === appointment.id; else viewMode">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Status</mat-label>
         <mat-select formControlName="status">
           <mat-option value="scheduled">Scheduled</mat-option>
-          <mat-option value="done">Done</mat-option>
           <mat-option value="cancelled">Cancelled</mat-option>
+          <mat-option value="completed">Completed</mat-option>
+          <mat-option value="no_show">No Show</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <!-- Diagnosis Dropdown -->
       <mat-form-field appearance="outline" class="half-width">
-        <mat-label>Treatment Plan</mat-label>
-        <textarea matInput formControlName="treatmentPlan"></textarea>
+        <mat-label>Diagnosis</mat-label>
+        <mat-select formControlName="diagnosis">
+          <mat-option *ngFor="let option of diagnosisOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
-      <button mat-raised-button color="primary" class="submit-btn" (click)="updateAppointment(appointment)" type="button">Update</button>
+
+      <!-- Lifestyle -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Lifestyle Changes</mat-label>
+        <mat-select formControlName="lifestyle" multiple>
+          <mat-option *ngFor="let lifestyle of lifestyleOptions" [value]="lifestyle">
+            {{ lifestyle }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Medications -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Medications</mat-label>
+        <mat-select formControlName="medications" multiple>
+          <mat-option *ngFor="let med of medicationOptions" [value]="med">
+            {{ med }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Follow-up Days -->
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Follow-up in Days</mat-label>
+        <input matInput type="number" formControlName="follow_up_days" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="submit-btn"
+        (click)="updateAppointment(appointment, appointmentForms[appointment.id!].value)" type="button">
+        Update
+      </button>
       <button mat-button color="warn" (click)="cancelEdit()" type="button">Cancel</button>
     </mat-card-content>
     <ng-template #viewMode>
@@ -97,7 +134,4 @@
       <button mat-button color="warn" (click)="deleteAppointment(appointment)">Delete</button>
     </ng-template>
   </mat-card>
-</form>
 </div>
-
-

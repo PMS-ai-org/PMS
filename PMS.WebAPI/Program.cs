@@ -26,11 +26,32 @@ builder.Services.AddDbContext<PmsDbContext>(options =>
 // Password hasher (PBKDF2)
 // Add NpgsqlDataSource for low-level ADO.NET access in SearchPatientService
 // Register connection for DI
-builder.Services.AddScoped<NpgsqlConnection>(sp =>
+// builder.Services.AddScoped<NpgsqlConnection>(sp =>
+// {
+//     var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
+//     return new NpgsqlConnection(connStr);
+// });
+
+// --- Configure NpgsqlDataSource with EnableDynamicJson ---
+builder.Services.AddSingleton<NpgsqlDataSource>(sp =>
 {
     var connStr = builder.Configuration.GetConnectionString("DefaultConnection")!;
-    return new NpgsqlConnection(connStr);
+    
+    var dataSourceBuilder = new NpgsqlDataSourceBuilder(connStr);
+
+    // ✅ Enable System.Text.Json dynamic serialization (fixes the jsonb issue)
+    dataSourceBuilder.EnableDynamicJson();
+    
+    return dataSourceBuilder.Build();
 });
+
+// --- Provide NpgsqlConnection from the configured data source ---
+builder.Services.AddScoped<NpgsqlConnection>(sp =>
+{
+    var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
+    return dataSource.CreateConnection();
+});
+
 
 //builder.Configuration.GetValue<string>("DefaultConnection"))
 // configure settings

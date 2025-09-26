@@ -1,11 +1,14 @@
 <div class="medical-history-wrap">
-  <h2 class="title">{{ patientName }}'s Medical History Details</h2>
-  <a mat-raised-button color="primary" routerLink="/medical-history/add">Add New Record</a><br><br>
+  <h2 class="title">Medical History Details</h2>
+  <a mat-raised-button color="primary" [routerLink]="'/medical-history/add'"
+    [queryParams]="{ patientId: patientId, clinicId: clinicId, siteId: siteId }">
+    Add New Record
+  </a><br><br>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 full-width">
-    <!-- Code Column -->
-    <ng-container matColumnDef="code">
-      <th mat-header-cell *matHeaderCellDef> Code </th>
+    <!-- Allergy Column -->
+    <ng-container matColumnDef="allergy">
+      <th mat-header-cell *matHeaderCellDef> Allergy </th>
       <td mat-cell *matCellDef="let record"> {{ record.code }} </td>
     </ng-container>
 

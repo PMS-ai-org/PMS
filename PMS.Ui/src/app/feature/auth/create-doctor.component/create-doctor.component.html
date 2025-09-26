@@ -31,16 +31,16 @@
 
       <mat-form-field appearance="outline" class="w-full mr-1">
         <mat-label>Specialization</mat-label>
-        <input matInput formControlName="specialization">
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-full mr-1">
-        <mat-label>Clinic</mat-label>
         <mat-select formControlName="clinicId" (selectionChange)="onClinicChange($event.value)">
           @for (clinic of clinics; track $index) {
           <mat-option [value]="clinic.id">{{ clinic.name }}</mat-option>
           }
         </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="w-full mr-1">
+        <mat-label>Super Specialization</mat-label>
+        <input matInput formControlName="specialization">
       </mat-form-field>
 
       <!-- Multi Select Sites -->

@@ -33,8 +33,8 @@ import { ToastService } from '../../../services/toast.service';
     MatIconModule,
     MatDialogModule,
     MatPaginatorModule,
-  MatTooltipModule,
-  HighlightPipe,
+    MatTooltipModule,
+    HighlightPipe,
   ],
   templateUrl: './search-patient.component.html',
   styleUrls: ['./search-patient.component.scss']
@@ -83,6 +83,8 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   canDeleteProfile = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  userRole: string = '';
+
   constructor(private svc: SearchPatientService, private dialog: MatDialog, private router: Router,
     private patientService: PatientService, private repo: RepositoryService, private authSession: AuthSessionService, private toastService: ToastService) {
     effect(() => {
@@ -92,8 +94,9 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnInit(): void {
+    this.userRole = this.authSession.session()?.role ?? '';
     this.q = this.control ?? new FormControl<string>('', { nonNullable: true });
-    
+  
     this.sub = this.q.valueChanges.pipe(
       startWith(this.q.value),
       debounceTime(this.debounceMs),
@@ -172,8 +175,8 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
       )
       .subscribe({
         next: (response) => {
-            this.dataSource.data = response.results;
-            this.totalCount = response.totalCount;
+          this.dataSource.data = response.results;
+          this.totalCount = response.totalCount;
         },
         error: () => {
           this.dataSource.data = [];
@@ -234,13 +237,13 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   getFeaturesListForSite(site: Site | null) {
-    
+
     if (site) {
       this.features = site.features ?? [];
     } else {
       this.features = [];
     }
-
+    
     if (this.role === 'Admin') {
       this.showappointment = true;
       this.showprofile = true;
@@ -260,9 +263,17 @@ export class SearchPatientComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
-  appointmentNavigation() {
+  appointmentNavigation(patientId: string) {
     this.router.navigate(
-      ['/appointment']
+      ['/appointment', patientId],
+      { queryParams: { mode: 'view' } }
+    );
+  }
+
+  appointmentCreateNavigation() {
+    this.router.navigate(
+      ['/appointment'],
+      { queryParams: { mode: 'create' } }
     );
   }
 

@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MedicalHistory } from '../../models/medical-history.model';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RepositoryService } from '../../services/repository.service';
 @Component({
   selector: 'app-medical-history',
   imports: [CommonModule, ReactiveFormsModule, RouterLink, MaterialModule],
@@ -18,11 +19,14 @@ export class MedicalHistoryComponent implements OnInit {
   patientName = '';
   records: MedicalHistory[] = [];
   dataSource = new MatTableDataSource<MedicalHistory>([]);
-  displayedColumns: string[] = ['code', 'description', 'source', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['allergy', 'description', 'source', 'createdAt', 'actions'];
+  clinicId = '';
+  siteId = '';
 
   constructor(private service: MedicalHistoryService,
     private snack: MatSnackBar,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private repositoryService: RepositoryService
   ) { }
 
   ngOnInit(): void {
@@ -30,12 +34,10 @@ export class MedicalHistoryComponent implements OnInit {
       const patientId = params.get('patientId');
       if (patientId) {
         this.patientId = patientId;
-        this.route.queryParamMap.subscribe(queryParams => {
-        this.patientName = queryParams.get('patientName') || '';
-        });
         this.loadRecords(patientId);
-      } else {
-        console.error('No patientId found in route');
+        this.repositoryService.getPatientById(this.patientId).subscribe(patient => {
+          this.patientName = patient.full_name; //Amy Robbins
+        });
       }
     });
   }
@@ -44,6 +46,8 @@ export class MedicalHistoryComponent implements OnInit {
     this.service.getByPatient(patientId).subscribe({
       next: data => {
         this.dataSource.data = data;
+        this.clinicId = data.length > 0 ? (data[0].clinicId ?? '') : '';
+        this.siteId = data.length > 0 ? (data[0].siteId ?? '') : '';
       },
       error: err => {
         this.snack.open(err?.error?.message || 'Failed to load records', 'Close', { duration: 3000 });
