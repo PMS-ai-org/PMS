@@ -9,7 +9,6 @@ namespace PMS.WebAPI.Services
         Task<Patient> CreateAsync(Patient patient);
         Task<bool> UpdateAsync(Guid id, Patient patient);
         Task<bool> DeleteAsync(Guid id);
-        
         Task<(IEnumerable<Patient> Results, int TotalCount)> SearchAsync(string query, int page, int pageSize);
     }
 }

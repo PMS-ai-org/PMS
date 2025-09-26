@@ -18,7 +18,7 @@
       <div class="meta">
         <div class="field"><label>Name</label><span [matTooltip]="fullName || 'Not provided'">{{ fullName || '—'
             }}</span></div>
-        <div class="field"><label>Age</label><span>{{ calculatedAge || '—' }}</span></div>
+        <div class="field"><label>Age</label><span>{{ ageDisplay || '—' }}</span></div>
         <div class="field"><label>Gender</label><span>{{ form.value.gender || '—' }}</span></div>
         <div class="field"><label>Phone</label><span>{{ form.value.phone || '—' }}<button *ngIf="form.value.phone"
               mat-icon-button type="button" (click)="copy(form.value.phone,'Phone')" matTooltip="Copy phone"
@@ -121,8 +121,8 @@
         <div class="responsible-radio-group" role="radiogroup" aria-label="Is patient the responsible person?">
           <label class="group-label">Is patient the responsible person?</label>
           <mat-radio-group formControlName="responsibleIsPatient" class="inline-radios">
-            <mat-radio-button value="false">No</mat-radio-button>
-            <mat-radio-button value="true">Yes</mat-radio-button>
+            <mat-radio-button value="true">No</mat-radio-button>
+            <mat-radio-button value="false">Yes</mat-radio-button>
           </mat-radio-group>
         </div>
         <ng-container *ngIf="form.value.responsibleIsPatient === 'true'">

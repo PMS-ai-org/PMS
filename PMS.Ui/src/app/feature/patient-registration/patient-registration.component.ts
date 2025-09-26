@@ -63,6 +63,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   conditions = ['Diabetes', 'Hypertension (High Blood Pressure)', 'Asthma', 'Heart Disease', 'Chronic Kidney Disease', 'Arthritis', 'Depression / Anxiety', 'Allergies', 'Thyroid Disorder', 'Cancer', 'COPD', 'Migraine', 'Obesity', 'Other'];
   medications = ['Aspirin', 'Metformin', 'Lisinopril', 'Simvastatin', 'Levothyroxine', 'Albuterol', 'Omeprazole', 'Amoxicillin', 'Ibuprofen', 'Acetaminophen', 'Other'];
   calculatedAge = 0;
+  ageDisplay: string = '';
   patientId: string | null = '';
   submitting = false;
   savingAnother = false;
@@ -93,6 +94,8 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   private insuranceLoaded = false; // prevent double binding
   private selfPatientInsuranceLoaded = false; // track self load vs responsible load
   showResponsibleHolderOption = false; // controls visibility of responsible person in policy holder dropdown
+  private originalPatientSnapshot?: Patient; // snapshot used to restore on reset while editing
+  private originalInsuranceSnapshot: any | null = null; // raw insurance form values snapshot
 
   constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService, private dialog: MatDialog, private repoService: RepositoryService) {
     this.form = this.fb.group({
@@ -114,13 +117,15 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       medications: [[]],
       notes: [''],
       // New responsible person controls
-      responsibleIsPatient: [false], // yes | no
+  // Store as string to match radio values ("true" | "false") so default 'false' selects the "Yes" option
+  responsibleIsPatient: ['false'], // 'true' => No (search shown), 'false' => Yes (patient is responsible)
       responsibleSearch: ['', Validators.minLength(3)],
       responsiblePatientId: ['']
     });
 
     // Secondary Insurance form (separate form group)
     this.insuranceForm = this.fb.group({
+      insuranceId : [''],
       policyHolderType: ['Self', Validators.required], // Self | Other
       providerId: ['', Validators.required],
       planId: [''], // becomes required after provider selection
@@ -338,6 +343,9 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       notes: patient.notes,
     });
     this.calculatedAge = patient.age || 0;
+    if (!this.originalPatientSnapshot && this.patientId) {
+      this.originalPatientSnapshot = { ...patient } as Patient; // shallow copy
+    }
   }
 
   // Autocomplete selection handler
@@ -423,6 +431,7 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
           if (list && list.length) {
             const primary = list.find(i => i.isPrimary === true) || list[0];
             this.insuranceForm.patchValue({
+              insuranceId: primary.id || '',
               providerId: primary.providerId || '',
               planId: primary.planId || '',
               policyNumber: primary.policyNumber || '',
@@ -432,6 +441,9 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
               effectiveDate: primary.effectiveDate ? new Date(primary.effectiveDate) : new Date(),
               expirationDate: primary.expirationDate ? new Date(primary.expirationDate) : this.addOneYear(new Date())
             }, { emitEvent: false });
+            if (!this.originalInsuranceSnapshot && this.patientId) {
+              this.originalInsuranceSnapshot = this.insuranceForm.getRawValue();
+            }
             if (isSelf) this.selfPatientInsuranceLoaded = true;
           } else {
             // No insurance records for chosen holder -> clear
@@ -463,51 +475,56 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     }
   }
 
-  saveInsurance() {
-    if (this.insuranceForm.invalid) {
-      this.insuranceForm.markAllAsTouched();
-      this.toast.error('Please complete required insurance fields.');
-      return;
-    }
-    const raw = this.insuranceForm.getRawValue();
-    const payload: PatientInsuranceDto = {
-      providerId: raw.providerId,
-      planId: raw.planId,
-      policyNumber: raw.policyNumber,
-      memberId: raw.memberId,
-      isPrimary: raw.priority === '1',
-      effectiveDate: raw.effectiveDate,
-      expirationDate: raw.expirationDate,
-      priority: Number(raw.priority)
-    };
-  }
-
   calculateAge() {
     const dob = this.form.get('dateOfBirth')?.value;
     if (!dob) {
       this.calculatedAge = 0;
+      this.ageDisplay = '';
       return 0;
     }
 
     const birthDate = new Date(dob);
     const today = new Date();
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    let days = today.getDate() - birthDate.getDate();
 
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    const dayDiff = today.getDate() - birthDate.getDate();
-
-    // Adjust if birthday hasn't occurred yet this year
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      age--;
+    if (days < 0) {
+      months--;
+      // days in previous month
+      const prevMonthDate = new Date(today.getFullYear(), today.getMonth(), 0);
+      days += prevMonthDate.getDate();
     }
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    if (years < 0) years = 0; // safety
 
-    this.calculatedAge = age;
+    this.calculatedAge = years;
+  const parts: string[] = [];
+  if (years > 0) parts.push(`${years} ${years === 1 ? 'yr' : 'yrs'}`);
+  if (months > 0) parts.push(`${months} ${months === 1 ? 'mo' : 'mos'}`);
+  if (days > 0 || parts.length === 0) parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+  this.ageDisplay = parts.join(' ');
   }
 
 
   onCancel(reset: boolean) {
-  this.resetForm();
-  if (reset) this.router.navigate(['/patient/search']);
+    if (this.patientId && this.originalPatientSnapshot) {
+      // restore patient fields
+      this.loadPatientDetails(this.originalPatientSnapshot);
+      // restore insurance if captured
+      if (this.originalInsuranceSnapshot) {
+        this.insuranceForm.reset(this.originalInsuranceSnapshot, { emitEvent: false });
+      } else {
+        this.resetInsuranceSection(true);
+      }
+      this.toast.info('Reverted changes');
+      return;
+    }
+    this.resetForm();
+    if (reset) this.router.navigate(['/patient/search']);
   }
 
   onSubmit() {
@@ -523,7 +540,6 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
         data.insurance = insuranceData;
       }
     }
-    console.log('Saving patient with insurance:', data);
 
     // Reuse existing service but keep navigation; show bottom snackbar
     this.patientService.savePatient(data, this.patientId);
@@ -543,30 +559,33 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
         data.insurance = insuranceData;
       }
     }
-    console.log('Saving patient with insurance:', data);
-    
-    // Manually call repository to control toast timing
-    const obs$ = this.patientId
-      ? this.patientService['repo'].updatePatient(this.patientId, data)
-      : this.patientService['repo'].addPatient(data);
 
-    (obs$ as any)
-      .pipe(finalize(() => this.savingAnother = false))
-      .subscribe(
-        () => {
-          this.toast.success('Saved. You can add another.');
-          this.resetForm();
-          this.patientId = null;
-        },
-        () => {
-          this.toast.error('Save failed. Please try again.');
+    this.patientService['repo'].addPatient(data).subscribe({
+      next: (newPatient) => {
+        if (newPatient.id && data.insurance) {
+          data.insurance.patientId = newPatient.id;
+          this.patientService['repo'].addPatientInsurance(newPatient.id, data.insurance).subscribe({
+            next: () => {
+              this.toast.success('Patient added successfully with insurance');
+            },
+            error: (err) => {
+              this.toast.error('Error adding patient insurance');
+            }
+          });
         }
-      );
+        this.router.navigate(['/patient/profile', newPatient.id]);
+        this.toast.success('Patient added successfully');
+      },
+      error: (err) => {
+        this.toast.error('Error adding patient');
+      }
+    });
   }
 
   mapInsuranceRecord(data: FormGroup): PatientInsuranceDto | undefined {
     if (data.invalid) return undefined;
     return {
+      insuranceId: data.value.insuranceId,
       providerId: data.value.providerId,
       planId: data.value.planId,
       policyNumber: data.value.policyNumber,
@@ -690,7 +709,8 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     });
     // Reset new fields
     this.form.patchValue({
-  responsibleIsPatient: 'false',
+      // keep string type so radio selects correctly
+      responsibleIsPatient: 'false',
       responsibleSearch: '',
       responsiblePatientId: ''
     });
@@ -708,6 +728,10 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
       otherPolicyHolderSearch: '',
       otherPolicyHolderPatientId: ''
     });
+    if (!this.patientId) {
+      this.originalPatientSnapshot = undefined;
+      this.originalInsuranceSnapshot = null;
+    }
   }
 
   ngAfterViewInit() {

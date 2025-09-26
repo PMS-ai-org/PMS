@@ -84,6 +84,8 @@ namespace PMS.WebAPI.Repositories
             if (patient != null && !patient.hasInsurance.HasValue)
             {
                 patient.hasInsurance = true;
+                patient.insuranceId = entity.id;
+
             }
             await _context.SaveChangesAsync();
             return entity;
@@ -127,6 +129,7 @@ namespace PMS.WebAPI.Repositories
             if (patient != null && patient.hasInsurance.HasValue && patient.hasInsurance.Value)
             {
                 patient.hasInsurance = false;
+                patient.insuranceId = null;
             }
             await _context.SaveChangesAsync();
             return true;
