@@ -62,6 +62,22 @@
           <mat-chip *ngFor="let m of medicationsVisible" color="accent" selected>{{ m }}</mat-chip>
         </mat-chip-listbox>
       </div>
+
+      <!-- Insurance Snapshot Block -->
+      <div class="insurance-snapshot" *ngIf="insuranceForm?.get('providerId')?.value">
+        <div class="ins-header">
+          <div class="ins-title">Insurance</div>
+          <span class="pill" [ngClass]="{'primary': insurancePriorityLabel==='Primary', 'secondary': insurancePriorityLabel==='Secondary'}">{{ insurancePriorityLabel }}</span>
+        </div>
+        <div class="ins-grid">
+          <div class="ins-field"><label>Provider</label><span>{{ insuranceProviderName }}</span></div>
+          <div class="ins-field"><label>Plan</label><span>{{ insurancePlanName }}</span></div>
+          <div class="ins-field"><label>Policy #</label><span>{{ insuranceForm.value.policyNumber || '—' }}</span></div>
+          <div class="ins-field" *ngIf="insuranceForm.value.memberId"><label>Member ID</label><span>{{ insuranceForm.value.memberId }}</span></div>
+          <div class="ins-field"><label>Effective</label><span>{{ insuranceEffective }}</span></div>
+          <div class="ins-field"><label>Expires</label><span>{{ insuranceExpiration }}</span></div>
+        </div>
+      </div>
     </div>
   </mat-card>
 

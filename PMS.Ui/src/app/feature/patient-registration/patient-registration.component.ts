@@ -98,9 +98,22 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   private originalInsuranceSnapshot: any | null = null; // raw insurance form values snapshot
 
   constructor(private fb: FormBuilder, private patientService: PatientService, private router: Router, private route: ActivatedRoute, private snack: MatSnackBar, private toast: ToastService, private dialog: MatDialog, private repoService: RepositoryService) {
+    // Custom validator to ensure name has at least 3 alphabetic characters (ignoring spaces) and not only whitespace
+    const nameValidator = (ctrl: AbstractControl) => {
+      const raw = ctrl.value as string;
+      if (raw == null) return null;
+      const trimmed = raw.trim();
+      if (!trimmed) return { required: true }; // leverage required error style
+      // Count only letters (allow A-Z, a-z, apostrophes, hyphens, spaces in input but require >=3 letters total)
+      const letters = (trimmed.match(/[A-Za-z]/g) || []).length;
+      if (letters < 3) return { minlength: { requiredLength: 3, actualLength: letters } };
+      // Prevent multiple consecutive spaces inside (optional) -> normalize later
+      return null;
+    };
+
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(3)]],
-      lastName: ['', [Validators.required, Validators.minLength(3)]],
+      firstName: ['', [Validators.required, nameValidator]],
+      lastName: ['', [Validators.required, nameValidator]],
       dateOfBirth: ['', [Validators.required, this.dateValidator]],
       age: [{ value: '', disabled: true }],
       gender: [''],
@@ -178,6 +191,25 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
     return this.showAllMedications ? this.medicationsList : this.medicationsList.slice(0,6);
   }
 
+  // Insurance snapshot helpers
+  get insuranceProviderName(): string {
+    const id = this.insuranceForm?.get('providerId')?.value;
+    if (!id) return '—';
+    return this.insuranceProviders.find(p=>p.id===id)?.name || '—';
+  }
+  get insurancePlanName(): string {
+    const id = this.insuranceForm?.get('planId')?.value;
+    if (!id) return '—';
+    return this.insurancePlans.find(p=>p.id===id)?.name || '—';
+  }
+  get insurancePriorityLabel(): string {
+    const pr = this.insuranceForm?.get('priority')?.value;
+    return pr === '2' ? 'Secondary' : pr ? 'Primary' : '—';
+  }
+  get insuranceEffective(): string { return this.formatDate(this.insuranceForm?.get('effectiveDate')?.value); }
+  get insuranceExpiration(): string { return this.formatDate(this.insuranceForm?.get('expirationDate')?.value); }
+  private formatDate(d: any): string { if(!d) return '—'; const dt = new Date(d); return isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString(); }
+
   toggleConditions() { this.showAllConditions = !this.showAllConditions; }
   toggleMedications() { this.showAllMedications = !this.showAllMedications; }
 
@@ -204,6 +236,18 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('id');
+
+    // Auto-trim & sanitize name fields (remove leading spaces and collapse multiple internal spaces)
+    ['firstName','lastName'].forEach(f => {
+      const ctrl = this.form.get(f);
+      ctrl?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(val => {
+        if (typeof val !== 'string') return;
+        const cleaned = val.replace(/^\s+/, '').replace(/\s{2,}/g, ' ');
+        if (cleaned !== val) {
+          ctrl.setValue(cleaned, { emitEvent: false });
+        }
+      });
+    });
 
     if (this.patientId) {
       this.patientService.loadPatientById(this.patientId);
@@ -598,8 +642,11 @@ export class PatientRegistrationComponent implements OnInit, OnDestroy, AfterVie
   }
 
   mapPatientRecord(data: FormGroup): Patient {
+    const normalize = (v: string) => (v || '').trim().replace(/\s{2,}/g,' ');
+    const first = normalize(data.value.firstName);
+    const last = normalize(data.value.lastName);
     const patientData: Patient = {
-      full_name: `${data.value.firstName} ${data.value.lastName}`.trim(),
+      full_name: `${first} ${last}`.trim(),
       dob: data.value.dateOfBirth ? data.value.dateOfBirth : undefined,
       gender: data.value.gender,
       phone: data.value.phone,
