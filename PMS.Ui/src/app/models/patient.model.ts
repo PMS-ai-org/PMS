@@ -17,5 +17,6 @@ export interface Patient extends AuditableEntity {
   homeClinicId?: string;
   homeSiteId?: string;
   hasInsurance?: boolean;      // backend flag to decide add vs update insurance
+  insuranceId?: string | null; // FK to PatientInsurance
   insurance?: PatientInsuranceDto;
 }

@@ -37,25 +37,23 @@ export class PatientService {
   savePatient(patient: Patient, patientId: string | null, isNavigate = true): void {
     if(patientId){
       this.repo.updatePatient(patientId, patient).subscribe({
-        next: () => {
+        next: (res) => {
+          console.log(res)
           // After patient update decide how to handle insurance per request:
           // "if hasInsurance true then call addPatientInsurance api if its false call updatePatientInsurance"
           // (Note: this appears inverted logically, but implemented as specified.)
           if (patient.insurance) {
-            if (patient.hasInsurance) {
+            if (patient?.insurance?.insuranceId) {
+              patient.insurance.patientId = patientId
               // Update requires an insurance id; if not present we skip
-              const insuranceId: any = (patient.insurance as any).id;
-              if (insuranceId) {
-                this.repo.updatePatientInsurance(insuranceId, patient.insurance).subscribe({
-                  next: () => this.toast.success('Insurance updated'),
-                  error: () => this.toast.error('Error updating insurance')
-                });
-              }
-              
+              this.repo.updatePatientInsurance(patient.insurance.insuranceId, patient.insurance).subscribe({
+                next: () => this.toast.success('Insurance updated'),
+                error: () => this.toast.error('Error updating insurance')
+              });
             } else {
               // Call add (spec as given)
               patient.insurance.patientId = patientId;
-              this.repo.addPatientInsurance(patientId!, patient.insurance).subscribe({
+              this.repo.addPatientInsurance(patientId, patient.insurance).subscribe({
                 next: () => this.toast.success('Insurance added'),
                 error: () => this.toast.error('Error adding insurance')
               });

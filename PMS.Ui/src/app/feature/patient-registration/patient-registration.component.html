@@ -18,7 +18,7 @@
       <div class="meta">
         <div class="field"><label>Name</label><span [matTooltip]="fullName || 'Not provided'">{{ fullName || '—'
             }}</span></div>
-        <div class="field"><label>Age</label><span>{{ calculatedAge || '—' }}</span></div>
+        <div class="field"><label>Age</label><span>{{ ageDisplay || '—' }}</span></div>
         <div class="field"><label>Gender</label><span>{{ form.value.gender || '—' }}</span></div>
         <div class="field"><label>Phone</label><span>{{ form.value.phone || '—' }}<button *ngIf="form.value.phone"
               mat-icon-button type="button" (click)="copy(form.value.phone,'Phone')" matTooltip="Copy phone"
@@ -61,6 +61,22 @@
         <mat-chip-listbox aria-label="Medications list">
           <mat-chip *ngFor="let m of medicationsVisible" color="accent" selected>{{ m }}</mat-chip>
         </mat-chip-listbox>
+      </div>
+
+      <!-- Insurance Snapshot Block -->
+      <div class="insurance-snapshot" *ngIf="insuranceForm?.get('providerId')?.value">
+        <div class="ins-header">
+          <div class="ins-title">Insurance</div>
+          <span class="pill" [ngClass]="{'primary': insurancePriorityLabel==='Primary', 'secondary': insurancePriorityLabel==='Secondary'}">{{ insurancePriorityLabel }}</span>
+        </div>
+        <div class="ins-grid">
+          <div class="ins-field"><label>Provider</label><span>{{ insuranceProviderName }}</span></div>
+          <div class="ins-field"><label>Plan</label><span>{{ insurancePlanName }}</span></div>
+          <div class="ins-field"><label>Policy #</label><span>{{ insuranceForm.value.policyNumber || '—' }}</span></div>
+          <div class="ins-field" *ngIf="insuranceForm.value.memberId"><label>Member ID</label><span>{{ insuranceForm.value.memberId }}</span></div>
+          <div class="ins-field"><label>Effective</label><span>{{ insuranceEffective }}</span></div>
+          <div class="ins-field"><label>Expires</label><span>{{ insuranceExpiration }}</span></div>
+        </div>
       </div>
     </div>
   </mat-card>
@@ -127,8 +143,8 @@
         <div class="responsible-radio-group" role="radiogroup" aria-label="Is patient the responsible person?">
           <label class="group-label">Is patient the responsible person?</label>
           <mat-radio-group formControlName="responsibleIsPatient" class="inline-radios">
-            <mat-radio-button value="false">No</mat-radio-button>
-            <mat-radio-button value="true">Yes</mat-radio-button>
+            <mat-radio-button value="true">No</mat-radio-button>
+            <mat-radio-button value="false">Yes</mat-radio-button>
           </mat-radio-group>
         </div>
         <ng-container *ngIf="form.value.responsibleIsPatient === 'true'">

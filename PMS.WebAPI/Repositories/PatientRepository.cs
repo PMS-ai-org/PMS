@@ -42,8 +42,13 @@ namespace PMS.WebAPI.Repositories
         public async Task<bool> DeleteAsync(Guid id)
         {
             var existing = await _context.Patients.FindAsync(id);
+            var existingInsurance = await _context.PatientInsurances.FirstOrDefaultAsync(pi => pi.patientId == id);
             if (existing == null) return false;
             _context.Patients.Remove(existing);
+            if (existingInsurance != null)
+            {
+                _context.PatientInsurances.Remove(existingInsurance);
+            }
             await _context.SaveChangesAsync();
             return true;
         }
