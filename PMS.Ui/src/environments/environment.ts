@@ -1,3 +1,3 @@
-export const environment = { production: false, apiUrl: 'https://localhost:7123/api' };
+export const environment = { production: false, apiUrl: 'https://pms-webapi.onrender.com/api' };
 //'https://pms-webapi.onrender.com/api'
 //https://localhost:7123/
